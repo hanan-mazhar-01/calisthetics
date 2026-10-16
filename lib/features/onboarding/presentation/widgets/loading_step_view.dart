@@ -5,6 +5,8 @@ import '../../../../core/theme/app_motion.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/theme/app_typography.dart';
 import '../../../../shared/widgets/media_placeholder.dart';
+import '../../../exercises/domain/exercise_lookup.dart';
+import '../../../exercises/presentation/widgets/exercise_picture.dart';
 import '../../domain/onboarding_step.dart';
 import '../widgets/onboarding_continue_bar.dart';
 
@@ -138,8 +140,11 @@ class _LoadingStepViewState extends State<LoadingStepView>
                                 borderRadius: BorderRadius.circular(16),
                                 child: SizedBox(
                                   height: 90,
-                                  child: MediaPlaceholder(
-                                    brief: widget.step.previewExercises[i],
+                                  child: _previewPicture(
+                                    widget.step.previewExercises[i],
+                                    i < widget.step.previewNumbers.length
+                                        ? widget.step.previewNumbers[i]
+                                        : null,
                                   ),
                                 ),
                               ),
@@ -234,4 +239,13 @@ class _StageRow extends StatelessWidget {
       ),
     );
   }
+}
+
+/// The exercise's thumbnail for the "building your plan" preview, or the
+/// labelled placeholder when the name isn't in the catalog.
+Widget _previewPicture(String name, int? number) {
+  final exercise = number == null ? null : exerciseByNumber(number);
+  return exercise == null
+      ? MediaPlaceholder(brief: name)
+      : ExercisePicture(exercise: exercise);
 }

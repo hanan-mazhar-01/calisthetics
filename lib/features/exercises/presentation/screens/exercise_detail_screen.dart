@@ -15,6 +15,7 @@ import '../../../workout/domain/workout_request.dart';
 import '../../domain/exercise.dart';
 import '../../domain/exercise_lookup.dart';
 import '../widgets/exercise_chips.dart';
+import '../widgets/exercise_picture.dart';
 import '../widgets/exercise_video_slot.dart';
 
 /// Full page for one catalog exercise. Content comes straight from the
@@ -54,6 +55,7 @@ class ExerciseDetailScreen extends ConsumerWidget {
             ExerciseVideoSlot(
               key: ValueKey(e.number),
               exerciseName: e.name,
+              thumbnailKey: exerciseThumbnailKey(e),
               url: media.exerciseVideo(e),
               locked: locked,
               onPlay: () => context.push(

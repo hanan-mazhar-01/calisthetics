@@ -114,6 +114,11 @@ class PlanTemplate {
     if (invertsNeck && areas.contains(ProtectedArea.neck)) ProtectedArea.neck,
   };
 
+  /// The exercise whose picture stands for the plan: the first exercise of
+  /// its first session.
+  int get coverExerciseNumber =>
+      stages.first.sessions.first.items.first.exerciseNumber;
+
   Iterable<int> get exerciseNumbers sync* {
     for (final stage in stages) {
       for (final session in stage.sessions) {

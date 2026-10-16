@@ -1,15 +1,15 @@
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../core/theme/app_colors_extension.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/theme/app_typography.dart';
-import '../../../../shared/widgets/media_placeholder.dart';
+import '../../../../shared/widgets/bunny_image.dart';
+import '../../../exercises/domain/exercise_lookup.dart';
+import '../../../exercises/presentation/widgets/exercise_picture.dart';
 import '../../../plans/domain/plan_recommender.dart';
 import '../../../plans/domain/plan_template.dart';
 import '../../../user/presentation/providers/user_providers.dart';
-import '../../../media/presentation/media_providers.dart';
 import '../../domain/onboarding_plan_summary.dart';
 import '../providers/onboarding_controller.dart';
 
@@ -180,7 +180,7 @@ class _HeroCard extends StatelessWidget {
             borderRadius: BorderRadius.circular(28.5),
             child: Stack(
               children: [
-                const Positioned.fill(child: _HeroBackground()),
+                Positioned.fill(child: _HeroBackground(template: t)),
                 // Darkens the photo so the white text stays readable.
                 Positioned.fill(
                   child: DecoratedBox(
@@ -294,17 +294,16 @@ class _HeroCard extends StatelessWidget {
   }
 }
 
-/// The plan hero photo (slot `plan-hero`) once media is configured; until
-/// then a plain blush gradient, so no placeholder label sits behind the text.
-class _HeroBackground extends ConsumerWidget {
-  const _HeroBackground();
+/// The plan's picture: the thumbnail of its lead exercise; until it loads,
+/// a plain blush gradient, so no placeholder label sits behind the text.
+class _HeroBackground extends StatelessWidget {
+  const _HeroBackground({required this.template});
+
+  final PlanTemplate template;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  Widget build(BuildContext context) {
     final c = context.appColors;
-    final url = ref
-        .watch(mediaRepositoryProvider)
-        .image('plan-hero', width: 900);
     final fallback = DecoratedBox(
       decoration: BoxDecoration(
         gradient: LinearGradient(
@@ -314,12 +313,10 @@ class _HeroBackground extends ConsumerWidget {
         ),
       ),
     );
-    if (url == null) return fallback;
-    return CachedNetworkImage(
-      imageUrl: url.toString(),
+    return BunnyImage(
+      exerciseThumbnailKey(exerciseByNumber(template.coverExerciseNumber)),
       fit: BoxFit.cover,
-      placeholder: (_, _) => fallback,
-      errorWidget: (_, _, _) => fallback,
+      fallback: fallback,
     );
   }
 }
@@ -550,8 +547,8 @@ class _PlanBubble extends StatelessWidget {
                                 : null,
                           ),
                           child: ClipOval(
-                            child: MediaPlaceholder(
-                              brief: t.name,
+                            child: ExercisePicture(
+                              exercise: exerciseByNumber(t.coverExerciseNumber),
                               compact: true,
                             ),
                           ),

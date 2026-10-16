@@ -12,6 +12,7 @@ import '../../../../shared/widgets/glass/glass_card.dart';
 import '../../../workout/domain/workout_request.dart';
 import '../../../user/presentation/providers/user_providers.dart';
 import '../../domain/plan_overview.dart';
+import '../../domain/cover_pictures.dart';
 import '../../domain/plan_timeline.dart';
 import '../providers/plan_providers.dart';
 import '../../../exercises/presentation/widgets/exercise_thumb.dart';
@@ -165,6 +166,7 @@ class _PlanScreenState extends ConsumerState<PlanScreen> {
     String templateId,
   ) {
     final rows = <Widget>[];
+    final covers = coverPictures([for (final ph in t.phases) ...ph.days]);
     for (var p = 0; p < t.phases.length; p++) {
       final phase = t.phases[p];
       rows.add(
@@ -188,8 +190,16 @@ class _PlanScreenState extends ConsumerState<PlanScreen> {
             child: CalestheticsFadeSlide(
               delay: Duration(milliseconds: 30 * i),
               child: isHero
-                  ? _HeroDay(day: day, templateId: templateId)
-                  : _CompactDay(day: day, templateId: templateId),
+                  ? _HeroDay(
+                      day: day,
+                      templateId: templateId,
+                      cover: covers[day.dayNumber] ?? day.session.cover,
+                    )
+                  : _CompactDay(
+                      day: day,
+                      templateId: templateId,
+                      cover: covers[day.dayNumber] ?? day.session.cover,
+                    ),
             ),
           ),
         );
@@ -675,9 +685,16 @@ class _TimelineRow extends StatelessWidget {
 
 /// The next training day: big image card with title overlay and Start Training.
 class _HeroDay extends ConsumerWidget {
-  const _HeroDay({required this.day, required this.templateId});
+  const _HeroDay({
+    required this.day,
+    required this.templateId,
+    required this.cover,
+  });
   final TimelineDay day;
   final String templateId;
+
+  /// Catalog number of the exercise whose picture heads the card.
+  final int cover;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -705,11 +722,7 @@ class _HeroDay extends ConsumerWidget {
                 child: Stack(
                   fit: StackFit.expand,
                   children: [
-                    ExerciseThumb(
-                      number: session.items.first.exerciseNumber,
-                      size: 400,
-                      radiusFactor: 0,
-                    ),
+                    ExerciseThumb(number: cover, size: 400, radiusFactor: 0),
                     DecoratedBox(
                       decoration: BoxDecoration(
                         gradient: LinearGradient(
@@ -808,9 +821,16 @@ class _HeroDay extends ConsumerWidget {
 
 /// Any other training day: thumbnail, "Day N", minutes and exercise count.
 class _CompactDay extends ConsumerWidget {
-  const _CompactDay({required this.day, required this.templateId});
+  const _CompactDay({
+    required this.day,
+    required this.templateId,
+    required this.cover,
+  });
   final TimelineDay day;
   final String templateId;
+
+  /// Catalog number of the exercise whose picture heads the card.
+  final int cover;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -826,11 +846,7 @@ class _CompactDay extends ConsumerWidget {
       onTap: () => context.push('/day/${day.weekday}?week=${day.weekNumber}'),
       child: Row(
         children: [
-          ExerciseThumb(
-            number: session.items.first.exerciseNumber,
-            size: 90,
-            radiusFactor: 0.16,
-          ),
+          ExerciseThumb(number: cover, size: 90, radiusFactor: 0.16),
           const SizedBox(width: AppSpacing.xl),
           Expanded(
             child: Column(

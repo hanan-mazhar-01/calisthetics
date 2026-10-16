@@ -9,6 +9,7 @@ import '../providers/onboarding_controller.dart';
 import 'choice_grid_tile.dart';
 import 'choice_list_tile.dart';
 import 'level_slider_content.dart';
+import 'typewriter_text.dart';
 
 /// Renders a [ChoiceStep] as either a vertical list or a photo grid, wiring
 /// taps to [OnboardingController.toggleOption] and auto-advancing single-select
@@ -36,7 +37,7 @@ class ChoiceStepContent extends ConsumerWidget {
     String optionId, {
     Duration advanceDelay = _defaultAdvanceDelay,
   }) {
-    HapticFeedback.selectionClick();
+    HapticFeedback.mediumImpact();
     if (binding != null) {
       binding!.onToggle(optionId);
       return;
@@ -65,10 +66,13 @@ class ChoiceStepContent extends ConsumerWidget {
         );
 
     if (step.layout == ChoiceLayout.slider) {
-      return LevelSliderContent(
-        options: step.options,
-        selectedId: selected.firstOrNull,
-        onSelect: (id) => _handleTap(ref, id),
+      return StepReveal(
+        index: 0,
+        child: LevelSliderContent(
+          options: step.options,
+          selectedId: selected.firstOrNull,
+          onSelect: (id) => _handleTap(ref, id),
+        ),
       );
     }
 
@@ -90,10 +94,13 @@ class ChoiceStepContent extends ConsumerWidget {
             crossAxisSpacing: AppSpacing.md,
             mainAxisSpacing: AppSpacing.md,
           ),
-          itemBuilder: (context, i) => ChoiceGridTile(
-            option: step.options[i],
-            selected: selected.contains(step.options[i].id),
-            onTap: () => _handleTap(ref, step.options[i].id),
+          itemBuilder: (context, i) => StepReveal(
+            index: i,
+            child: ChoiceGridTile(
+              option: step.options[i],
+              selected: selected.contains(step.options[i].id),
+              onTap: () => _handleTap(ref, step.options[i].id),
+            ),
           ),
         ),
       );
@@ -101,12 +108,15 @@ class ChoiceStepContent extends ConsumerWidget {
 
     return _ResponsiveList(
       itemCount: step.options.length,
-      itemBuilder: (itemHeight, i) => ChoiceListTile(
-        option: step.options[i],
-        selected: selected.contains(step.options[i].id),
-        onTap: () => _handleTap(ref, step.options[i].id),
-        multi: step.selection == ChoiceSelection.multi,
-        minHeight: itemHeight,
+      itemBuilder: (itemHeight, i) => StepReveal(
+        index: i,
+        child: ChoiceListTile(
+          option: step.options[i],
+          selected: selected.contains(step.options[i].id),
+          onTap: () => _handleTap(ref, step.options[i].id),
+          multi: step.selection == ChoiceSelection.multi,
+          minHeight: itemHeight,
+        ),
       ),
     );
   }

@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../../../../core/theme/app_colors_extension.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/theme/app_typography.dart';
+import '../../../../shared/widgets/bunny_image.dart';
 import '../../../../shared/widgets/media_placeholder.dart';
 
 /// Emotional-benefit screen: two contrasted weeks side by side, then a
@@ -28,6 +29,7 @@ class PairStepContent extends StatelessWidget {
               Expanded(
                 child: _Panel(
                   photoPrompt: 'Starting out: hesitant first push-up',
+                  imageKey: 'onboarding/your-plan/before',
                   grayscale: true,
                   weekLabel: 'Starting out',
                   weekColor: context.appColors.textPrimary,
@@ -38,6 +40,7 @@ class PairStepContent extends StatelessWidget {
               Expanded(
                 child: _Panel(
                   photoPrompt: 'With practice: confident, strong plank',
+                  imageKey: 'onboarding/your-plan/after',
                   grayscale: false,
                   weekLabel: 'With practice',
                   weekColor: context.appColors.accent,
@@ -71,6 +74,7 @@ class PairStepContent extends StatelessWidget {
 class _Panel extends StatelessWidget {
   const _Panel({
     required this.photoPrompt,
+    required this.imageKey,
     required this.grayscale,
     required this.weekLabel,
     required this.weekColor,
@@ -78,6 +82,7 @@ class _Panel extends StatelessWidget {
   });
 
   final String photoPrompt;
+  final String imageKey;
   final bool grayscale;
   final String weekLabel;
   final Color weekColor;
@@ -120,7 +125,24 @@ class _Panel extends StatelessWidget {
                       Colors.transparent,
                       BlendMode.multiply,
                     ),
-              child: MediaPlaceholder(brief: photoPrompt),
+              child: DecoratedBox(
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
+                    colors: [
+                      context.appColors.softRose,
+                      context.appColors.surfaceMuted,
+                    ],
+                  ),
+                ),
+                child: BunnyImage(
+                  imageKey,
+                  fit: BoxFit.cover,
+                  alignment: Alignment.topCenter,
+                  fallback: MediaPlaceholder(brief: photoPrompt),
+                ),
+              ),
             ),
           ),
         ),

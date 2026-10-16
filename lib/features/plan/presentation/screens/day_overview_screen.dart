@@ -12,6 +12,7 @@ import '../../../plans/domain/plan_template.dart';
 import '../../../user/presentation/providers/user_providers.dart';
 import '../../../workout/domain/workout_request.dart';
 import '../../domain/plan_overview.dart';
+import '../../domain/cover_pictures.dart';
 import '../providers/plan_providers.dart';
 import '../widgets/day_header.dart';
 import '../widgets/day_rows.dart';
@@ -61,7 +62,19 @@ class DayOverviewScreen extends ConsumerWidget {
       );
     }
     final shownWeek = week ?? plan.weekNumberOn(ref.watch(clockProvider)());
+    // The same picture this day wears on the Plan tab.
+    final timeline = ref.watch(planTimelineProvider);
+    var hero = session.cover;
+    if (timeline != null) {
+      final date = PlanTimeline.dateOf(plan, shownWeek, weekday);
+      final days = [for (final ph in timeline.phases) ...ph.days];
+      final covers = coverPictures(days);
+      for (final d in days) {
+        if (d.date == date) hero = covers[d.dayNumber] ?? hero;
+      }
+    }
     return _Body(
+      heroNumber: hero,
       session: session,
       templateId: plan.templateId,
       progressKey: dayProgressKey(
@@ -88,11 +101,13 @@ String? _levelLabel(PlanTemplate? t, int stageIndex, PlanLevel chosen) {
 
 class _Body extends ConsumerWidget {
   const _Body({
+    required this.heroNumber,
     required this.session,
     required this.templateId,
     required this.progressKey,
     required this.level,
   });
+  final int heroNumber;
   final BuiltSession session;
   final String templateId;
   final String progressKey;
@@ -134,6 +149,7 @@ class _Body extends ConsumerWidget {
       SliverPersistentHeader(
         pinned: true,
         delegate: DayHeaderDelegate(
+          heroNumber: heroNumber,
           topInset: top,
           musicOn: musicOn,
           animate: animate,

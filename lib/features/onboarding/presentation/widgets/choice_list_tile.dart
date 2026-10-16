@@ -4,6 +4,7 @@ import '../../../../core/theme/app_colors_extension.dart';
 import '../../../../core/theme/app_motion.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/theme/app_typography.dart';
+import '../../../../shared/widgets/bunny_image.dart';
 import '../../../../shared/widgets/media_placeholder.dart';
 import '../../domain/onboarding_step.dart';
 
@@ -126,7 +127,9 @@ class ChoiceListTile extends StatelessWidget {
                               ),
                             ),
                           ),
-                          if (option.imagePrompt != null)
+                          if (option.imageKey != null)
+                            _OptionPicture(option: option)
+                          else if (option.imagePrompt != null)
                             SizedBox(
                               width: 108,
                               child: MediaPlaceholder(
@@ -169,6 +172,62 @@ class ChoiceListTile extends StatelessWidget {
             ),
           ),
         ),
+      ),
+    );
+  }
+}
+
+/// The option's picture on the right of the card: a photo of a person bleeds
+/// to the card edge; a 3D icon sits inside it. Until the image is available
+/// (or if it can't load) the old placeholder / letter badge shows.
+class _OptionPicture extends StatelessWidget {
+  const _OptionPicture({required this.option});
+
+  final ChoiceOption option;
+
+  @override
+  Widget build(BuildContext context) {
+    final fallback = option.imagePrompt != null
+        ? MediaPlaceholder(brief: option.imagePrompt!)
+        : option.glyph != null
+        ? Center(child: _GlyphBadge(glyph: option.glyph!))
+        : null;
+    // The picture only fills the room the card already has (a Stack of
+    // positioned children has no height of its own), so a tall image can
+    // never stretch its card taller than the others.
+    if (option.photo) {
+      // Whole figure, standing on the card's bottom edge: nothing is cropped.
+      return SizedBox(
+        width: 122,
+        child: Stack(
+          children: [
+            Positioned.fill(
+              child: BunnyImage(
+                option.imageKey!,
+                fit: BoxFit.contain,
+                alignment: Alignment.bottomCenter,
+                fallback: fallback,
+              ),
+            ),
+          ],
+        ),
+      );
+    }
+    return SizedBox(
+      width: 100,
+      child: Stack(
+        children: [
+          Positioned.fill(
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(0, 6, 10, 6),
+              child: BunnyImage(
+                option.imageKey!,
+                fit: BoxFit.contain,
+                fallback: fallback,
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }

@@ -4,7 +4,9 @@ import 'package:video_player/video_player.dart';
 
 import '../../../../core/theme/app_colors_extension.dart';
 import '../../../../core/theme/app_typography.dart';
+import '../../../../shared/widgets/bunny_image.dart';
 import '../../../exercises/domain/exercise_lookup.dart';
+import '../../../exercises/presentation/widgets/exercise_picture.dart';
 import '../../../media/presentation/media_providers.dart';
 
 /// Looping demo of one exercise. Holds at most ONE
@@ -127,7 +129,12 @@ class _WorkoutVideoState extends ConsumerState<WorkoutVideo> {
     return Stack(
       fit: StackFit.expand,
       children: [
-        _VideoPlaceholder(name: name),
+        _VideoPlaceholder(
+          name: name,
+          thumbnailKey: exerciseThumbnailKey(
+            exerciseByNumber(widget.exerciseNumber),
+          ),
+        ),
         // A URL exists and the clip is still preparing: thin pre-roll bar.
         if (controller != null) const _Buffering(),
       ],
@@ -153,13 +160,14 @@ class _Buffering extends StatelessWidget {
 }
 
 class _VideoPlaceholder extends StatelessWidget {
-  const _VideoPlaceholder({required this.name});
+  const _VideoPlaceholder({required this.name, required this.thumbnailKey});
   final String name;
+  final String thumbnailKey;
 
   @override
   Widget build(BuildContext context) {
     final c = context.appColors;
-    return DecoratedBox(
+    final label = DecoratedBox(
       decoration: BoxDecoration(
         gradient: LinearGradient(
           begin: Alignment.topCenter,
@@ -182,5 +190,8 @@ class _VideoPlaceholder extends StatelessWidget {
         ),
       ),
     );
+    // The exercise's thumbnail stands in while the clip loads; the plain
+    // name card shows only if there is no picture either.
+    return BunnyImage(thumbnailKey, fit: BoxFit.cover, fallback: label);
   }
 }

@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 
 import '../../../../core/theme/app_spacing.dart';
+import '../../../../core/theme/app_typography.dart';
 import '../../../../shared/widgets/media_placeholder.dart';
+import '../../../exercises/domain/exercise_lookup.dart';
+import '../../../exercises/presentation/widgets/exercise_picture.dart';
 import '../../../../shared/widgets/primary_button.dart';
 import '../../domain/onboarding_step.dart';
 import 'onboarding_titled_header.dart';
@@ -90,7 +93,49 @@ class _MosaicColumn extends StatelessWidget {
                 borderRadius: BorderRadius.circular(18),
                 child: SizedBox(
                   height: tile.height,
-                  child: MediaPlaceholder(brief: tile.photoPrompt),
+                  child: tile.exerciseNumber == null
+                      ? MediaPlaceholder(brief: tile.photoPrompt)
+                      : Stack(
+                          fit: StackFit.expand,
+                          children: [
+                            ExercisePicture(
+                              exercise: exerciseByNumber(tile.exerciseNumber!),
+                            ),
+                            Positioned(
+                              left: 0,
+                              right: 0,
+                              bottom: 0,
+                              child: DecoratedBox(
+                                decoration: BoxDecoration(
+                                  gradient: LinearGradient(
+                                    begin: Alignment.topCenter,
+                                    end: Alignment.bottomCenter,
+                                    colors: [
+                                      Colors.transparent,
+                                      Colors.black.withValues(alpha: 0.55),
+                                    ],
+                                  ),
+                                ),
+                                child: Padding(
+                                  padding: const EdgeInsets.fromLTRB(
+                                    12,
+                                    18,
+                                    12,
+                                    10,
+                                  ),
+                                  child: Text(
+                                    tile.label,
+                                    style: AppTypography.title(
+                                      15,
+                                      Colors.white,
+                                      weight: FontWeight.w800,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
                 ),
               ),
             ),

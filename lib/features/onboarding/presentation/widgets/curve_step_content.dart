@@ -4,6 +4,7 @@ import '../../../../core/theme/app_colors_extension.dart';
 import '../../../../core/theme/app_motion.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/theme/app_typography.dart';
+import '../../../../shared/widgets/bunny_image.dart';
 import '../../domain/onboarding_step.dart';
 
 /// Animated growth-curve chart ("Potential", "Projection" screens): the line
@@ -170,16 +171,42 @@ class _PointMarker extends StatelessWidget {
                 ),
               ),
             ),
-            Container(
-              width: 16,
-              height: 16,
-              decoration: BoxDecoration(
-                color: context.appColors.surface,
-                shape: BoxShape.circle,
-                border: Border.all(color: context.appColors.accent, width: 4),
-              ),
-            ),
+            _Dot(imageKey: point.imageKey),
           ],
+        ),
+      ),
+    );
+  }
+}
+
+class _Dot extends StatelessWidget {
+  const _Dot({this.imageKey});
+
+  final String? imageKey;
+
+  @override
+  Widget build(BuildContext context) {
+    final dot = Container(
+      width: 16,
+      height: 16,
+      decoration: BoxDecoration(
+        color: context.appColors.surface,
+        shape: BoxShape.circle,
+        border: Border.all(color: context.appColors.accent, width: 4),
+      ),
+    );
+    if (imageKey == null) return dot;
+    // The emoji is centred on the curve point (the dot's own centre).
+    return SizedBox(
+      width: 16,
+      height: 16,
+      child: OverflowBox(
+        maxWidth: 40,
+        maxHeight: 40,
+        child: SizedBox(
+          width: 40,
+          height: 40,
+          child: BunnyImage(imageKey!, fallback: Center(child: dot)),
         ),
       ),
     );

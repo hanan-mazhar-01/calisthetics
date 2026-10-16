@@ -27,9 +27,23 @@ class BuiltSession {
     required this.items,
     required this.coolDown,
     required this.estimatedMinutes,
+    this.coverNumber,
+    this.ownNumbers = const [],
   });
 
   final String name;
+
+  /// The exercise that stands for the session on its card: the session's own
+  /// first exercise, not a focus exercise added in front of it (which can be
+  /// for another body area than the session's name).
+  final int? coverNumber;
+
+  /// The session's own exercises (without the focus ones added in front),
+  /// best first: what its card picture can be chosen from.
+  final List<int> ownNumbers;
+
+  /// [coverNumber], or the first exercise when none was set.
+  int get cover => coverNumber ?? items.first.exerciseNumber;
 
   /// Catalog exercise numbers, each done for [PlanBuilder.drillSeconds].
   final List<int> warmUp;
@@ -466,6 +480,8 @@ class PlanBuilder {
     while (items.length > 3 && _seconds(items) + reserved > budget) {
       items.removeLast();
     }
+    final cover = items.isEmpty ? null : items.first.exerciseNumber;
+    final own = [for (final i in items) i.exerciseNumber];
     // Her focus exercises lead the session, so they are what she sees first.
     items.insertAll(0, [for (final f in focusPicks) build(f)]);
 
@@ -560,6 +576,8 @@ class PlanBuilder {
       items: items,
       coolDown: coolDown,
       estimatedMinutes: (total / 60).round(),
+      coverNumber: cover,
+      ownNumbers: own,
     );
   }
 

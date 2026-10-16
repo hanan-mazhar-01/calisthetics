@@ -65,13 +65,20 @@ OnboardingStep applyDynamicContent(
             xFraction: 0.10,
             yFraction: 0.84,
             label: p == 0 ? 'Start' : '${p}s',
+            imageKey: 'onboarding/goal-screen/emoji-2',
           ),
-          CurvePoint(xFraction: 0.50, yFraction: 0.54, label: '${mid}s'),
+          CurvePoint(
+            xFraction: 0.50,
+            yFraction: 0.54,
+            label: '${mid}s',
+            imageKey: 'onboarding/goal-screen/emoji',
+          ),
           CurvePoint(
             xFraction: 0.92,
             yFraction: 0.14,
             label: '${goal}s',
             emphasized: true,
+            imageKey: 'onboarding/goal-screen/emoji-1',
           ),
         ],
         footer: p == 0 ? s.footer : 'You held $p seconds today. ${s.footer}',
@@ -84,6 +91,7 @@ OnboardingStep applyDynamicContent(
         id: s.id,
         stages: s.stages,
         previewExercises: plan.previewExercises,
+        previewNumbers: plan.previewNumbers,
       );
 
     case 'personalized-result':

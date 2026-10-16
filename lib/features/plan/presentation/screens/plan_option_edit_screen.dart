@@ -43,17 +43,22 @@ class PlanOptionEditScreen extends ConsumerWidget {
     final Widget header;
     final Widget content;
     final bool fills;
+    var fixed = false;
     switch (step) {
       case ChoiceStep():
         final binding = _bindingFor(ref, option, draft, notifier);
         header = OnboardingTitledHeader(
           headline: step.headline,
           subtitle: step.subtitle,
+          animate: false,
         );
         content = ChoiceStepContent(step: step, binding: binding);
         fills = step.layout == ChoiceLayout.list;
       case FocusStep():
-        header = OnboardingTitledHeader(headline: step.headline);
+        header = OnboardingTitledHeader(
+          headline: step.headline,
+          animate: false,
+        );
         content = FocusStepContent(
           step: step,
           binding: SelectionBinding(
@@ -66,6 +71,7 @@ class PlanOptionEditScreen extends ConsumerWidget {
           ),
         );
         fills = false;
+        fixed = true;
       default:
         throw StateError('Unsupported step for ${option.name}');
     }
@@ -98,6 +104,7 @@ class PlanOptionEditScreen extends ConsumerWidget {
               Expanded(
                 child: OnboardingScrollBody(
                   fillsHeight: fills,
+                  fixed: fixed,
                   header: header,
                   content: content,
                 ),

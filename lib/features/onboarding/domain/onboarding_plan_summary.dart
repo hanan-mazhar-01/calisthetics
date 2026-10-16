@@ -305,6 +305,12 @@ class OnboardingPlanSummary {
     ];
   }
 
+  List<int> get previewNumbers {
+    final first = _trainingDays.firstOrNull?.session;
+    if (first == null) return const [];
+    return [for (final item in first.items.take(6)) item.exerciseNumber];
+  }
+
   static const _weekdays = ['M', 'T', 'W', 'T', 'F', 'S', 'S'];
   static const _months = [
     'Jan',

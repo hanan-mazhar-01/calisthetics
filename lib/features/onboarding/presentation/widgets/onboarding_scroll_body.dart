@@ -12,11 +12,16 @@ class OnboardingScrollBody extends StatefulWidget {
     required this.header,
     required this.content,
     required this.fillsHeight,
+    this.fixed = false,
   });
 
   final Widget header;
   final Widget content;
   final bool fillsHeight;
+
+  /// A page that never scrolls: the header on top, the content given exactly
+  /// the rest of the height ([OnboardingViewport]) to fit itself into.
+  final bool fixed;
 
   @override
   State<OnboardingScrollBody> createState() => _OnboardingScrollBodyState();
@@ -41,6 +46,22 @@ class _OnboardingScrollBodyState extends State<OnboardingScrollBody> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (mounted) _measure();
     });
+    if (widget.fixed) {
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          KeyedSubtree(key: _headerKey, child: widget.header),
+          Expanded(
+            child: LayoutBuilder(
+              builder: (context, box) => OnboardingViewport(
+                availableHeight: box.maxHeight,
+                child: widget.content,
+              ),
+            ),
+          ),
+        ],
+      );
+    }
     return LayoutBuilder(
       builder: (context, constraints) {
         final below = (constraints.maxHeight - _headerHeight).clamp(

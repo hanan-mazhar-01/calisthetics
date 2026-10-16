@@ -1,4 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+
+import '../../../media/data/bunny_prefetch.dart';
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
@@ -33,6 +37,7 @@ import '../widgets/plan_preview_step_view.dart';
 import '../widgets/plank_step_content.dart';
 import '../widgets/plans_step_content.dart';
 import '../widgets/reveal_step_view.dart';
+import '../widgets/typewriter_text.dart';
 import '../widgets/welcome_step_view.dart';
 import '../widgets/win_step_content.dart';
 
@@ -60,6 +65,14 @@ class OnboardingFlowScreen extends ConsumerStatefulWidget {
 class _OnboardingFlowScreenState extends ConsumerState<OnboardingFlowScreen> {
   int? _previousIndex;
   bool _forward = true;
+
+  @override
+  void initState() {
+    super.initState();
+    // Fetch the onboarding pictures in the background while the first
+    // screens are shown.
+    prefetchBunnyImages('onboarding/');
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -232,6 +245,7 @@ class _StepBody extends ConsumerWidget {
       FocusStep() => _ChapterScaffold(
         step: current,
         headline: current.headline,
+        fixedContent: true,
         content: FocusStepContent(step: current),
         continueEnabled: ref.watch(
           onboardingControllerProvider.select(
@@ -300,7 +314,7 @@ Future<void> _advance(
 /// Shared chrome + titled header + scrollable content + optional continue
 /// bar, used by every step type except Welcome and the chapter dividers
 /// (which own their full layout).
-class _ChapterScaffold extends ConsumerWidget {
+class _ChapterScaffold extends ConsumerStatefulWidget {
   const _ChapterScaffold({
     required this.step,
     required this.headline,
@@ -310,6 +324,7 @@ class _ChapterScaffold extends ConsumerWidget {
     this.ctaLabel = 'Continue',
     this.beforeContinue,
     this.contentFillsHeight = false,
+    this.fixedContent = false,
   });
 
   final OnboardingStep step;
@@ -325,14 +340,58 @@ class _ChapterScaffold extends ConsumerWidget {
   /// to fill the screen instead of sitting short with empty space below.
   final bool contentFillsHeight;
 
+  /// The content fits the screen exactly and the page never scrolls.
+  final bool fixedContent;
+
   /// Awaited before advancing — lets a screen (e.g. the Name step's folder
   /// animation) play a closing beat first instead of navigating instantly.
   final Future<void> Function()? beforeContinue;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<_ChapterScaffold> createState() => _ChapterScaffoldState();
+}
+
+class _ChapterScaffoldState extends ConsumerState<_ChapterScaffold>
+    with SingleTickerProviderStateMixin {
+  /// Runs once the headline has finished typing: the content (cards,
+  /// options, chart...) then comes in one piece after another.
+  late final AnimationController _body = AnimationController(
+    vsync: this,
+    duration: const Duration(milliseconds: 1000),
+  );
+
+  @override
+  void dispose() {
+    _body.dispose();
+    super.dispose();
+  }
+
+  void _headlineTyped() {
+    if (!mounted) return;
+    if (MediaQuery.disableAnimationsOf(context)) {
+      _body.value = 1;
+    } else {
+      _body.forward();
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final step = widget.step;
     final controller = ref.read(onboardingControllerProvider.notifier);
     final progress = controller.chapterProgress;
+    return StepIntroScope(
+      animation: _body,
+      child: _layout(context, step, controller, progress),
+    );
+  }
+
+  Widget _layout(
+    BuildContext context,
+    OnboardingStep step,
+    OnboardingController controller,
+    ({int step, int total}) progress,
+  ) {
     return Column(
       children: [
         CalestheticsFadeSlide(
@@ -349,34 +408,29 @@ class _ChapterScaffold extends ConsumerWidget {
         // and the content scroll together between them.
         Expanded(
           child: OnboardingScrollBody(
-            fillsHeight: contentFillsHeight,
-            header: CalestheticsFadeSlide(
-              delay: const Duration(milliseconds: 60),
-              duration: const Duration(milliseconds: 340),
-              offset: 18,
-              child: OnboardingTitledHeader(
-                headline: headline,
-                subtitle: subtitle,
-              ),
+            fillsHeight: widget.contentFillsHeight,
+            fixed: widget.fixedContent,
+            header: OnboardingTitledHeader(
+              headline: widget.headline,
+              subtitle: widget.subtitle,
+              onTyped: _headlineTyped,
             ),
-            content: CalestheticsFadeSlide(
-              delay: const Duration(milliseconds: 130),
-              duration: const Duration(milliseconds: 360),
-              offset: 26,
-              child: content,
-            ),
+            // Choice screens stagger their own options; everything else
+            // comes in as one block.
+            content: step is ChoiceStep
+                ? widget.content
+                : StepReveal(index: 0, child: widget.content),
           ),
         ),
         if (step.showsContinueCta)
-          CalestheticsFadeSlide(
-            delay: const Duration(milliseconds: 200),
-            duration: const Duration(milliseconds: 300),
-            offset: 14,
+          StepReveal(
+            index: 5,
             child: OnboardingContinueBar(
-              label: ctaLabel,
-              enabled: continueEnabled,
+              label: widget.ctaLabel,
+              enabled: widget.continueEnabled,
               onPressed: () async {
-                await beforeContinue?.call();
+                HapticFeedback.mediumImpact();
+                await widget.beforeContinue?.call();
                 if (!context.mounted) return;
                 await _advance(context, controller);
               },

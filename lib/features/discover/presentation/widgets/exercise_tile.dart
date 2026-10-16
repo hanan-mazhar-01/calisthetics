@@ -5,8 +5,7 @@ import '../../../../core/theme/app_colors_extension.dart';
 import '../../../../core/theme/app_typography.dart';
 import '../../../exercises/domain/exercise.dart';
 import '../../../exercises/presentation/widgets/exercise_chips.dart';
-import '../../../media/data/media_manifest.dart';
-import '../../../media/presentation/media_slot.dart';
+import '../../../exercises/presentation/widgets/exercise_picture.dart';
 
 /// List card for one exercise: a full-height photo on the left, then a small
 /// kind label with a "Video" pill, the bold name, and "level • gear".
@@ -76,13 +75,7 @@ class ExerciseTile extends StatelessWidget {
                       child: Stack(
                         fit: StackFit.expand,
                         children: [
-                          MediaSlot(
-                            slot: MediaSlotSpec(
-                              'exercise-thumb-${exercise.number}',
-                              exercise.name,
-                            ),
-                            width: 360,
-                          ),
+                          ExercisePicture(exercise: exercise),
                           if (locked)
                             Positioned(
                               left: 8,

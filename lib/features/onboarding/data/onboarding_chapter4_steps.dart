@@ -24,18 +24,61 @@ final List<OnboardingStep> onboardingChapter4Steps = [
     id: 'focus-areas',
     chapter: 4,
     headline: Headline('Where should we ', 'focus', '?'),
+    // Positions are fractions of the (trimmed) figure image: the pill's side
+    // and height, and the spots of the body that light up when it is chosen.
     areas: [
       FocusArea(
         id: 'shoulders',
         label: 'Shoulders',
         xFraction: 0,
-        yFraction: 0.125,
+        yFraction: 0.15,
+        glow: [GlowSpot(0.366, 0.205, 0.08), GlowSpot(0.634, 0.205, 0.08)],
       ),
-      FocusArea(id: 'arms', label: 'Arms', xFraction: 0.742, yFraction: 0.232),
-      FocusArea(id: 'core', label: 'Core', xFraction: 0, yFraction: 0.375),
-      FocusArea(id: 'back', label: 'Back', xFraction: 0.735, yFraction: 0.464),
-      FocusArea(id: 'glutes', label: 'Glutes', xFraction: 0, yFraction: 0.607),
-      FocusArea(id: 'legs', label: 'Legs', xFraction: 0.761, yFraction: 0.75),
+      FocusArea(
+        id: 'back',
+        label: 'Back',
+        xFraction: 0,
+        yFraction: 0.255,
+        glow: [GlowSpot(0.40, 0.265, 0.08), GlowSpot(0.60, 0.255, 0.08)],
+      ),
+      FocusArea(
+        id: 'core',
+        label: 'Core',
+        xFraction: 0,
+        yFraction: 0.36,
+        glow: [GlowSpot(0.48, 0.34, 0.1)],
+      ),
+      FocusArea(
+        id: 'arms',
+        label: 'Arms',
+        xFraction: 0.99,
+        yFraction: 0.25,
+        glow: [
+          GlowSpot(0.71, 0.245, 0.065),
+          GlowSpot(0.78, 0.30, 0.06),
+          GlowSpot(0.39, 0.30, 0.055),
+          GlowSpot(0.33, 0.37, 0.055),
+        ],
+      ),
+      FocusArea(
+        id: 'glutes',
+        label: 'Glutes',
+        xFraction: 0.99,
+        yFraction: 0.44,
+        glow: [GlowSpot(0.41, 0.44, 0.09), GlowSpot(0.64, 0.45, 0.09)],
+      ),
+      FocusArea(
+        id: 'legs',
+        label: 'Legs',
+        xFraction: 0.99,
+        yFraction: 0.6,
+        glow: [
+          GlowSpot(0.437, 0.535, 0.09),
+          GlowSpot(0.603, 0.55, 0.09),
+          GlowSpot(0.38, 0.66, 0.07),
+          GlowSpot(0.576, 0.66, 0.07),
+        ],
+      ),
     ],
   ),
   const ChoiceStep(
@@ -48,24 +91,28 @@ final List<OnboardingStep> onboardingChapter4Steps = [
     options: [
       ChoiceOption(
         id: 'morning',
+        imageKey: 'onboarding/your-plan/morning',
         label: 'Morning',
         description: 'Before the day gets going',
         glyph: 'AM',
       ),
       ChoiceOption(
         id: 'afternoon',
+        imageKey: 'onboarding/your-plan/afternoon',
         label: 'Afternoon',
         description: 'A midday reset',
         glyph: 'PM',
       ),
       ChoiceOption(
         id: 'evening',
+        imageKey: 'onboarding/your-plan/evening',
         label: 'Evening',
         description: 'To wind the day down',
         glyph: 'EV',
       ),
       ChoiceOption(
         id: 'anytime',
+        imageKey: 'onboarding/your-plan/no-set-time',
         label: 'No set time',
         description: 'Whenever it fits',
         glyph: '—',
@@ -82,24 +129,28 @@ final List<OnboardingStep> onboardingChapter4Steps = [
     options: [
       ChoiceOption(
         id: 'days-2',
+        imageKey: 'onboarding/your-plan/2-days',
         label: '2 days',
         description: 'Light and steady',
         glyph: '2',
       ),
       ChoiceOption(
         id: 'days-3',
+        imageKey: 'onboarding/your-plan/3-days',
         label: '3 days',
         description: 'A good rhythm to start',
         glyph: '3',
       ),
       ChoiceOption(
         id: 'days-4',
+        imageKey: 'onboarding/your-plan/4-days',
         label: '4 days',
         description: 'More practice time',
         glyph: '4',
       ),
       ChoiceOption(
         id: 'days-5',
+        imageKey: 'onboarding/your-plan/5-days',
         label: '5 days',
         description: 'A full training week',
         glyph: '5',
@@ -115,18 +166,21 @@ final List<OnboardingStep> onboardingChapter4Steps = [
     options: [
       ChoiceOption(
         id: '10-min',
+        imageKey: 'onboarding/your-plan/10-min',
         label: '10 min',
         description: 'Micro sessions',
         glyph: "10'",
       ),
       ChoiceOption(
         id: '15-min',
+        imageKey: 'onboarding/your-plan/15-min',
         label: '15 min',
         description: 'Recommended',
         glyph: "15'",
       ),
       ChoiceOption(
         id: '20-min',
+        imageKey: 'onboarding/your-plan/20-min',
         label: '20 min',
         description: 'Full sessions',
         glyph: "20'",
@@ -143,6 +197,7 @@ final List<OnboardingStep> onboardingChapter4Steps = [
     options: [
       ChoiceOption(
         id: 'steady',
+        imageKey: 'onboarding/your-plan/l1',
         label: 'Steady',
         description: 'Controlled, technique-first',
         glyph: 'L1',
@@ -151,6 +206,7 @@ final List<OnboardingStep> onboardingChapter4Steps = [
       ),
       ChoiceOption(
         id: 'building',
+        imageKey: 'onboarding/your-plan/l2',
         label: 'Building',
         description: 'Challenging but sustainable',
         glyph: 'L2',
@@ -159,6 +215,7 @@ final List<OnboardingStep> onboardingChapter4Steps = [
       ),
       ChoiceOption(
         id: 'strong',
+        imageKey: 'onboarding/your-plan/l3',
         label: 'Strong',
         description: 'Push close to your limit',
         glyph: 'L3',
@@ -167,6 +224,7 @@ final List<OnboardingStep> onboardingChapter4Steps = [
       ),
       ChoiceOption(
         id: 'athlete',
+        imageKey: 'onboarding/your-plan/l4',
         label: 'Athlete',
         description: 'Max effort, skill work',
         glyph: 'L4',
@@ -187,11 +245,13 @@ final List<OnboardingStep> onboardingChapter4Steps = [
     options: [
       ChoiceOption(
         id: 'unsure-start',
+        imageKey: 'onboarding/your-plan/1',
         label: 'I never know where to start',
         glyph: '1',
       ),
       ChoiceOption(
         id: 'random-workouts',
+        imageKey: 'onboarding/your-plan/2',
         label: 'Random workouts leave me guessing',
         glyph: '2',
       ),
@@ -202,6 +262,7 @@ final List<OnboardingStep> onboardingChapter4Steps = [
       ),
       ChoiceOption(
         id: 'consistency',
+        imageKey: 'onboarding/your-plan/4',
         label: 'I do better with a clear schedule',
         glyph: '4',
       ),
@@ -281,17 +342,25 @@ final List<OnboardingStep> onboardingChapter4Steps = [
       MosaicTile(
         label: 'Living room',
         photoPrompt: 'Push-up at home',
+        exerciseNumber: 4,
         height: 230,
       ),
       MosaicTile(
         label: 'Park',
         photoPrompt: 'Pull-up on a secure bar',
+        exerciseNumber: 36,
         height: 280,
       ),
-      MosaicTile(label: 'Wall', photoPrompt: 'Wall handstand', height: 260),
+      MosaicTile(
+        label: 'Wall',
+        photoPrompt: 'Wall handstand',
+        exerciseNumber: 64,
+        height: 260,
+      ),
       MosaicTile(
         label: 'Chair',
         photoPrompt: 'Chair/Box Squat at home',
+        exerciseNumber: 17,
         height: 210,
       ),
     ],
@@ -304,31 +373,37 @@ final List<OnboardingStep> onboardingChapter4Steps = [
       MosaicTile(
         label: 'Push-Up',
         photoPrompt: 'Woman, full push-up',
+        exerciseNumber: 4,
         height: 250,
       ),
       MosaicTile(
         label: 'Pull-Up',
         photoPrompt: 'Woman, pull-up on bar',
+        exerciseNumber: 36,
         height: 200,
       ),
       MosaicTile(
         label: 'Handstand',
         photoPrompt: 'Woman, wall handstand',
+        exerciseNumber: 68,
         height: 200,
       ),
       MosaicTile(
         label: 'L-Sit',
         photoPrompt: 'Woman, L-sit on parallettes',
+        exerciseNumber: 60,
         height: 250,
       ),
       MosaicTile(
         label: 'Pistol Squat',
         photoPrompt: 'Woman, pistol squat',
+        exerciseNumber: 52,
         height: 200,
       ),
       MosaicTile(
         label: 'Dips',
         photoPrompt: 'Woman, parallel bar dip',
+        exerciseNumber: 74,
         height: 200,
       ),
     ],

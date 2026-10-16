@@ -5,14 +5,15 @@ import 'package:flutter/material.dart';
 import '../../../../core/theme/app_colors_extension.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/theme/app_typography.dart';
-import '../../../media/data/media_manifest.dart';
-import '../../../media/presentation/media_slot.dart';
+import '../../../exercises/domain/exercise_lookup.dart';
+import '../../../exercises/presentation/widgets/exercise_picture.dart';
 
 /// Hero image header that collapses into a plain top bar while the list
 /// scrolls. Expanded: plan hero photo under a dark scrim with solid
 /// translucent circular buttons. Collapsed: plain bar, themed icons.
 class DayHeaderDelegate extends SliverPersistentHeaderDelegate {
   DayHeaderDelegate({
+    required this.heroNumber,
     required this.topInset,
     required this.musicOn,
     required this.onBack,
@@ -21,6 +22,8 @@ class DayHeaderDelegate extends SliverPersistentHeaderDelegate {
     this.expandedBody = 240,
   });
 
+  /// Catalog number of the exercise whose picture is the header image.
+  final int heroNumber;
   final double topInset;
   final bool musicOn;
   final VoidCallback onBack;
@@ -37,6 +40,7 @@ class DayHeaderDelegate extends SliverPersistentHeaderDelegate {
 
   @override
   bool shouldRebuild(DayHeaderDelegate old) =>
+      old.heroNumber != heroNumber ||
       old.topInset != topInset ||
       old.musicOn != musicOn ||
       old.animate != animate;
@@ -68,9 +72,9 @@ class DayHeaderDelegate extends SliverPersistentHeaderDelegate {
               child: Stack(
                 fit: StackFit.expand,
                 children: [
-                  const MediaSlot(
-                    slot: MediaSlotSpec('plan-hero', 'Plan hero photo'),
-                    width: 900,
+                  ExercisePicture(
+                    exercise: exerciseByNumber(heroNumber),
+                    fit: BoxFit.cover,
                   ),
                   DecoratedBox(
                     decoration: BoxDecoration(

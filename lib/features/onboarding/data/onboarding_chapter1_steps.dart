@@ -17,31 +17,43 @@ final List<OnboardingStep> onboardingChapter1Steps = [
     options: [
       ChoiceOption(
         id: '18-24',
+        imageKey: 'onboarding/goal-screen/18-24',
+        photo: true,
         label: '18–24',
         imagePrompt: 'Portrait, woman 18–24',
       ),
       ChoiceOption(
         id: '25-34',
+        imageKey: 'onboarding/goal-screen/25-34',
+        photo: true,
         label: '25–34',
         imagePrompt: 'Portrait, woman 25–34',
       ),
       ChoiceOption(
         id: '35-44',
+        imageKey: 'onboarding/goal-screen/35-44',
+        photo: true,
         label: '35–44',
         imagePrompt: 'Portrait, woman 35–44',
       ),
       ChoiceOption(
         id: '45-54',
+        imageKey: 'onboarding/goal-screen/45-54',
+        photo: true,
         label: '45–54',
         imagePrompt: 'Portrait, woman 45–54',
       ),
       ChoiceOption(
         id: '55-64',
+        imageKey: 'onboarding/goal-screen/55-64',
+        photo: true,
         label: '55–64',
         imagePrompt: 'Portrait, woman 55–64',
       ),
       ChoiceOption(
         id: '65-plus',
+        imageKey: 'onboarding/goal-screen/65-plus',
+        photo: true,
         label: '65+',
         imagePrompt: 'Portrait, woman 65+',
       ),
@@ -64,24 +76,32 @@ final List<OnboardingStep> onboardingChapter1Steps = [
     options: [
       ChoiceOption(
         id: 'get-stronger',
+        imageKey: 'onboarding/goal-screen/get-stronger',
+        photo: true,
         label: 'Get Stronger',
         description: 'Lift your own bodyweight with control',
         imagePrompt: 'Get Stronger',
       ),
       ChoiceOption(
         id: 'fit-tone-my-body',
+        imageKey: 'onboarding/goal-screen/fit-and-tone-my-body',
+        photo: true,
         label: 'Fit & Tone My Body',
         description: 'Strong legs, core and arms',
         imagePrompt: 'Fit & Tone My Body',
       ),
       ChoiceOption(
         id: 'improve-fitness',
+        imageKey: 'onboarding/goal-screen/improve-fitness',
+        photo: true,
         label: 'Improve Fitness',
         description: 'More energy, better endurance',
         imagePrompt: 'Improve Fitness',
       ),
       ChoiceOption(
         id: 'master-calisthenics-skills',
+        imageKey: 'onboarding/goal-screen/master-calisthenics-skills',
+        photo: true,
         label: 'Master Calisthenics Skills',
         description: 'Handstands, L-sits, pull-ups',
         imagePrompt: 'Master Calisthenics Skills',
@@ -99,31 +119,37 @@ final List<OnboardingStep> onboardingChapter1Steps = [
     options: [
       ChoiceOption(
         id: 'stronger-upper-body',
+        imageKey: 'onboarding/goal-screen/stronger-core',
         label: 'Stronger Upper Body',
         imagePrompt: 'Stronger Upper Body',
       ),
       ChoiceOption(
         id: 'stronger-core',
+        imageKey: 'onboarding/goal-screen/stronger-upper-body',
         label: 'Stronger Core',
         imagePrompt: 'Stronger Core',
       ),
       ChoiceOption(
         id: 'stronger-legs',
+        imageKey: 'onboarding/goal-screen/stronger-legs',
         label: 'Stronger Legs',
         imagePrompt: 'Stronger Legs',
       ),
       ChoiceOption(
         id: 'better-mobility',
+        imageKey: 'onboarding/goal-screen/better-mobility',
         label: 'Better Mobility',
         imagePrompt: 'Better Mobility',
       ),
       ChoiceOption(
         id: 'better-balance',
+        imageKey: 'onboarding/goal-screen/better-balance',
         label: 'Better Balance',
         imagePrompt: 'Better Balance',
       ),
       ChoiceOption(
         id: 'feel-more-confident',
+        imageKey: 'onboarding/goal-screen/feel-more-confident',
         label: 'Feel More Confident',
         imagePrompt: 'Feel More Confident',
       ),
@@ -135,12 +161,18 @@ final List<OnboardingStep> onboardingChapter1Steps = [
     headline: Headline('Skills grow ', 'one rung', ' at a time.'),
     xAxisLabels: ['Wk 1', 'Wk 4', 'Wk 8', 'Wk 12'],
     points: [
-      CurvePoint(xFraction: 0.42, yFraction: 0.60, label: 'Strength'),
+      CurvePoint(
+        xFraction: 0.42,
+        yFraction: 0.60,
+        label: 'Strength',
+        imageKey: 'onboarding/goal-screen/emoji-2',
+      ),
       CurvePoint(
         xFraction: 0.92,
         yFraction: 0.14,
         label: 'Your skill',
         emphasized: true,
+        imageKey: 'onboarding/goal-screen/emoji-1',
       ),
     ],
     footer: 'Calisthenics is a ladder. Each rung is a movement you can master before the next — we build every rung for you.',
@@ -154,18 +186,21 @@ final List<OnboardingStep> onboardingChapter1Steps = [
     options: [
       ChoiceOption(
         id: 'home',
+        imageKey: 'onboarding/goal-screen/home-icon',
         label: 'Home',
         description: 'Floor, wall, a sturdy chair',
         imagePrompt: 'Home',
       ),
       ChoiceOption(
         id: 'gym',
+        imageKey: 'onboarding/goal-screen/gym-icon',
         label: 'Gym',
         description: 'Pull-up bar, parallel bars',
         imagePrompt: 'Gym',
       ),
       ChoiceOption(
         id: 'both',
+        imageKey: 'onboarding/goal-screen/both-icon',
         label: 'Both',
         description: 'A mix of home and gym or park',
         imagePrompt: 'Both',
@@ -185,30 +220,35 @@ final List<OnboardingStep> onboardingChapter1Steps = [
     options: [
       ChoiceOption(
         id: 'none',
+        imageKey: 'onboarding/goal-screen/none',
         label: 'None',
         description: 'Just me and the floor',
         glyph: '—',
       ),
       ChoiceOption(
         id: 'pull-up-bar',
+        imageKey: 'onboarding/goal-screen/pull-up-bar',
         label: 'Pull-up bar',
         description: 'A secure, fixed pull-up bar',
         glyph: 'P',
       ),
       ChoiceOption(
         id: 'parallettes',
+        imageKey: 'onboarding/goal-screen/parallettes-or-dip-bars',
         label: 'Parallettes or dip bars',
         description: 'Low bars or parallel bars',
         glyph: 'D',
       ),
       ChoiceOption(
         id: 'resistance-band',
+        imageKey: 'onboarding/goal-screen/resistance-band',
         label: 'Resistance band',
         description: 'For assisted pulls and dips',
         glyph: 'R',
       ),
       ChoiceOption(
         id: 'chair-box',
+        imageKey: 'onboarding/goal-screen/sturdy-chair-or-box',
         label: 'Sturdy chair or box',
         description: 'Something stable to step or sit back to',
         glyph: 'C',

@@ -47,7 +47,7 @@ class LaddersScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return _ListScaffold( 
+    return _ListScaffold(
       title: 'Skill ladders',
       subtitle: 'Eight skills, each a ladder from the first rung to the full movement.',
       children: [

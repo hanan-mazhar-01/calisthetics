@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../../../../core/theme/app_colors_extension.dart';
 import '../../../../core/theme/app_motion.dart';
 import '../../../../core/theme/app_typography.dart';
+import '../../../../shared/widgets/bunny_image.dart';
 import '../../../../shared/widgets/media_placeholder.dart';
 import '../../domain/onboarding_step.dart';
 
@@ -46,7 +47,10 @@ class ChoiceGridTile extends StatelessWidget {
             child: Stack(
               fit: StackFit.expand,
               children: [
-                MediaPlaceholder(brief: option.imagePrompt ?? option.label),
+                if (option.imageKey != null)
+                  _Portrait(option: option)
+                else
+                  MediaPlaceholder(brief: option.imagePrompt ?? option.label),
                 Positioned(
                   left: 0,
                   right: 0,
@@ -114,6 +118,36 @@ class ChoiceGridTile extends StatelessWidget {
             ),
           ),
         ),
+      ),
+    );
+  }
+}
+
+/// A cut-out portrait standing on the tile's soft gradient.
+class _Portrait extends StatelessWidget {
+  const _Portrait({required this.option});
+
+  final ChoiceOption option;
+
+  @override
+  Widget build(BuildContext context) {
+    final c = context.appColors;
+    final placeholder = MediaPlaceholder(
+      brief: option.imagePrompt ?? option.label,
+    );
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topCenter,
+          end: Alignment.bottomCenter,
+          colors: [c.softRose, c.surfaceMuted],
+        ),
+      ),
+      child: BunnyImage(
+        option.imageKey!,
+        fit: BoxFit.cover,
+        alignment: Alignment.topCenter,
+        fallback: placeholder,
       ),
     );
   }

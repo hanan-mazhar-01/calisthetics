@@ -66,7 +66,7 @@ class _DiscoverSearchScreenState extends ConsumerState<DiscoverSearchScreen> {
     _controller.dispose();
     // Leave Discover in browse mode next time.
     Future.microtask(() {
-      _query.set(''); 
+      _query.set('');
       _filters.clear();
     });
     super.dispose();

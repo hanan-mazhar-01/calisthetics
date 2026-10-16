@@ -36,12 +36,42 @@ final List<OnboardingStep> onboardingChapter2Steps = [
     autoAdvance: false,
     exclusiveOptionId: 'none',
     options: [
-      ChoiceOption(id: 'none', label: 'None', glyph: '—'),
-      ChoiceOption(id: 'wrists', label: 'Wrists', glyph: 'W'),
-      ChoiceOption(id: 'shoulders', label: 'Shoulders', glyph: 'S'),
-      ChoiceOption(id: 'lower-back', label: 'Lower back', glyph: 'B'),
-      ChoiceOption(id: 'knees', label: 'Knees', glyph: 'K'),
-      ChoiceOption(id: 'neck', label: 'Neck', glyph: 'N'),
+      ChoiceOption(
+        id: 'none',
+        imageKey: 'onboarding/goal-screen/none-about-you',
+        label: 'None',
+        glyph: '—',
+      ),
+      ChoiceOption(
+        id: 'wrists',
+        imageKey: 'onboarding/goal-screen/wrists',
+        label: 'Wrists',
+        glyph: 'W',
+      ),
+      ChoiceOption(
+        id: 'shoulders',
+        imageKey: 'onboarding/goal-screen/shoulders',
+        label: 'Shoulders',
+        glyph: 'S',
+      ),
+      ChoiceOption(
+        id: 'lower-back',
+        imageKey: 'onboarding/goal-screen/lower-back',
+        label: 'Lower back',
+        glyph: 'B',
+      ),
+      ChoiceOption(
+        id: 'knees',
+        imageKey: 'onboarding/goal-screen/knee',
+        label: 'Knees',
+        glyph: 'K',
+      ),
+      ChoiceOption(
+        id: 'neck',
+        imageKey: 'onboarding/goal-screen/neck',
+        label: 'Neck',
+        glyph: 'N',
+      ),
     ],
   ),
 ];

@@ -3,6 +3,7 @@ import 'package:video_player/video_player.dart';
 
 import '../../../../core/theme/app_colors_extension.dart';
 import '../../../../core/theme/app_typography.dart';
+import '../../../../shared/widgets/bunny_image.dart';
 import '../../../../shared/widgets/media_placeholder.dart';
 
 /// Looping, muted demo video for one exercise. Owns exactly one
@@ -18,6 +19,7 @@ class ExerciseVideoSlot extends StatefulWidget {
     this.onLockedTap,
     this.aspectRatio = 4 / 5,
     this.onPlay,
+    this.thumbnailKey,
   });
 
   final String exerciseName;
@@ -28,6 +30,10 @@ class ExerciseVideoSlot extends StatefulWidget {
 
   /// Shows a Play button on the video; it starts a 30-second try-out.
   final VoidCallback? onPlay;
+
+  /// Bunny key of the exercise's thumbnail, shown whenever the video isn't
+  /// playing (locked, loading, or no video yet).
+  final String? thumbnailKey;
 
   @override
   State<ExerciseVideoSlot> createState() => _ExerciseVideoSlotState();
@@ -107,10 +113,20 @@ class _ExerciseVideoSlotState extends State<ExerciseVideoSlot> {
         ),
       );
     } else {
-      child = MediaPlaceholder(
+      final placeholder = MediaPlaceholder(
         brief: '${widget.exerciseName}\nDemo video',
         borderRadius: radius,
       );
+      child = widget.thumbnailKey == null
+          ? placeholder
+          : ClipRRect(
+              borderRadius: radius,
+              child: BunnyImage(
+                widget.thumbnailKey!,
+                fit: BoxFit.cover,
+                fallback: placeholder,
+              ),
+            );
     }
     return AspectRatio(
       aspectRatio: widget.aspectRatio,

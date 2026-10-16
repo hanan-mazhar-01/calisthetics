@@ -62,6 +62,7 @@ final List<OnboardingStep> onboardingChapter3Steps = [
     options: [
       ChoiceOption(
         id: 'out-of-breath',
+        imageKey: 'onboarding/fitness/out-of-breath',
         label: 'Out of breath',
         glyph: '1',
         feedbackLead: 'Good to know.',
@@ -69,6 +70,7 @@ final List<OnboardingStep> onboardingChapter3Steps = [
       ),
       ChoiceOption(
         id: 'a-bit-tired',
+        imageKey: 'onboarding/fitness/a-bit-tired',
         label: 'A bit tired',
         glyph: '2',
         feedbackLead: 'Solid.',
@@ -76,6 +78,7 @@ final List<OnboardingStep> onboardingChapter3Steps = [
       ),
       ChoiceOption(
         id: 'feeling-easy',
+        imageKey: 'onboarding/fitness/feeling-easy',
         label: 'Feeling easy',
         glyph: '3',
         feedbackLead: 'Strong engine.',
@@ -95,13 +98,24 @@ final List<OnboardingStep> onboardingChapter3Steps = [
     headline: Headline('A plank target to ', 'aim for', '.'),
     xAxisLabels: ['Today', 'Wk 2', 'Wk 4', 'Wk 8'],
     points: [
-      CurvePoint(xFraction: 0.10, yFraction: 0.84, label: 'Today'),
-      CurvePoint(xFraction: 0.50, yFraction: 0.54, label: 'Wk 4'),
+      CurvePoint(
+        xFraction: 0.10,
+        yFraction: 0.84,
+        label: 'Today',
+        imageKey: 'onboarding/goal-screen/emoji-2',
+      ),
+      CurvePoint(
+        xFraction: 0.50,
+        yFraction: 0.54,
+        label: 'Wk 4',
+        imageKey: 'onboarding/goal-screen/emoji',
+      ),
       CurvePoint(
         xFraction: 0.92,
         yFraction: 0.14,
         label: 'Target',
         emphasized: true,
+        imageKey: 'onboarding/goal-screen/emoji-1',
       ),
     ],
     footer: 'A target, not a promise. Holds grow a little each week, and consistency matters more than intensity.',

@@ -4,6 +4,8 @@ import '../../../../core/theme/app_colors_extension.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/theme/app_typography.dart';
 import '../../../../shared/widgets/media_placeholder.dart';
+import '../../../exercises/domain/exercise_lookup.dart';
+import '../../../exercises/presentation/widgets/exercise_picture.dart';
 import '../../domain/onboarding_plan_summary.dart';
 
 /// Body for the single "Encouragement" milestone screen: a reassurance
@@ -32,11 +34,13 @@ class WinStepContent extends StatelessWidget {
             child: SizedBox(
               height: 300,
               width: double.infinity,
-              child: MediaPlaceholder(
-                brief: plan == null
-                    ? 'Woman training, smiling'
-                    : 'Hero image: ${plan!.template.name}',
-              ),
+              child: plan == null
+                  ? const MediaPlaceholder(brief: 'Woman training, smiling')
+                  : ExercisePicture(
+                      exercise: exerciseByNumber(
+                        plan!.template.coverExerciseNumber,
+                      ),
+                    ),
             ),
           ),
           Container(

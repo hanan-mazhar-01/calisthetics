@@ -19,6 +19,8 @@ class ChoiceOption {
     this.description,
     this.imagePrompt,
     this.glyph,
+    this.imageKey,
+    this.photo = false,
     this.feedbackLead,
     this.feedbackBody,
   });
@@ -35,6 +37,14 @@ class ChoiceOption {
 
   /// Short text/letter badge shown instead of a photo (list layout, no image).
   final String? glyph;
+
+  /// Bunny CDN key of this option's picture (e.g. `onboarding/goal-screen/knee`).
+  /// When the image can't be shown, the [imagePrompt] / [glyph] look is used.
+  final String? imageKey;
+
+  /// True for a photo of a person that bleeds to the card edge; false for a
+  /// small 3D icon that sits inside the card.
+  final bool photo;
 
   /// Bold lead-in shown inline once this option is selected (self-assessment
   /// screens like Endurance/Squat test), e.g. "Good to know." followed by
@@ -132,6 +142,7 @@ class CurvePoint {
     required this.yFraction,
     required this.label,
     this.emphasized = false,
+    this.imageKey,
   });
 
   /// 0-1 position along the chart width/height (mirrors the design's % values).
@@ -139,6 +150,9 @@ class CurvePoint {
   final double yFraction;
   final String label;
   final bool emphasized;
+
+  /// Bunny CDN key of an emoji drawn on the curve instead of the plain dot.
+  final String? imageKey;
 }
 
 /// Free-text first-name capture.
@@ -249,17 +263,35 @@ class MilestonesStep extends OnboardingStep {
   bool get showsContinueCta => true;
 }
 
+/// A soft glow over part of the body figure, in fractions of the figure's
+/// width (x, y measured from the top-left of the figure; radius of its width).
+class GlowSpot {
+  const GlowSpot(this.x, this.y, this.radius);
+  final double x;
+  final double y;
+  final double radius;
+}
+
 class FocusArea {
   const FocusArea({
     required this.id,
     required this.label,
     required this.xFraction,
     required this.yFraction,
+    this.glow = const [],
   });
   final String id;
   final String label;
+
+  /// Which side the pill sits on: below 0.5 is the left edge of the figure,
+  /// from 0.5 up is the right edge.
   final double xFraction;
+
+  /// Vertical centre of the pill, as a fraction of the figure's height.
   final double yFraction;
+
+  /// Where the body lights up while this area is selected.
+  final List<GlowSpot> glow;
 }
 
 /// Body-silhouette multi-select (muscle-focus areas). Pill positions are
@@ -338,12 +370,16 @@ class LoadingStep extends OnboardingStep {
     required super.id,
     required this.stages,
     this.previewExercises = const [],
+    this.previewNumbers = const [],
   });
 
   final List<String> stages;
 
   /// Names of exercises from the plan being built, shown while it loads.
   final List<String> previewExercises;
+
+  /// Catalog numbers of the same exercises, in the same order (for pictures).
+  final List<int> previewNumbers;
 }
 
 class PlanStat {
@@ -489,10 +525,15 @@ class MosaicTile {
     required this.label,
     required this.photoPrompt,
     required this.height,
+    this.exerciseNumber,
   });
   final String label;
   final String photoPrompt;
   final double height;
+
+  /// Catalog exercise whose thumbnail fills the tile (the labelled
+  /// placeholder shows until it loads).
+  final int? exerciseNumber;
 }
 
 /// Asymmetric photo mosaic ("Train anywhere", "Exercise library" — the

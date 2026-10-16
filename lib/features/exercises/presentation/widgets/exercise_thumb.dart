@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 
-import '../../../media/data/media_manifest.dart';
-import '../../../media/presentation/media_slot.dart';
 import '../../domain/exercise_lookup.dart';
+import 'exercise_picture.dart';
 
 /// Square exercise thumbnail through the media seam. Until media is
 /// configured it shows the labelled placeholder with the exercise name.
@@ -26,10 +25,9 @@ class ExerciseThumb extends StatelessWidget {
     return SizedBox(
       width: size,
       height: size,
-      child: MediaSlot(
-        slot: MediaSlotSpec('exercise-thumb-$number', exercise.name),
+      child: ExercisePicture(
+        exercise: exercise,
         borderRadius: BorderRadius.circular(size * radiusFactor),
-        width: (size * 3).round(),
         compact: size < 64,
       ),
     );

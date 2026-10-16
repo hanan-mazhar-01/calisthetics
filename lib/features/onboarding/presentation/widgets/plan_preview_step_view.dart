@@ -3,8 +3,9 @@ import 'package:flutter/material.dart';
 import '../../../../core/theme/app_colors_extension.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/theme/app_typography.dart';
-import '../../../media/data/media_manifest.dart';
-import '../../../media/presentation/media_slot.dart';
+import '../../../../shared/widgets/media_placeholder.dart';
+import '../../../exercises/domain/exercise_lookup.dart';
+import '../../../exercises/presentation/widgets/exercise_picture.dart';
 import '../../domain/onboarding_step.dart';
 import 'intro_motion.dart';
 
@@ -468,11 +469,13 @@ class _Thumb extends StatelessWidget {
           child: Stack(
             fit: StackFit.expand,
             children: [
-              MediaSlot(
-                slot: MediaSlotSpec('exercise-thumb-${number ?? name}', name),
-                width: 240,
-                compact: true,
-              ),
+              if (number != null)
+                ExercisePicture(
+                  exercise: exerciseByNumber(number!),
+                  compact: true,
+                )
+              else
+                MediaPlaceholder(brief: name, compact: true),
               Positioned(
                 left: 0,
                 right: 0,
