@@ -8,7 +8,7 @@ import 'bunny_image_versions.g.dart';
 abstract final class BunnyImages {
   static const host = String.fromEnvironment(
     'BUNNY_IMAGE_HOST',
-    defaultValue: 'calisthetics-images.b-cdn.net',
+    defaultValue: 'calisthetics.b-cdn.net',
   );
 
   /// Tests switch this off so no widget test touches the network.

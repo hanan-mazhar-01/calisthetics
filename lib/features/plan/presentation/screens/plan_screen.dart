@@ -705,7 +705,7 @@ class _HeroDay extends ConsumerWidget {
     final session = day.session;
     final subtitle =
         '${session.estimatedMinutes} Mins · ${session.items.length} exercises';
-    final dateLabel = '${_weekdayShort[day.weekday]}.${day.date.day}';
+    final dateLabel = '${_weekdayShort[day.date.weekday - 1]}.${day.date.day}';
     return GlassCard(
       padding: const EdgeInsets.all(12),
       borderRadius: BorderRadius.circular(26),
@@ -885,7 +885,7 @@ class _CompactDay extends ConsumerWidget {
                   )
                 else
                   Text(
-                    '${_weekdayShort[day.weekday]}.${day.date.day} · ${session.name}',
+                    '${_weekdayShort[day.date.weekday - 1]}.${day.date.day} · ${session.name}',
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                     style: AppTypography.body(c.textMuted, fontSize: 12.5),

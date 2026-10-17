@@ -63,27 +63,20 @@ class PlanTimeline {
   /// Training days of week 1 that fall before the plan began (it started
   /// mid-week), so the plan's first session lands on its first real day.
   /// Calendar date of [weekday] (0 = Monday) in plan week [week].
+  /// [weekday] is the day's position in the plan week (0 = the weekday the
+  /// plan began on).
   static DateTime dateOf(ActivePlan plan, int week, int weekday) {
-    final start = DateTime(
-      plan.startDate.year,
-      plan.startDate.month,
-      plan.startDate.day,
+    final start = plan.startDay;
+    return DateTime(
+      start.year,
+      start.month,
+      start.day + (week - 1) * 7 + weekday,
     );
-    final monday = start.subtract(Duration(days: start.weekday - 1));
-    return monday.add(Duration(days: (week - 1) * 7 + weekday));
   }
 
-  static int leadingSkip(ActivePlan plan) {
-    final start = DateTime(
-      plan.startDate.year,
-      plan.startDate.month,
-      plan.startDate.day,
-    );
-    final monday = start.subtract(Duration(days: start.weekday - 1));
-    return PlanBuilder.trainingWeekdays(plan.profile.daysPerWeek)
-        .where((wd) => monday.add(Duration(days: wd)).isBefore(start))
-        .length;
-  }
+  /// Plan weeks start on the plan's first day, so no session ever falls
+  /// before it: nothing to skip.
+  static int leadingSkip(ActivePlan plan) => 0;
 
   const PlanTimeline({required this.phases, required this.hero});
 
@@ -108,9 +101,7 @@ class PlanTimeline {
   }) {
     const builder = PlanBuilder();
     final todayDate = DateTime(today.year, today.month, today.day);
-    final startMonday = plan.startDate.subtract(
-      Duration(days: plan.startDate.weekday - 1),
-    );
+    final startDay = plan.startDay;
     final currentWeek = plan.weekNumberOn(todayDate);
     final cycle = (currentWeek - 1) ~/ 4;
     final lastWeek = cycle * 4 + 4;
@@ -135,7 +126,11 @@ class PlanTimeline {
       for (final d in built.days) {
         final session = d.session;
         if (session == null) continue;
-        final date = startMonday.add(Duration(days: (w - 1) * 7 + d.weekday));
+        final date = DateTime(
+          startDay.year,
+          startDay.month,
+          startDay.day + (w - 1) * 7 + d.weekday,
+        );
         if (date.isBefore(plan.startDate)) continue; // before the plan began
         dayNumber++;
         final status = doneDates.contains(date)

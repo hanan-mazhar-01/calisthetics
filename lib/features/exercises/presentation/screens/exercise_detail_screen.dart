@@ -55,6 +55,7 @@ class ExerciseDetailScreen extends ConsumerWidget {
             ExerciseVideoSlot(
               key: ValueKey(e.number),
               exerciseName: e.name,
+              exercise: e,
               thumbnailKey: exerciseThumbnailKey(e),
               url: media.exerciseVideo(e),
               locked: locked,

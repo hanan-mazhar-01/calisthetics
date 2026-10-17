@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+
+import '../../../media/data/exercise_videos.dart';
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
@@ -104,6 +107,13 @@ class _WorkoutScreenState extends ConsumerState<WorkoutScreen> {
     final ctl = ref.read(provider.notifier);
     final interlude =
         phase == WorkoutPhase.preview || phase == WorkoutPhase.rest;
+    // Get the next exercise's clip and video onto the phone during this set.
+    final upNext = state.nextStep?.exerciseNumber;
+    if (phase == WorkoutPhase.work && upNext != null) {
+      final e = exerciseByNumber(upNext);
+      ExerciseVideos.save(e, clip: true);
+      ExerciseVideos.save(e);
+    }
     final key = ValueKey('${phase.name}-${state.index}');
     final switchDuration = motion(context, 250);
 
@@ -155,6 +165,12 @@ class _WorkoutScreenState extends ConsumerState<WorkoutScreen> {
                 child: WorkoutVideo(
                   exerciseNumber: state.displayExercise,
                   paused: state.paused,
+                  // Rest and "up next" show the short silent clip; the set
+                  // plays the full video, with its sound when music is on.
+                  clip: interlude,
+                  sound:
+                      (ref.watch(settingsProvider)['musicEnabled'] as bool?) ??
+                      true,
                 ),
               ),
             ),

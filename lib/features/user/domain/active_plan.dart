@@ -34,17 +34,22 @@ class ActivePlan {
   /// How many completed 4-week cycles have already been judged for stage advancement.
   final int cyclesApplied;
 
-  /// 1-based plan week containing [date]. Weeks run Monday–Sunday and week 1
-  /// is the one containing [startDate], matching how plan weeks are scheduled.
+  /// The plan's first day (date only). Plan weeks are counted from it, not
+  /// from a Monday, so week 1 is always a full week of sessions and the
+  /// first 4 weeks are exactly 28 days, whatever day the plan began.
+  DateTime get startDay =>
+      DateTime(startDate.year, startDate.month, startDate.day);
+
+  /// 1-based plan week containing [date]: days 1–7 are week 1, and so on.
   int weekNumberOn(DateTime date) {
-    DateTime monday(DateTime d) => DateTime(
-      d.year,
-      d.month,
-      d.day,
-    ).subtract(Duration(days: d.weekday - 1));
-    final days = monday(date).difference(monday(startDate)).inDays;
+    final d = DateTime(date.year, date.month, date.day);
+    final days = d.difference(startDay).inDays;
     return (days < 0 ? 0 : days) ~/ 7 + 1;
   }
+
+  /// Calendar weekday (0 = Monday) of position [dayOfWeek] (0-6) in a plan
+  /// week. Plan weeks start on [startDay]'s weekday.
+  int calendarWeekday(int dayOfWeek) => (startDay.weekday - 1 + dayOfWeek) % 7;
 
   ActivePlan copyWith({
     int? stageIndex,

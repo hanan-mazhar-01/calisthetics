@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:video_player/video_player.dart';
@@ -7,7 +9,7 @@ import '../../../../core/theme/app_typography.dart';
 import '../../../../shared/widgets/bunny_image.dart';
 import '../../../exercises/domain/exercise_lookup.dart';
 import '../../../exercises/presentation/widgets/exercise_picture.dart';
-import '../../../media/presentation/media_providers.dart';
+import '../../../media/data/exercise_videos.dart';
 
 /// Looping demo of one exercise. Holds at most ONE
 /// [VideoPlayerController]: when the exercise changes the old one is
@@ -20,10 +22,19 @@ class WorkoutVideo extends ConsumerStatefulWidget {
     super.key,
     required this.exerciseNumber,
     required this.paused,
+    this.clip = false,
+    this.sound = false,
   });
 
   final int exerciseNumber;
   final bool paused;
+
+  /// Plays the exercise's short rest clip (always silent) instead of its
+  /// 30 s video: used while she rests or sees what's up next.
+  final bool clip;
+
+  /// Plays the 30 s video's own sound.
+  final bool sound;
 
   @override
   ConsumerState<WorkoutVideo> createState() => _WorkoutVideoState();
@@ -43,9 +54,10 @@ class _WorkoutVideoState extends ConsumerState<WorkoutVideo> {
   @override
   void didUpdateWidget(WorkoutVideo old) {
     super.didUpdateWidget(old);
-    if (old.exerciseNumber != widget.exerciseNumber) {
+    if (old.exerciseNumber != widget.exerciseNumber ||
+        old.clip != widget.clip) {
       _load();
-    } else if (old.paused != widget.paused) {
+    } else if (old.paused != widget.paused || old.sound != widget.sound) {
       _syncPlayback();
     }
   }
@@ -53,6 +65,7 @@ class _WorkoutVideoState extends ConsumerState<WorkoutVideo> {
   void _syncPlayback() {
     final c = _controller;
     if (c == null || !_ready) return;
+    c.setVolume(widget.sound && !widget.clip ? 1 : 0);
     widget.paused ? c.pause() : c.play();
   }
 
@@ -63,17 +76,21 @@ class _WorkoutVideoState extends ConsumerState<WorkoutVideo> {
     _ready = false;
     await old?.dispose();
     if (!mounted || generation != _generation) return;
-    final url = ref
-        .read(mediaRepositoryProvider)
-        .exerciseVideo(exerciseByNumber(widget.exerciseNumber));
-    if (url == null) {
+    final exercise = exerciseByNumber(widget.exerciseNumber);
+    // While the clip plays during rest, the 30 s video is saved for the set.
+    if (widget.clip) unawaited(ExerciseVideos.save(exercise));
+    final controller = await ExerciseVideos.controller(
+      exercise,
+      clip: widget.clip,
+    );
+    if (!mounted || generation != _generation) {
+      await controller?.dispose();
+      return;
+    }
+    if (controller == null) {
       setState(() {});
       return;
     }
-    final controller = VideoPlayerController.networkUrl(
-      url,
-      videoPlayerOptions: VideoPlayerOptions(mixWithOthers: true),
-    );
     _controller = controller;
     try {
       await controller.initialize();
@@ -82,7 +99,7 @@ class _WorkoutVideoState extends ConsumerState<WorkoutVideo> {
         return;
       }
       await controller.setLooping(true);
-      await controller.setVolume(0);
+      await controller.setVolume(widget.sound && !widget.clip ? 1 : 0);
       setState(() => _ready = true);
       _syncPlayback();
       if (!widget.paused) await controller.play();

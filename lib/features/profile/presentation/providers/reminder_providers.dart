@@ -55,7 +55,7 @@ final reminderSyncProvider = Provider<void>((ref) {
   }
   final weekdays = {
     for (final d in PlanBuilder.trainingWeekdays(plan.profile.daysPerWeek))
-      d + 1,
+      plan.calendarWeekday(d) + 1,
   };
   service.schedule(time: setting.time, weekdays: weekdays);
 });

@@ -118,7 +118,7 @@ final List<OnboardingStep> onboardingChapter3Steps = [
         imageKey: 'onboarding/goal-screen/emoji-1',
       ),
     ],
-    footer: 'A target, not a promise. Holds grow a little each week, and consistency matters more than intensity.',
+    footer: 'A target, not a promise. Regular practice builds it, and consistency matters more than intensity.',
   ),
   const CompareStep(
     id: 'why-calesthetics-different',

@@ -223,7 +223,11 @@ class OnboardingPlanSummary {
 
   List<CalendarDay> get calendar => [
     for (final d in weeks.first.days)
-      CalendarDay(label: _weekdays[d.weekday], isTraining: !d.isRest),
+      // Plan weeks start today, so label each day by its real weekday.
+      CalendarDay(
+        label: _weekdays[(start.weekday - 1 + d.weekday) % 7],
+        isTraining: !d.isRest,
+      ),
   ];
 
   /// Share of the week's sessions that train each area, read from the

@@ -327,6 +327,18 @@ void midWeekStartTests() {
     );
     final first = tl.phases.first.days.first;
     expect(first.session.name, push.stages.first.sessions.first.name);
-    expect(PlanTimeline.leadingSkip(plan), 1);
+    // Plan weeks start on the start day: day 1 is that Tuesday itself, and
+    // every one of the 4 weeks (28 days) has the full 3 sessions.
+    expect(first.date, DateTime(2026, 10, 13));
+    expect(PlanTimeline.leadingSkip(plan), 0);
+    expect(tl.phases.length, 4);
+    for (final ph in tl.phases) {
+      expect(ph.days.length, 3);
+    }
+    expect(tl.totalDays, 12);
+    expect(
+      tl.phases.last.days.last.date.isBefore(DateTime(2026, 11, 10)),
+      isTrue,
+    );
   });
 }

@@ -437,7 +437,9 @@ class PlanBuilder {
       exerciseNumber: i.exerciseNumber,
       sets: (i.sets + levelSets(i)).clamp(1, 5),
       reps: i.reps == null ? null : i.reps! + bump,
-      holdSeconds: i.holdSeconds == null ? null : i.holdSeconds! + bump * 5,
+      // Every exercise video is 30 s, so every timed set is 30 s too: a hold
+      // grows with more sets and harder rungs, not with longer timers.
+      holdSeconds: i.holdSeconds == null ? null : drillSeconds,
       perSide: i.perSide,
     );
 

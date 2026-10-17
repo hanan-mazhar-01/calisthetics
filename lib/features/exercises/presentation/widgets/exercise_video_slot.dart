@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:video_player/video_player.dart';
 
+import '../../../media/data/exercise_videos.dart';
+import '../../domain/exercise.dart';
+
 import '../../../../core/theme/app_colors_extension.dart';
 import '../../../../core/theme/app_typography.dart';
 import '../../../../shared/widgets/bunny_image.dart';
@@ -14,7 +17,8 @@ class ExerciseVideoSlot extends StatefulWidget {
   const ExerciseVideoSlot({
     super.key,
     required this.exerciseName,
-    required this.url,
+    this.exercise,
+    this.url,
     this.locked = false,
     this.onLockedTap,
     this.aspectRatio = 4 / 5,
@@ -23,6 +27,10 @@ class ExerciseVideoSlot extends StatefulWidget {
   });
 
   final String exerciseName;
+
+  /// Plays this exercise's Bunny Stream video (saved on the phone after the
+  /// first play). Takes precedence over [url].
+  final Exercise? exercise;
   final Uri? url;
   final bool locked;
   final VoidCallback? onLockedTap;
@@ -43,7 +51,10 @@ class _ExerciseVideoSlotState extends State<ExerciseVideoSlot> {
   VideoPlayerController? _controller;
   bool _failed = false;
 
-  bool get _shouldPlay => widget.url != null && !widget.locked;
+  bool get _hasVideo =>
+      (widget.exercise != null && ExerciseVideos.has(widget.exercise!)) ||
+      widget.url != null;
+  bool get _shouldPlay => _hasVideo && !widget.locked;
 
   @override
   void initState() {
@@ -54,15 +65,28 @@ class _ExerciseVideoSlotState extends State<ExerciseVideoSlot> {
   @override
   void didUpdateWidget(ExerciseVideoSlot old) {
     super.didUpdateWidget(old);
-    if (old.url != widget.url || old.locked != widget.locked) {
+    if (old.url != widget.url ||
+        old.exercise != widget.exercise ||
+        old.locked != widget.locked) {
       _tearDown();
       _setUp();
     }
   }
 
-  void _setUp() {
+  int _generation = 0;
+
+  Future<void> _setUp() async {
     if (!_shouldPlay) return;
-    final controller = VideoPlayerController.networkUrl(widget.url!);
+    final generation = ++_generation;
+    final controller =
+        widget.exercise != null && ExerciseVideos.has(widget.exercise!)
+        ? await ExerciseVideos.controller(widget.exercise!)
+        : VideoPlayerController.networkUrl(widget.url!);
+    if (controller == null) return;
+    if (!mounted || generation != _generation) {
+      await controller.dispose();
+      return;
+    }
     _controller = controller;
     _failed = false;
     controller
@@ -83,6 +107,7 @@ class _ExerciseVideoSlotState extends State<ExerciseVideoSlot> {
   }
 
   void _tearDown() {
+    _generation++;
     _controller?.dispose();
     _controller = null;
   }

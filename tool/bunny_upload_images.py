@@ -26,13 +26,13 @@ NO_TRIM = {"welcome-hero"}
 ALIASES = {"four-women-in-colorful-outfits": "welcome-hero"}
 
 
-def load_env():
+def load_env(required=("BUNNY_STORAGE_ZONE", "BUNNY_STORAGE_KEY", "BUNNY_STORAGE_HOST")):
     if ENV.exists():
         for line in ENV.read_text().splitlines():
             if "=" in line and not line.lstrip().startswith("#"):
                 k, v = line.split("=", 1)
                 os.environ.setdefault(k.strip(), v.strip())
-    for k in ("BUNNY_STORAGE_ZONE", "BUNNY_STORAGE_KEY", "BUNNY_STORAGE_HOST"):
+    for k in required:
         if not os.environ.get(k):
             sys.exit(f"Missing {k} (set it in {ENV})")
 

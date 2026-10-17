@@ -73,7 +73,14 @@ class PlanOverview {
     required DateTime today,
   }) {
     final todayDate = DateTime(today.year, today.month, today.day);
-    final todayWeekday = todayDate.weekday - 1;
+    // Position of today in this plan week (plan weeks start on the plan's
+    // first day, not on a Monday).
+    final weekStart = DateTime(
+      plan.startDay.year,
+      plan.startDay.month,
+      plan.startDay.day + (week.weekNumber - 1) * 7,
+    );
+    final todayWeekday = todayDate.difference(weekStart).inDays;
     final planHistory = [
       for (final s in history)
         if (plan.counts(s)) s,

@@ -60,8 +60,15 @@ List<StreakDay> weekStrip({
         final d = DateTime(monday.year, monday.month, monday.day + i);
         final inPlan =
             week != null && (planStart == null || !d.isBefore(planStart));
-        final planned = inPlan
-            ? week.days.where((p) => p.weekday == i).firstOrNull
+        // Plan weeks start on the plan's first day; every week has the same
+        // pattern, so the day's place in its plan week picks its slot.
+        final planned = inPlan && week.days.length == 7
+            ? week.days[((planStart == null
+                              ? d.weekday - 1
+                              : d.difference(planStart).inDays) %
+                          7 +
+                      7) %
+                  7]
             : null;
         final state = trained.contains(d)
             ? StreakDayState.done

@@ -7,6 +7,7 @@ import '../../../../core/motion/calesthetics_motion.dart';
 import '../../../../core/theme/app_colors_extension.dart';
 import '../../../../core/theme/app_typography.dart';
 import '../../../../core/theme/theme_reveal.dart';
+import '../../../media/data/exercise_videos.dart';
 import '../../../onboarding/presentation/providers/onboarding_controller.dart';
 import '../../../plan/presentation/providers/plan_providers.dart';
 import '../../../plan/presentation/widgets/plan_confirm_dialog.dart';
@@ -93,6 +94,13 @@ class ProfileScreen extends ConsumerWidget {
                     ? _format(context, reminder)
                     : 'Off',
                 onTap: () => showReminderSheet(context),
+              ),
+              _RowData(
+                icon: Icons.download_done_rounded,
+                title: 'Downloaded videos',
+                subtitle: 'Saved after the first play, for offline use',
+                value: 'Clear',
+                onTap: () => _clearVideos(context),
               ),
               _RowData(
                 icon: Icons.help_outline_rounded,
@@ -187,6 +195,20 @@ class ProfileScreen extends ConsumerWidget {
   static void _linkPlaceholder(BuildContext context, String what) {
     // TODO: link the published URL once Verado Studio provides it.
     _snack(context, 'The $what link is not available yet.');
+  }
+
+  static Future<void> _clearVideos(BuildContext context) async {
+    final ok = await showPlanConfirmDialog(
+      context,
+      title: 'Clear downloaded videos?',
+      message:
+          'Exercise videos saved on this phone are removed. They download '
+          'again the next time they play.',
+      confirmLabel: 'Clear',
+    );
+    if (!ok || !context.mounted) return;
+    await ExerciseVideos.clearSaved();
+    if (context.mounted) _snack(context, 'Downloaded videos cleared.');
   }
 
   static Future<void> _confirmDelete(

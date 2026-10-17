@@ -278,9 +278,12 @@ final userStatsProvider = Provider<UserStats>((ref) {
   // Weekdays the plan leaves free: they never break the streak.
   final rest = plan == null
       ? const <int>{}
-      : {0, 1, 2, 3, 4, 5, 6}.difference(
-          PlanBuilder.trainingWeekdays(plan.profile.daysPerWeek).toSet(),
-        );
+      : {0, 1, 2, 3, 4, 5, 6}.difference({
+          for (final d in PlanBuilder.trainingWeekdays(
+            plan.profile.daysPerWeek,
+          ))
+            plan.calendarWeekday(d),
+        });
   return UserStats.from(
     ref.watch(historyProvider),
     today: ref.watch(clockProvider)(),

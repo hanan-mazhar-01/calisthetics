@@ -13,9 +13,12 @@ final achievementsProvider = Provider<List<Achievement>>((ref) {
   // Weekdays the plan leaves free never break a streak (same rule as stats).
   final rest = plan == null
       ? const <int>{}
-      : {0, 1, 2, 3, 4, 5, 6}.difference(
-          PlanBuilder.trainingWeekdays(plan.profile.daysPerWeek).toSet(),
-        );
+      : {0, 1, 2, 3, 4, 5, 6}.difference({
+          for (final d in PlanBuilder.trainingWeekdays(
+            plan.profile.daysPerWeek,
+          ))
+            plan.calendarWeekday(d),
+        });
   return const AchievementEvaluator().evaluate(
     history: ref.watch(historyProvider),
     stats: ref.watch(userStatsProvider),
