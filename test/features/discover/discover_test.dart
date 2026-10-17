@@ -218,9 +218,10 @@ void main() {
       addTearDown(tester.view.reset);
       final e = exerciseByNumber(1);
       await tester.pumpWidget(await app(ExerciseDetailScreen(number: 1)));
-      await tester.pumpAndSettle();
-      expect(find.text(e.name), findsOneWidget);
-      expect(find.textContaining("Demo video"), findsOneWidget);
+      await tester.pump(const Duration(seconds: 1));
+      expect(find.text(e.name), findsWidgets);
+      // Nothing plays by itself: the thumbnail with a play button.
+      expect(find.textContaining('Tap to try it'), findsOneWidget);
       expect(find.text('How to'), findsOneWidget);
     });
   });

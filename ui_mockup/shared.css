@@ -1,0 +1,109 @@
+/* Shared frame + tokens for the Calesthetics first-screen mockups.
+   Colours are the app's own (lib/core/theme/app_colors.dart). */
+:root {
+  --bg: #F7F7F7;
+  --surface: #FFFFFF;
+  --surface-warm: #F3E9E8;
+  --rose: #D85F70;
+  --rose-deep: #B94A5B;
+  --rose-soft: #F1C6CB;
+  --rose-mist: #F7E1E4;
+  --ink: #191719;
+  --ink-2: #746D70;
+  --ink-3: #BDB1B3;
+  --line: #DED5D5;
+  --night: #171516;
+  --night-2: #242021;
+  --night-ink: #FAF6F4;
+  --night-ink-2: #AAA1A3;
+  --night-rose: #E27A88;
+  --page: #E9E4E5;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) { --page: #0E0C0D; }
+}
+:root[data-theme="dark"] { --page: #0E0C0D; }
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { background: var(--page); }
+body {
+  font-family: "Poppins", system-ui, sans-serif;
+  color: var(--ink);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 18px;
+  padding: 28px 16px 40px;
+}
+
+.topbar {
+  width: 100%;
+  max-width: 900px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.topbar a { color: var(--rose); font-weight: 700; text-decoration: none; font-size: 14px; }
+.topbar h1 { font-size: 18px; font-weight: 800; color: #6b6265; }
+.controls { display: flex; gap: 8px; }
+.controls button {
+  font: 600 13px "Poppins", sans-serif;
+  border: 0;
+  border-radius: 999px;
+  padding: 9px 16px;
+  background: #fff;
+  color: var(--ink);
+  cursor: pointer;
+  box-shadow: 0 2px 10px rgba(0,0,0,.06);
+}
+.controls button.primary { background: var(--rose); color: #fff; }
+
+/* Phone frame: 390 x 844 (iPhone 14 / most Androids in dp). */
+.phone {
+  position: relative;
+  width: min(390px, 100%);
+  aspect-ratio: 390 / 844;
+  border-radius: 46px;
+  overflow: hidden;
+  background: var(--bg);
+  box-shadow:
+    0 0 0 10px #111,
+    0 0 0 11px #2a2a2a,
+    0 30px 80px rgba(0,0,0,.35);
+}
+.phone .status {
+  position: absolute; inset: 0 0 auto 0; height: 44px; z-index: 50;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 28px; font-size: 14px; font-weight: 700; pointer-events: none;
+}
+.phone .status.light { color: #fff; }
+.screen { position: absolute; inset: 0; }
+.screen[hidden] { display: none !important; }
+
+.note {
+  max-width: 560px;
+  font-size: 14px;
+  line-height: 1.55;
+  color: #6b6265;
+  text-align: center;
+}
+.note b { color: var(--ink); }
+
+/* Buttons used on screens */
+.cta {
+  display: flex; align-items: center; justify-content: space-between;
+  width: 100%; height: 58px; border: 0; border-radius: 999px;
+  padding: 0 24px; font: 600 17px "Poppins", sans-serif;
+  background: var(--rose); color: #fff; cursor: pointer;
+  box-shadow: 0 12px 28px rgba(216, 95, 112, .35);
+}
+.cta svg { width: 22px; height: 22px; }
+.login { margin-top: 14px; text-align: center; font-size: 14px; }
+.login b { font-weight: 800; }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: 1ms !important; transition-duration: 1ms !important; }
+}

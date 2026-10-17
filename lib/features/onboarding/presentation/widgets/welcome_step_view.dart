@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../../../core/theme/app_colors_extension.dart';
 import '../../../../core/theme/app_spacing.dart';
@@ -6,21 +8,23 @@ import '../../../../core/theme/app_typography.dart';
 import '../../../../shared/widgets/bunny_image.dart';
 import '../../../../shared/widgets/media_placeholder.dart';
 import '../../../../shared/widgets/primary_button.dart';
+import '../../../auth/presentation/widgets/auth_modal_sheet.dart';
+import '../providers/onboarding_completed_provider.dart';
 import 'intro_motion.dart';
 import 'typewriter_text.dart';
 
 /// Screen 1: full-bleed dark cover — the only onboarding screen with no
 /// chrome header, matching the reference's cinematic first impression.
-class WelcomeStepView extends StatefulWidget {
+class WelcomeStepView extends ConsumerStatefulWidget {
   const WelcomeStepView({super.key, required this.onStart});
 
   final VoidCallback onStart;
 
   @override
-  State<WelcomeStepView> createState() => _WelcomeStepViewState();
+  ConsumerState<WelcomeStepView> createState() => _WelcomeStepViewState();
 }
 
-class _WelcomeStepViewState extends State<WelcomeStepView>
+class _WelcomeStepViewState extends ConsumerState<WelcomeStepView>
     with SingleTickerProviderStateMixin {
   /// Starts when the headline has been typed: the rest comes in under it.
   late final AnimationController _body = AnimationController(
@@ -119,13 +123,13 @@ class _WelcomeStepViewState extends State<WelcomeStepView>
               TypewriterText(
                 onDone: _typed,
                 style: AppTypography.display(
-                  fontSize: 48,
+                  fontSize: 42,
                   color: p.fg,
                   stretchPercent: 78,
                 ),
                 segments: [
                   const TypeSegment('Build strength.\n'),
-                  TypeSegment('Master', TextStyle(color: p.accent)),
+                  TypeSegment('Master', AppTypography.accentSerif(p.accent)),
                   const TypeSegment(' your body.'),
                 ],
               ),
@@ -177,15 +181,19 @@ class _WelcomeStepViewState extends State<WelcomeStepView>
               const SizedBox(height: AppSpacing.lg),
               GestureDetector(
                 behavior: HitTestBehavior.opaque,
-                onTap: () => ScaffoldMessenger.of(context)
-                  ..hideCurrentSnackBar()
-                  ..showSnackBar(
-                    const SnackBar(
-                      content: Text(
-                        'Log in will be available once accounts are connected.',
-                      ),
-                    ),
-                  ),
+                onTap: () async {
+                  final success = await showAuthModalSheet(
+                    context,
+                    initialIsSignUp: false,
+                  );
+                  if (success == true && context.mounted) {
+                    await ref
+                        .read(onboardingCompletedProvider.notifier)
+                        .complete();
+                    if (!context.mounted) return;
+                    context.go('/home');
+                  }
+                },
                 child: Padding(
                   padding: const EdgeInsets.symmetric(vertical: AppSpacing.sm),
                   child: Text.rich(

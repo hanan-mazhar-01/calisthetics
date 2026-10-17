@@ -83,7 +83,7 @@ class _PartIntroStepViewState extends State<PartIntroStepView>
                 TypeSegment(step.headline.lead),
                 TypeSegment(
                   step.headline.accent,
-                  TextStyle(color: context.appColors.accentText),
+                  AppTypography.accentSerif(context.appColors.accentText),
                 ),
                 TypeSegment(step.headline.tail),
               ],

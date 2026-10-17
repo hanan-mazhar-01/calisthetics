@@ -88,4 +88,23 @@ void main() {
     expect(t.phases.first.weekNumber, 5);
     expect(t.phases.first.firstDay, 13);
   });
+
+  test(
+    'two workouts on one day tick off two days (doing the next one early)',
+    () {
+      final t = _build(
+        start: monday,
+        today: monday,
+        history: [
+          _done(monday.add(const Duration(hours: 9))),
+          _done(monday.add(const Duration(hours: 18))),
+        ],
+      );
+      final days = [for (final p in t.phases) ...p.days];
+      expect(days[0].status, TimelineStatus.done);
+      expect(days[1].status, TimelineStatus.done);
+      expect(days[2].status, isNot(TimelineStatus.done));
+      expect(t.doneDays, 2);
+    },
+  );
 }

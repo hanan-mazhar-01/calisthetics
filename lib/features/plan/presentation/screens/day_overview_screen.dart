@@ -12,6 +12,8 @@ import '../../../plans/domain/plan_template.dart';
 import '../../../user/presentation/providers/user_providers.dart';
 import '../../../workout/domain/workout_request.dart';
 import '../../domain/plan_overview.dart';
+import '../../../exercises/domain/exercise_lookup.dart';
+import '../../../media/data/exercise_videos.dart';
 import '../../domain/cover_pictures.dart';
 import '../providers/plan_providers.dart';
 import '../widgets/day_header.dart';
@@ -62,6 +64,16 @@ class DayOverviewScreen extends ConsumerWidget {
       );
     }
     final shownWeek = week ?? plan.weekNumberOn(ref.watch(clockProvider)());
+    // Get the first exercises onto the phone while she reads the list, so
+    // the workout opens on ready videos.
+    for (final n in [
+      ...session.warmUp.take(2),
+      ...session.items.take(1).map((i) => i.exerciseNumber),
+    ]) {
+      final e = exerciseByNumber(n);
+      ExerciseVideos.save(e, clip: true);
+      ExerciseVideos.save(e);
+    }
     // The same picture this day wears on the Plan tab.
     final timeline = ref.watch(planTimelineProvider);
     var hero = session.cover;

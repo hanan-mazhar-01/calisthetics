@@ -1,13 +1,14 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 
-/// Typography tokens, all routed through Manrope — premium, editorial,
-/// highly readable, the single global font for the whole app.
+/// Typography tokens. Poppins is the app's font for every piece of text;
+/// Lora (a soft serif) is used only for the highlighted pink word inside a
+/// headline ([accentSerif]), as in the reference design.
 ///
-/// `stretchPercent` is kept as a parameter for call-site compatibility with
-/// the display styles that used to request Archivo's variable "width" axis;
-/// Manrope's variable font only exposes a weight axis, so this is a no-op
-/// here (safely ignored) rather than a visual regression.
+/// Poppins draws heavier than the font it replaced, so the very heavy
+/// weights are eased one step down to keep the same visual weight.
+///
+/// `stretchPercent` is kept as a parameter for call-site compatibility; it
+/// has no effect (Poppins has no width axis).
 abstract final class AppTypography {
   static TextStyle _base({
     required double fontSize,
@@ -17,27 +18,33 @@ abstract final class AppTypography {
     double letterSpacingEm = 0,
     double? stretchPercent,
   }) {
-    return GoogleFonts.manrope(
+    return TextStyle(
+      fontFamily: 'Poppins',
       fontSize: fontSize,
-      fontWeight: weight,
+      fontWeight: switch (weight) {
+        FontWeight.w900 => FontWeight.w600,
+        FontWeight.w800 => FontWeight.w600,
+        FontWeight.w700 => FontWeight.w600,
+        _ => weight,
+      },
       color: color,
       height: height,
       letterSpacing: letterSpacingEm * fontSize,
     );
   }
 
-  /// Big condensed display headline/number (hero titles, plan-number counters).
-  /// `stretchPercent` mirrors the source CSS `font-stretch` value (62-92).
+  /// Big display headline/number (hero titles, plan-number counters).
+  /// Medium-semibold, like the reference headlines, with room between lines.
   static TextStyle display({
     required double fontSize,
     required Color color,
     double stretchPercent = 80,
-    double height = 0.95,
-    double letterSpacingEm = -0.03,
+    double height = 1.12,
+    double letterSpacingEm = -0.02,
   }) {
     return _base(
       fontSize: fontSize,
-      weight: FontWeight.w800,
+      weight: FontWeight.w500,
       color: color,
       height: height,
       letterSpacingEm: letterSpacingEm,
@@ -88,6 +95,18 @@ abstract final class AppTypography {
       color: color,
       height: 1.1,
       letterSpacingEm: letterSpacingEm,
+    );
+  }
+
+  /// The highlighted word in a headline ("Where should we *focus*?"): Lora,
+  /// in [color]. Merge it into the headline's own style so size and line
+  /// height stay the same.
+  static TextStyle accentSerif(Color color) {
+    return TextStyle(
+      fontFamily: 'Lora',
+      color: color,
+      fontWeight: FontWeight.w500,
+      letterSpacing: 0,
     );
   }
 }

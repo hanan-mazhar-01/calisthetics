@@ -265,6 +265,7 @@ class _DiscoverScreenState extends ConsumerState<DiscoverScreen> {
         ref.watch(continueLadderSkillProvider) == skill.id || index > 1;
     return GradientProgramCard(
       width: width,
+      imageKey: 'thumbnails/ladder_${skill.id}',
       colors: skillGradients[skill.id]!,
       kicker: '${ladder.length} RUNGS',
       title: skill.label,
@@ -329,6 +330,7 @@ class _DiscoverScreenState extends ConsumerState<DiscoverScreen> {
         for (final (id, label, screenTitle) in _areas)
           AreaBubble(
             label: label,
+            imageKey: 'thumbnails/area_$id',
             colors: areaGradients[id]!,
             onTap: () => _openSection(screenTitle, exercisesInSection(id)),
           ),
@@ -438,11 +440,13 @@ class _SearchPill extends StatelessWidget {
             children: [
               Icon(Icons.search_rounded, color: c.textSecondary, size: 26),
               const SizedBox(width: 12),
-              Text(
-                'Search exercises, skills or equipment',
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                style: AppTypography.body(c.textMuted, fontSize: 15.5),
+              Expanded(
+                child: Text(
+                  'Search exercises, skills or equipment',
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: AppTypography.body(c.textMuted, fontSize: 15.5),
+                ),
               ),
             ],
           ),

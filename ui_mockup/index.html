@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>First Screen Mockups</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="shared.css">
+<style>
+  body { gap: 22px; }
+  header { max-width: 900px; text-align: center; }
+  header h1 { font-size: 30px; font-weight: 800; letter-spacing: -.03em; color: var(--ink); }
+  header p { margin-top: 8px; color: #6b6265; font-size: 15px; line-height: 1.5; }
+  .grid { width: 100%; max-width: 1100px; display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 26px; }
+  .card {
+    display: flex; flex-direction: column; gap: 14px; text-decoration: none; color: inherit;
+    background: #fff; border-radius: 26px; padding: 14px; box-shadow: 0 10px 30px rgba(0,0,0,.06);
+    transition: transform .25s ease, box-shadow .25s ease;
+  }
+  .card:hover { transform: translateY(-4px); box-shadow: 0 18px 40px rgba(0,0,0,.1); }
+  .card iframe { width: 100%; aspect-ratio: 390/700; border: 0; border-radius: 18px; pointer-events: none; background: var(--bg); }
+  .card h2 { font-size: 18px; font-weight: 800; padding: 0 6px; }
+  .card p { font-size: 13.5px; color: #6b6265; line-height: 1.5; padding: 0 6px 6px; }
+  .tag { display: inline-block; margin-left: 6px; font-size: 11px; font-weight: 800; color: var(--rose); letter-spacing: .1em; }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) header h1 { color: #FAF6F4; }
+    :root:not([data-theme="light"]) .card { background: #1E1B1C; }
+    :root:not([data-theme="light"]) .card h2 { color: #FAF6F4; }
+  }
+</style>
+</head>
+<body>
+  <header>
+    <h1>First screen · 3 directions</h1>
+    <p>Each one plays the splash screen, then the "Start my journey" screen. Open one to replay it, or pin a single screen. Copy, colours, font and photos are the app's own.</p>
+  </header>
+  <div class="grid">
+    <a class="card" href="variation-a-soft-bloom.html">
+      <iframe src="variation-a-soft-bloom.html" title="A" loading="lazy" tabindex="-1"></iframe>
+      <h2>A · Soft Bloom <span class="tag">LIGHT</span></h2>
+      <p>Warm and friendly. Pulsing logo splash; the photo sits in an arch card with floating fact chips.</p>
+    </a>
+    <a class="card" href="variation-b-night-editorial.html">
+      <iframe src="variation-b-night-editorial.html" title="B" loading="lazy" tabindex="-1"></iframe>
+      <h2>B · Night Editorial <span class="tag">DARK</span></h2>
+      <p>Bold and premium. Three words rise on the splash; full-bleed photo with glass stat tiles.</p>
+    </a>
+    <a class="card" href="variation-c-motion-gallery.html">
+      <iframe src="variation-c-motion-gallery.html" title="C" loading="lazy" tabindex="-1"></iframe>
+      <h2>C · Motion Gallery <span class="tag">LIGHT</span></h2>
+      <p>Shows the product. Exercise cards fan out on the splash; real exercise thumbnails drift past above a 3-step intro.</p>
+    </a>
+  </div>
+  <header style="margin-top:18px">
+    <h1>"Built as a progression" · 3 directions</h1>
+    <p>The onboarding compare screen, redone with 3D motion and the real push-up ladder photos.</p>
+  </header>
+  <div class="grid">
+    <a class="card" href="progression-screen.html?v=A">
+      <iframe src="progression-screen.html?v=A" title="Progression A" loading="lazy" tabindex="-1"></iframe>
+      <h2>A · 3D Ladder</h2>
+      <p>The push-up ladder is built as raised 3D steps, one rung after another.</p>
+    </a>
+    <a class="card" href="progression-screen.html?v=B">
+      <iframe src="progression-screen.html?v=B" title="Progression B" loading="lazy" tabindex="-1"></iframe>
+      <h2>B · Flip Duel</h2>
+      <p>The old way tips back and greys out; the Calesthetics card flips in, floats and shines.</p>
+    </a>
+    <a class="card" href="progression-screen.html?v=C">
+      <iframe src="progression-screen.html?v=C" title="Progression C" loading="lazy" tabindex="-1"></iframe>
+      <h2>C · Climb Carousel</h2>
+      <p>A turning 3D ring of all 8 rungs, a ladder meter, and old vs new rows.</p>
+    </a>
+  </div>
+</body>
+</html>

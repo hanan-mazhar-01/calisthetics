@@ -232,7 +232,7 @@ class _Headline extends StatelessWidget {
           const TextSpan(text: 'Everything is '),
           TextSpan(
             text: 'set',
-            style: base.copyWith(color: colors.accentText),
+            style: base.merge(AppTypography.accentSerif(colors.accentText)),
           ),
           const TextSpan(text: '.'),
         ],

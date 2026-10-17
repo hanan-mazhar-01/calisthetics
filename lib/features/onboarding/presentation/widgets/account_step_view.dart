@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../core/theme/app_colors_extension.dart';
 import '../../../../core/theme/app_spacing.dart';
@@ -6,11 +7,12 @@ import '../../../../core/theme/app_typography.dart';
 import '../../../../shared/widgets/glass/glass_button.dart';
 import '../../../../shared/widgets/glass/glass_card.dart';
 import '../../../../shared/widgets/primary_button.dart';
+import '../../../auth/presentation/providers/auth_providers.dart';
+import '../../../auth/presentation/widgets/auth_modal_sheet.dart';
 
-/// Optional account creation. Sign-in is not connected yet (no auth backend),
-/// so the three methods are shown disabled with a "Coming soon" label and
-/// Skip is the one working action.
-class AccountStepView extends StatelessWidget {
+/// Optional account creation step at the end of onboarding.
+/// Connects to Apple, Google, or Email Authentication via Firebase.
+class AccountStepView extends ConsumerStatefulWidget {
   const AccountStepView({
     super.key,
     required this.onSkip,
@@ -21,17 +23,77 @@ class AccountStepView extends StatelessWidget {
   final VoidCallback onSkip;
   final VoidCallback onBack;
 
-  /// True while the plan is being started after Skip.
+  /// True while the plan is being started.
   final bool busy;
+
+  @override
+  ConsumerState<AccountStepView> createState() => _AccountStepViewState();
+}
+
+class _AccountStepViewState extends ConsumerState<AccountStepView> {
+  Future<void> _handleGoogle() async {
+    final ctl = ref.read(authControllerProvider.notifier);
+    final user = await ctl.signInWithGoogle();
+    if (user != null && mounted) {
+      widget.onSkip();
+    }
+  }
+
+  Future<void> _handleApple() async {
+    final ctl = ref.read(authControllerProvider.notifier);
+    final user = await ctl.signInWithApple();
+    if (user != null && mounted) {
+      widget.onSkip();
+    }
+  }
+
+  Future<void> _handleEmail() async {
+    final success = await showAuthModalSheet(
+      context,
+      initialIsSignUp: true,
+    );
+    if (success == true && mounted) {
+      widget.onSkip();
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     final c = context.appColors;
-    const methods = [
-      (Icons.apple_rounded, 'Continue with Apple'),
-      (Icons.g_mobiledata_rounded, 'Continue with Google'),
-      (Icons.mail_outline_rounded, 'Continue with email'),
+    final authState = ref.watch(authControllerProvider);
+    final isBusy = widget.busy || authState.isLoading;
+
+    ref.listen(authControllerProvider, (prev, next) {
+      if (next.errorMessage != null && next.errorMessage != prev?.errorMessage) {
+        ScaffoldMessenger.of(context)
+          ..hideCurrentSnackBar()
+          ..showSnackBar(
+            SnackBar(
+              content: Text(next.errorMessage!),
+              backgroundColor: Colors.red.shade800,
+            ),
+          );
+      }
+    });
+
+    final methods = [
+      (
+        icon: Icons.apple_rounded,
+        label: 'Continue with Apple',
+        onTap: _handleApple,
+      ),
+      (
+        icon: Icons.g_mobiledata_rounded,
+        label: 'Continue with Google',
+        onTap: _handleGoogle,
+      ),
+      (
+        icon: Icons.mail_outline_rounded,
+        label: 'Continue with email',
+        onTap: _handleEmail,
+      ),
     ];
+
     return Column(
       children: [
         Expanded(
@@ -50,11 +112,11 @@ class AccountStepView extends StatelessWidget {
                     GlassButton(
                       icon: Icons.arrow_back_ios_new_rounded,
                       tooltip: 'Back',
-                      onPressed: onBack,
+                      onPressed: isBusy ? null : widget.onBack,
                     ),
                     const Spacer(),
                     TextButton(
-                      onPressed: busy ? null : onSkip,
+                      onPressed: isBusy ? null : widget.onSkip,
                       child: Text(
                         'Skip',
                         style: AppTypography.title(
@@ -78,23 +140,28 @@ class AccountStepView extends StatelessWidget {
                 ),
                 const SizedBox(height: AppSpacing.md),
                 Text(
-                  'An account would keep your plan and progress safe if you change phones. It is optional.',
+                  'An account keeps your customized plan, streak, and progress safe if you change devices.',
                   style: AppTypography.body(c.textSecondary),
                 ),
                 const SizedBox(height: AppSpacing.xxxl),
-                for (final (icon, label) in methods)
+                for (final item in methods)
                   Padding(
                     padding: const EdgeInsets.only(bottom: AppSpacing.md),
-                    child: Opacity(
-                      opacity: 0.55,
+                    child: InkWell(
+                      borderRadius: BorderRadius.circular(20),
+                      onTap: isBusy ? null : item.onTap,
                       child: GlassCard(
                         child: Row(
                           children: [
-                            Icon(icon, color: c.textPrimary),
+                            Icon(
+                              item.icon,
+                              color: c.textPrimary,
+                              size: item.icon == Icons.g_mobiledata_rounded ? 28 : 22,
+                            ),
                             const SizedBox(width: AppSpacing.lg),
                             Expanded(
                               child: Text(
-                                label,
+                                item.label,
                                 style: AppTypography.title(
                                   16,
                                   c.textPrimary,
@@ -102,13 +169,17 @@ class AccountStepView extends StatelessWidget {
                                 ),
                               ),
                             ),
-                            Text(
-                              'Coming soon',
-                              style: AppTypography.kicker(
-                                c.textMuted,
-                                fontSize: 11,
+                            if (isBusy)
+                              const SizedBox(
+                                width: 18,
+                                height: 18,
+                                child: CircularProgressIndicator(strokeWidth: 2),
+                              )
+                            else
+                              Icon(
+                                Icons.chevron_right_rounded,
+                                color: c.textMuted,
                               ),
-                            ),
                           ],
                         ),
                       ),
@@ -116,7 +187,7 @@ class AccountStepView extends StatelessWidget {
                   ),
                 const SizedBox(height: AppSpacing.sm),
                 Text(
-                  'Accounts are not connected yet. Your plan is stored on this device for now.',
+                  'Creating an account is optional. You can also skip and connect it later in your profile.',
                   style: AppTypography.body(c.textMuted, fontSize: 13),
                 ),
               ],
@@ -132,8 +203,8 @@ class AccountStepView extends StatelessWidget {
           ),
           child: PrimaryButton(
             label: 'Skip and start my plan',
-            enabled: !busy,
-            onPressed: busy ? null : onSkip,
+            enabled: !isBusy,
+            onPressed: isBusy ? null : widget.onSkip,
             trailingIcon: Icons.arrow_forward_rounded,
           ),
         ),

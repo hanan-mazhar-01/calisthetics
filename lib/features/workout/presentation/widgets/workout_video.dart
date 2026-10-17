@@ -7,6 +7,7 @@ import 'package:video_player/video_player.dart';
 import '../../../../core/theme/app_colors_extension.dart';
 import '../../../../core/theme/app_typography.dart';
 import '../../../../shared/widgets/bunny_image.dart';
+import '../../../exercises/domain/exercise.dart';
 import '../../../exercises/domain/exercise_lookup.dart';
 import '../../../exercises/presentation/widgets/exercise_picture.dart';
 import '../../../media/data/exercise_videos.dart';
@@ -24,6 +25,7 @@ class WorkoutVideo extends ConsumerStatefulWidget {
     required this.paused,
     this.clip = false,
     this.sound = false,
+    this.onLoading,
   });
 
   final int exerciseNumber;
@@ -36,6 +38,10 @@ class WorkoutVideo extends ConsumerStatefulWidget {
   /// Plays the 30 s video's own sound.
   final bool sound;
 
+  /// Told when the video starts (true) and finishes (false) loading, so the
+  /// workout timer can wait for it.
+  final ValueChanged<bool>? onLoading;
+
   @override
   ConsumerState<WorkoutVideo> createState() => _WorkoutVideoState();
 }
@@ -44,6 +50,13 @@ class _WorkoutVideoState extends ConsumerState<WorkoutVideo> {
   VideoPlayerController? _controller;
   bool _ready = false;
   int _generation = 0;
+
+  /// The set's 30 s video, initialised (paused) while its rest clip plays,
+  /// so the set starts on a ready video instead of a loading picture.
+  VideoPlayerController? _warm;
+  String? _warmKey;
+
+  String _key(int exercise, bool clip) => '$exercise-$clip';
 
   @override
   void initState() {
@@ -69,14 +82,37 @@ class _WorkoutVideoState extends ConsumerState<WorkoutVideo> {
     widget.paused ? c.pause() : c.play();
   }
 
+  /// Shows [next] in place of the current video; the old one is disposed
+  /// only after the new one is on screen, so nothing blank shows between.
+  void _swapIn(VideoPlayerController next) {
+    widget.onLoading?.call(false);
+    final old = _controller;
+    setState(() {
+      _controller = next;
+      _ready = true;
+    });
+    _syncPlayback();
+    if (!widget.paused) next.play();
+    if (old != null && old != next) {
+      WidgetsBinding.instance.addPostFrameCallback((_) => old.dispose());
+    }
+  }
+
   Future<void> _load() async {
     final generation = ++_generation;
-    final old = _controller;
-    _controller = null;
-    _ready = false;
-    await old?.dispose();
-    if (!mounted || generation != _generation) return;
     final exercise = exerciseByNumber(widget.exerciseNumber);
+    final key = _key(widget.exerciseNumber, widget.clip);
+    widget.onLoading?.call(ExerciseVideos.has(exercise));
+
+    // The set's video was already warmed up during the rest clip.
+    final warm = _warm;
+    if (warm != null && _warmKey == key && warm.value.isInitialized) {
+      _warm = null;
+      _warmKey = null;
+      _swapIn(warm);
+      return;
+    }
+
     // While the clip plays during rest, the 30 s video is saved for the set.
     if (widget.clip) unawaited(ExerciseVideos.save(exercise));
     final controller = await ExerciseVideos.controller(
@@ -88,11 +124,17 @@ class _WorkoutVideoState extends ConsumerState<WorkoutVideo> {
       return;
     }
     if (controller == null) {
-      setState(() {});
+      widget.onLoading?.call(false);
+      final old = _controller;
+      setState(() {
+        _controller = null;
+        _ready = false;
+      });
+      await old?.dispose();
       return;
     }
-    _controller = controller;
     try {
+      // The previous video keeps playing until this one is ready.
       await controller.initialize();
       if (!mounted || generation != _generation) {
         await controller.dispose();
@@ -100,13 +142,39 @@ class _WorkoutVideoState extends ConsumerState<WorkoutVideo> {
       }
       await controller.setLooping(true);
       await controller.setVolume(widget.sound && !widget.clip ? 1 : 0);
-      setState(() => _ready = true);
-      _syncPlayback();
-      if (!widget.paused) await controller.play();
+      _swapIn(controller);
+      if (widget.clip) unawaited(_warmUp(exercise, generation));
     } catch (_) {
-      if (_controller == controller) _controller = null;
       await controller.dispose();
-      if (mounted && generation == _generation) setState(() {});
+      if (generation == _generation) widget.onLoading?.call(false);
+      if (mounted && generation == _generation && _controller == null) {
+        setState(() {});
+      }
+    }
+  }
+
+  /// Gets the set's 30 s video ready (paused, silent) behind the rest clip.
+  Future<void> _warmUp(Exercise exercise, int generation) async {
+    final key = _key(exercise.number, false);
+    if (_warmKey == key) return;
+    final previous = _warm;
+    _warm = null;
+    _warmKey = null;
+    await previous?.dispose();
+    final c = await ExerciseVideos.controller(exercise);
+    if (c == null) return;
+    try {
+      await c.initialize();
+      await c.setLooping(true);
+      await c.setVolume(0);
+      if (!mounted || generation != _generation) {
+        await c.dispose();
+        return;
+      }
+      _warm = c;
+      _warmKey = key;
+    } catch (_) {
+      await c.dispose();
     }
   }
 
@@ -115,13 +183,15 @@ class _WorkoutVideoState extends ConsumerState<WorkoutVideo> {
     _generation++;
     _controller?.dispose();
     _controller = null;
+    _warm?.dispose();
+    _warm = null;
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     final controller = _controller;
-    final name = exerciseByNumber(widget.exerciseNumber).name;
+    final exercise = exerciseByNumber(widget.exerciseNumber);
     if (controller != null && _ready) {
       return Stack(
         fit: StackFit.expand,
@@ -143,21 +213,28 @@ class _WorkoutVideoState extends ConsumerState<WorkoutVideo> {
         ],
       );
     }
-    return Stack(
-      fit: StackFit.expand,
-      children: [
-        _VideoPlaceholder(
-          name: name,
-          thumbnailKey: exerciseThumbnailKey(
-            exerciseByNumber(widget.exerciseNumber),
-          ),
-        ),
-        // A URL exists and the clip is still preparing: thin pre-roll bar.
-        if (controller != null) const _Buffering(),
-      ],
+    // The exercise has a video that is still loading: show the video's own
+    // plain studio backdrop (not a different photo) with a thin loading bar,
+    // so the video appears without a jump.
+    if (ExerciseVideos.has(exercise)) {
+      return const Stack(
+        fit: StackFit.expand,
+        children: [
+          ColoredBox(color: _videoBackdrop),
+          _Buffering(),
+        ],
+      );
+    }
+    // No video for this exercise: its thumbnail, or the name.
+    return _VideoPlaceholder(
+      name: exercise.name,
+      thumbnailKey: exerciseThumbnailKey(exercise),
     );
   }
 }
+
+/// The light studio grey the exercise videos are filmed against.
+const _videoBackdrop = Color(0xFFDBD3CA);
 
 class _Buffering extends StatelessWidget {
   const _Buffering();

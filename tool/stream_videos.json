@@ -90,9 +90,9 @@
    "source": "pushup_beginner_videos/Resistance-Band row clip 1.mp4"
   },
   "main": {
-   "guid": "10e9a7ff-a2a2-40fa-bac5-e55188737c52",
-   "sha": "78f4ca18aae2",
-   "source": "pushup_beginner_videos/Resistance-Band row clip 1.mp4"
+   "guid": "9d9bb563-f219-4ae1-bdfa-8866c0570013",
+   "sha": "ecaa018e66b6",
+   "source": "Foundation_Upper_Body/Resistance-Band Row.mp4"
   }
  },
  "calesthetics_009_bench_bar_support_hold_beg-int_v1": {
@@ -234,9 +234,16 @@
    "source": "foundation_legs_glutes/Supported_Split clip 1.mp4"
   },
   "main": {
-   "guid": "8a76c7c2-6ecb-4d46-b71a-a515bb900fe8",
-   "sha": "4540ce63fd80",
-   "source": "foundation_legs_glutes/Supported_Split clip 1.mp4"
+   "guid": "2ba8e092-ef08-4399-99d6-35741cb3dc62",
+   "sha": "b6f6445c6cf6",
+   "source": "Foundation_Legs_&_Glutes/Supported Split Squat.mp4"
+  }
+ },
+ "calesthetics_021_glute_bridge_beginner_v1": {
+  "main": {
+   "guid": "3c8aadb1-6c28-41a0-bb8b-b6c839db8871",
+   "sha": "78e78daa7203",
+   "source": "Foundation_Legs_&_Glutes/Glute Bridge.mp4"
   }
  },
  "calesthetics_022_single_leg_glute_bridge_intermediate_v1": {
@@ -261,6 +268,18 @@
    "guid": "fcdd9d12-3f79-4343-9e01-d060ee30b3f7",
    "sha": "b23892474a78",
    "source": "foundation_legs_glutes/Step-Up.mp4"
+  }
+ },
+ "calesthetics_024_calf_raise_beginner_v1": {
+  "clip": {
+   "guid": "f2295e3a-e588-44ae-85a8-5db6914cf09a",
+   "sha": "ea7324395055",
+   "source": "Foundation_Legs_&_Glutes/Calf_Raise_1080p_ clip 1.mp4"
+  },
+  "main": {
+   "guid": "8d414484-5d61-403f-822c-e269445916a0",
+   "sha": "9c60e1628c17",
+   "source": "Foundation_Legs_&_Glutes/Calf Raise.mp4"
   }
  },
  "calesthetics_025_march_in_place_beginner_v1": {
@@ -297,6 +316,18 @@
    "guid": "f8a14c1d-8810-4da6-bc61-25a536862e28",
    "sha": "285ef9e8aa4a",
    "source": "Foundation \u2014 Conditioning/foundation_conditioning/Jumping Jack.mp4"
+  }
+ },
+ "calesthetics_028_mountain_climber_intermediate_v1": {
+  "clip": {
+   "guid": "2f495a4a-b069-4071-ae9d-4f00896274b1",
+   "sha": "c01d159f8d8f",
+   "source": "Foundation_Conditioning/Mountain_Climber_1080p_clip 1.mp4"
+  },
+  "main": {
+   "guid": "4f95371a-fbfd-4f63-9f70-e056c27aee67",
+   "sha": "3c02e6ca3f3f",
+   "source": "Foundation_Conditioning/Mountain Climber.mp4"
   }
  },
  "calesthetics_029_high_knees_intermediate_v1": {
@@ -474,9 +505,9 @@
    "source": "skill_pushup_2/Assisted_Single-Leg_Squat Clip 1.mp4"
   },
   "main": {
-   "guid": "d1fcb50d-0f63-4cb4-b3d1-528cbc1a595a",
-   "sha": "6daafb474012",
-   "source": "skill_pushup_2/Assisted_Single-Leg_Squat Clip 1.mp4"
+   "guid": "58b0a342-8609-4a78-810b-6ea802883d9d",
+   "sha": "d78ebaf4f049",
+   "source": "Skill_Push-Up_2/Assisted Single-Leg Squat.mp4"
   }
  },
  "calesthetics_049_box_pistol_squat_beg-int_v1": {
@@ -599,6 +630,18 @@
    "source": "skill_lshit/One-Leg L-Sit clip 1.mp4"
   }
  },
+ "calesthetics_059_advanced_tuck_l_sit_int-adv_v1": {
+  "clip": {
+   "guid": "18c6d982-9bc6-4253-ba9c-884ef674906a",
+   "sha": "a1c5274d78e2",
+   "source": "Skill_L-Sit/Advanced_Tuck_L-Sit_ clip 1.mp4"
+  },
+  "main": {
+   "guid": "e8cfdaaf-5d70-43d8-8a76-1747cae55e61",
+   "sha": "dc114c43506f",
+   "source": "Skill_L-Sit/Advanced Tuck L-Sit.mp4"
+  }
+ },
  "calesthetics_060_full_l_sit_advanced_v1": {
   "clip": {
    "guid": "1a624bc3-516e-4c49-9116-346494027eaf",
@@ -623,6 +666,18 @@
    "source": "skill_handstand/Wrist Preparation.mp4"
   }
  },
+ "calesthetics_062_pike_hold_beginner_v1": {
+  "clip": {
+   "guid": "d225acbf-f1e8-473f-b027-dc08beb6a935",
+   "sha": "fd6a6a3c482a",
+   "source": "Skill_Handstand/Pike_Hold_1080p_clip 1.mp4"
+  },
+  "main": {
+   "guid": "1580233f-9911-4d34-9203-755272d6dfc9",
+   "sha": "2d7b28b7baa8",
+   "source": "Skill_Handstand/Pike hold.mp4"
+  }
+ },
  "calesthetics_064_chest_to_wall_handstand_intermediate_v1": {
   "clip": {
    "guid": "675a899d-66fb-4697-9250-1aaddd695aa3",
@@ -630,9 +685,9 @@
    "source": "skill_handstand/Chest-to-Wall_Handstand clip 1.mp4"
   },
   "main": {
-   "guid": "a01c52c4-ab41-4ccc-8896-133eb0365b02",
-   "sha": "013af5edebb6",
-   "source": "skill_handstand/Chest-to-Wall_Handstand clip 1.mp4"
+   "guid": "434c618c-8f89-494c-b355-7c68769d3f60",
+   "sha": "b8b9b639473b",
+   "source": "Skill_Handstand/Chest-to-Wall Handstand.mp4"
   }
  },
  "calesthetics_065_back_to_wall_handstand_intermediate_v1": {
@@ -810,9 +865,9 @@
    "source": "skill_chinup/Partial-Range Chin-Up clip 1.mp4"
   },
   "main": {
-   "guid": "f1cf001e-b33c-42bf-b4e5-d7a3bb582db2",
-   "sha": "d520ec80f29b",
-   "source": "skill_chinup/Partial-Range Chin-Up clip 1.mp4"
+   "guid": "987881d1-0658-4212-96c3-046d387fec26",
+   "sha": "df156917c845",
+   "source": "Skill_Chin-Up/Partial-Range Chin-Up.mp4"
   }
  },
  "calesthetics_081_strict_chin_up_intermediate_v1": {

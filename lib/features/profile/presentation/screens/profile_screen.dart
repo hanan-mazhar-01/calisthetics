@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -7,10 +8,13 @@ import '../../../../core/motion/calesthetics_motion.dart';
 import '../../../../core/theme/app_colors_extension.dart';
 import '../../../../core/theme/app_typography.dart';
 import '../../../../core/theme/theme_reveal.dart';
+import '../../../auth/presentation/providers/auth_providers.dart';
+import '../../../auth/presentation/widgets/auth_modal_sheet.dart';
 import '../../../media/data/exercise_videos.dart';
 import '../../../onboarding/presentation/providers/onboarding_controller.dart';
 import '../../../plan/presentation/providers/plan_providers.dart';
 import '../../../plan/presentation/widgets/plan_confirm_dialog.dart';
+import '../../../sync/presentation/providers/sync_providers.dart';
 import '../../../user/presentation/providers/user_providers.dart';
 import '../providers/profile_providers.dart';
 import '../widgets/reminder_sheet.dart';
@@ -25,6 +29,7 @@ class ProfileScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final c = context.appColors;
+    final user = ref.watch(currentUserProvider);
     final name = ref.watch(onboardingControllerProvider.select((s) => s.name));
     final settings = ref.watch(settingsProvider);
     final isPremium = ref.watch(isPremiumProvider);
@@ -65,7 +70,9 @@ class ProfileScreen extends ConsumerWidget {
               delay: d(1),
               child: _AccountCard(
                 name: name.trim(),
+                user: user,
                 onEdit: () => _editName(context, ref),
+                onConnect: () => showAuthModalSheet(context),
               ),
             ),
             const SizedBox(height: 14),
@@ -125,11 +132,20 @@ class ProfileScreen extends ConsumerWidget {
                 title: 'Terms of Use',
                 onTap: () => _linkPlaceholder(context, 'Terms of Use'),
               ),
-              const _RowData(
-                icon: Icons.logout_rounded,
-                title: 'Sign out',
-                value: 'Not signed in',
-              ),
+              if (user != null)
+                _RowData(
+                  icon: Icons.logout_rounded,
+                  title: 'Sign out',
+                  value: user.email ?? 'Connected',
+                  onTap: () => _confirmSignOut(context, ref),
+                )
+              else
+                _RowData(
+                  icon: Icons.login_rounded,
+                  title: 'Sign in / Sign up',
+                  value: 'Connect account',
+                  onTap: () => showAuthModalSheet(context),
+                ),
               _RowData(
                 icon: Icons.delete_outline_rounded,
                 title: 'Delete Account',
@@ -225,8 +241,31 @@ class ProfileScreen extends ConsumerWidget {
     );
     if (!ok || !context.mounted) return;
     final router = GoRouter.of(context);
+    await ref.read(cloudSyncProvider).deleteRemote();
     await ref.read(accountActionsProvider).deleteLocalData();
+    try {
+      await ref.read(authRepositoryProvider).currentUser?.delete();
+    } catch (_) {}
     router.go('/');
+  }
+
+  static Future<void> _confirmSignOut(
+    BuildContext context,
+    WidgetRef ref,
+  ) async {
+    final ok = await showPlanConfirmDialog(
+      context,
+      title: 'Sign out?',
+      message: 'Are you sure you want to sign out of your account on this device?',
+      confirmLabel: 'Sign out',
+    );
+    if (!ok || !context.mounted) return;
+    final router = GoRouter.of(context);
+    await ref.read(authControllerProvider.notifier).signOut();
+    await ref.read(cloudSyncProvider).handleSignOut();
+    if (context.mounted) {
+      router.go('/');
+    }
   }
 }
 
@@ -244,14 +283,26 @@ class _Enter extends StatelessWidget {
 }
 
 class _AccountCard extends StatelessWidget {
-  const _AccountCard({required this.name, required this.onEdit});
+  const _AccountCard({
+    required this.name,
+    this.user,
+    required this.onEdit,
+    required this.onConnect,
+  });
+
   final String name;
+  final User? user;
   final VoidCallback onEdit;
+  final VoidCallback onConnect;
 
   @override
   Widget build(BuildContext context) {
     final c = context.appColors;
-    final initial = name.isEmpty ? '?' : name.characters.first.toUpperCase();
+    final displayName = user?.displayName?.trim().isNotEmpty == true
+        ? user!.displayName!.trim()
+        : (name.isNotEmpty ? name : 'Athlete');
+    final initial = displayName.characters.first.toUpperCase();
+
     return Container(
       width: double.infinity,
       decoration: BoxDecoration(
@@ -296,7 +347,7 @@ class _AccountCard extends StatelessWidget {
                   ),
                   const SizedBox(height: 18),
                   Text(
-                    name.isEmpty ? 'Your name' : name,
+                    displayName,
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                     textAlign: TextAlign.center,
@@ -308,10 +359,41 @@ class _AccountCard extends StatelessWidget {
                   ),
                   const SizedBox(height: 4),
                   Text(
-                    'Guest · saved on this device',
+                    user != null
+                        ? (user!.email ?? 'Account connected')
+                        : 'Guest · saved on this device',
                     textAlign: TextAlign.center,
                     style: AppTypography.body(c.textMuted, fontSize: 15),
                   ),
+                  if (user == null) ...[
+                    const SizedBox(height: 14),
+                    OutlinedButton.icon(
+                      style: OutlinedButton.styleFrom(
+                        side: BorderSide(color: c.accent),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(16),
+                        ),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 18,
+                          vertical: 10,
+                        ),
+                      ),
+                      onPressed: onConnect,
+                      icon: Icon(
+                        Icons.login_rounded,
+                        size: 18,
+                        color: c.accentText,
+                      ),
+                      label: Text(
+                        'Sign in / Create account',
+                        style: AppTypography.title(
+                          14,
+                          c.accentText,
+                          weight: FontWeight.w600,
+                        ),
+                      ),
+                    ),
+                  ],
                 ],
               ),
             ),

@@ -1,0 +1,336 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Progression Screen</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&family=Lora:wght@500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="shared.css">
+<style>
+  /* ---------- shared screen chrome (matches the app's onboarding) ---------- */
+  .scr {
+    position: absolute; inset: 0; overflow: hidden;
+    background: linear-gradient(180deg, #F3C9CF 0%, #F7E6E8 26%, var(--bg) 46%);
+    display: flex; flex-direction: column;
+  }
+  .scr[hidden] { display: none !important; }
+  .chrome { padding: 52px 20px 0; }
+  .chrome .row { display: flex; align-items: center; }
+  .back { width: 44px; height: 44px; border-radius: 50%; background: #fff; display: grid; place-items: center; box-shadow: 0 4px 12px rgba(0,0,0,.06); }
+  .chrome .ttl { flex: 1; text-align: center; margin-right: 44px; font-weight: 500; font-size: 17px; }
+  .bar { margin-top: 14px; height: 4px; border-radius: 4px; background: #EBDCDE; overflow: hidden; }
+  .bar i { display: block; height: 100%; width: 72%; background: var(--rose); border-radius: 4px; }
+  .head { padding: 22px 22px 0; font-size: 30px; line-height: 1.15; font-weight: 500; letter-spacing: -.02em; }
+  .head em { font-family: "Lora", serif; font-style: normal; color: var(--rose); }
+  .head, .sub { opacity: 0; transform: translateY(10px); animation: in .6s cubic-bezier(.2,.8,.2,1) forwards; }
+  .sub { padding: 8px 22px 0; font-size: 14px; color: var(--ink-2); animation-delay: .12s; }
+  .stage { position: relative; flex: 1; min-height: 0; perspective: 1100px; }
+  .foot { padding: 10px 22px 26px; }
+  .foot .cta { opacity: 0; animation: in .5s 1.9s forwards; }
+  @keyframes in { to { opacity: 1; transform: none } }
+
+  /* ======================= A · 3D LADDER ======================= */
+  #A .ladder {
+    position: absolute; left: 50%; top: 8px; width: 320px; height: 300px;
+    transform: translateX(-46%) rotateX(56deg) rotateZ(-24deg);
+    transform-style: preserve-3d;
+  }
+  #A .step {
+    position: absolute; width: 124px; height: 92px; border-radius: 18px;
+    background: #fff; transform-style: preserve-3d;
+    box-shadow: 0 2px 0 #E8D4D7;
+    opacity: 0; animation: build .7s cubic-bezier(.2,.9,.25,1.25) forwards;
+  }
+  /* Each rung is a raised block: a front face and a side face give depth. */
+  #A .step::before, #A .step::after { content: ""; position: absolute; border-radius: 4px; }
+  #A .step::before { left: 0; right: 0; top: 100%; height: var(--h); background: linear-gradient(#EFD3D7, #E2BCC2); transform-origin: top; transform: rotateX(-90deg); }
+  #A .step::after { top: 0; bottom: 0; left: 100%; width: var(--h); background: linear-gradient(90deg, #F5DDE0, #E9C6CB); transform-origin: left; transform: rotateY(90deg); }
+  #A .step img { width: 100%; height: 100%; object-fit: cover; border-radius: 18px; }
+  #A .step .n {
+    position: absolute; left: 8px; top: 8px; width: 24px; height: 24px; border-radius: 50%;
+    background: var(--rose); color: #fff; font-size: 12px; font-weight: 600; display: grid; place-items: center;
+  }
+  #A .step.on { box-shadow: 0 0 0 3px var(--rose), 0 18px 30px rgba(216,95,112,.35); }
+  @keyframes build { from { opacity: 0; transform: translateZ(calc(var(--z) + 120px)) } to { opacity: 1; transform: translateZ(var(--z)) } }
+
+  #A .label {
+    position: absolute; padding: 8px 12px; border-radius: 14px; background: rgba(255,255,255,.92);
+    backdrop-filter: blur(8px); font-size: 12.5px; font-weight: 500; box-shadow: 0 8px 18px rgba(0,0,0,.08);
+    opacity: 0; transform: translateY(8px); animation: in .5s forwards;
+  }
+  #A .label b { color: var(--rose); font-weight: 600; }
+  #A .l1 { left: 18px; bottom: 132px; animation-delay: 1.3s; }
+  #A .l2 { right: 18px; top: 18px; animation-delay: 1.45s; }
+  #A .you {
+    position: absolute; left: 50%; bottom: 118px; transform: translateX(-50%);
+    display: flex; gap: 8px;
+  }
+  #A .pill {
+    display: inline-flex; align-items: center; gap: 6px; padding: 7px 12px; border-radius: 999px;
+    font-size: 12px; font-weight: 500; opacity: 0; animation: in .45s forwards;
+  }
+  #A .pill.old { background: #EDE6E7; color: #9A8F92; text-decoration: line-through; animation-delay: 1.55s; }
+  #A .pill.new { background: var(--ink); color: #fff; animation-delay: 1.7s; }
+  #A .list {
+    position: absolute; left: 18px; right: 18px; bottom: 6px;
+    display: grid; grid-template-columns: 1fr 1fr; gap: 8px;
+  }
+  #A .list div {
+    background: #fff; border-radius: 16px; padding: 10px 12px; font-size: 12.5px; line-height: 1.3;
+    display: flex; gap: 8px; align-items: flex-start; box-shadow: 0 6px 14px rgba(0,0,0,.05);
+    opacity: 0; transform: translateY(10px); animation: in .45s forwards;
+  }
+  #A .list div i { flex: none; width: 18px; height: 18px; border-radius: 50%; background: var(--rose-mist); color: var(--rose); font-style: normal; font-size: 11px; display: grid; place-items: center; }
+
+  /* ======================= B · FLIP DUEL ======================= */
+  #B .duel { position: absolute; inset: 14px 18px 0; }
+  #B .card {
+    position: absolute; left: 0; right: 0; border-radius: 28px; padding: 18px 18px 16px;
+    transform-style: preserve-3d; backface-visibility: hidden;
+  }
+  #B .old {
+    top: 0; background: #fff; color: var(--ink-2); transform-origin: 50% 0;
+    border: 1px solid #EADDDF;
+    transform: rotateX(28deg) translateZ(-120px) scale(.9);
+    filter: saturate(.3); opacity: 0;
+    animation: oldIn .9s .2s cubic-bezier(.2,.8,.2,1) forwards, sink 1s 1.2s ease forwards;
+  }
+  #B .new {
+    top: 150px; background: linear-gradient(160deg, #26201F, #171516 60%);
+    color: #FAF6F4; box-shadow: 0 30px 60px rgba(23,21,22,.35), 0 0 0 1px rgba(255,255,255,.05);
+    transform: rotateX(-90deg); opacity: 0; transform-origin: 50% 0;
+    animation: flipIn 1s .55s cubic-bezier(.2,.9,.25,1.15) forwards, float 5s 1.8s ease-in-out infinite;
+  }
+  #B .new::after {
+    content: ""; position: absolute; inset: 0; border-radius: inherit; pointer-events: none;
+    background: linear-gradient(115deg, transparent 35%, rgba(255,255,255,.14) 50%, transparent 65%);
+    background-size: 250% 100%; animation: shine 3s 1.7s ease-in-out infinite;
+  }
+  #B .k { font-size: 11.5px; font-weight: 600; letter-spacing: .14em; }
+  #B .old .k { color: #B4A9AC; }
+  #B .new .k { color: var(--night-rose); }
+  #B ul { list-style: none; margin-top: 12px; display: grid; gap: 10px; }
+  #B li { display: flex; gap: 10px; font-size: 13.5px; line-height: 1.35; align-items: flex-start; }
+  #B li i { flex: none; width: 22px; height: 22px; border-radius: 50%; display: grid; place-items: center; font-style: normal; font-size: 12px; }
+  #B .old li i { background: #F1ECED; color: #B4A9AC; }
+  #B .old li { text-decoration: line-through; text-decoration-color: rgba(180,169,172,.7); }
+  #B .new li i { background: rgba(226,122,136,.18); color: var(--night-rose); }
+  #B .new li { opacity: 0; transform: translateX(14px); animation: in .45s forwards; }
+  #B .rungs { margin-top: 14px; display: flex; gap: 6px; }
+  #B .rungs img { width: 46px; height: 46px; border-radius: 12px; object-fit: cover; opacity: 0; transform: translateY(8px) scale(.8); animation: pop .4s forwards; }
+  #B .badge {
+    position: absolute; right: 14px; top: 118px; width: 70px; height: 70px; z-index: 4;
+    opacity: 0; transform: translateY(20px) scale(.6) rotate(-10deg);
+    animation: pop .7s 2s cubic-bezier(.34,1.56,.64,1) forwards, bob 3.5s 2.8s ease-in-out infinite;
+    filter: drop-shadow(0 16px 20px rgba(216,95,112,.3));
+  }
+  #B .vs {
+    position: absolute; left: 50%; margin-left: -25px; top: 124px; width: 50px; height: 50px; border-radius: 50%;
+    background: #fff; display: grid; place-items: center; font-weight: 600; font-size: 13px; color: var(--rose);
+    box-shadow: 0 10px 24px rgba(0,0,0,.12); z-index: 3; opacity: 0; animation: pop .5s 1.4s cubic-bezier(.34,1.56,.64,1) forwards;
+  }
+  @keyframes oldIn { from { opacity: 0; transform: rotateX(60deg) translateZ(-260px) } to { opacity: 1; transform: rotateX(28deg) translateZ(-120px) scale(.9) } }
+  @keyframes sink { to { opacity: .6; filter: saturate(0) blur(.4px) } }
+  @keyframes flipIn { to { opacity: 1; transform: rotateX(6deg) } }
+  @keyframes float { 0%,100% { transform: rotateX(6deg) } 50% { transform: rotateX(2deg) rotateY(-3deg) translateY(-6px) } }
+  @keyframes shine { 0% { background-position: 150% 0 } 60%,100% { background-position: -50% 0 } }
+  @keyframes pop { to { opacity: 1; transform: none } }
+  @keyframes bob { 50% { transform: translateY(-8px) rotate(4deg) } }
+
+  /* ======================= C · CLIMB ======================= */
+  #C .stage { display: flex; flex-direction: column; }
+  #C .ring {
+    position: relative; height: 220px; perspective: 900px; transform-style: preserve-3d; margin-top: 6px;
+  }
+  #C .carousel {
+    position: absolute; left: 50%; top: 34px; width: 96px; height: 130px; margin-left: -48px;
+    transform-style: preserve-3d; animation: spin 18s linear infinite;
+  }
+  #C .carousel figure {
+    position: absolute; inset: 0; border-radius: 20px; overflow: hidden; background: #fff;
+    box-shadow: 0 14px 28px rgba(0,0,0,.14);
+    transform: rotateY(calc(var(--i) * 45deg)) translateZ(138px);
+  }
+  #C .carousel img { width: 100%; height: 100%; object-fit: cover; }
+  #C .carousel figcaption {
+    position: absolute; left: 0; right: 0; bottom: 0; padding: 18px 8px 7px; color: #fff;
+    font-size: 11px; font-weight: 500; text-align: center;
+    background: linear-gradient(transparent, rgba(0,0,0,.6));
+  }
+  #C .floor {
+    position: absolute; left: 50%; bottom: 8px; width: 330px; height: 70px; margin-left: -165px;
+    border-radius: 50%; background: radial-gradient(closest-side, rgba(216,95,112,.28), transparent);
+  }
+  #C .meter {
+    margin: 8px 22px 0; background: #fff; border-radius: 22px; padding: 14px 16px;
+    box-shadow: 0 10px 24px rgba(0,0,0,.06);
+    opacity: 0; transform: translateY(14px); animation: in .6s .5s forwards;
+  }
+  #C .meter .top { display: flex; justify-content: space-between; font-size: 12.5px; color: var(--ink-2); }
+  #C .meter .top b { color: var(--ink); font-weight: 600; }
+  #C .track { position: relative; margin-top: 12px; height: 10px; border-radius: 10px; background: var(--rose-mist); }
+  #C .track i { position: absolute; inset: 0 auto 0 0; width: 0; border-radius: 10px; background: linear-gradient(90deg, #E99AA6, var(--rose)); animation: fill 2.2s .8s cubic-bezier(.2,.8,.2,1) forwards; }
+  #C .dots { position: absolute; inset: -4px 0; display: flex; justify-content: space-between; }
+  #C .dots span { width: 18px; height: 18px; border-radius: 50%; background: #fff; border: 3px solid var(--rose-soft); }
+  #C .dots span.d { border-color: var(--rose); background: var(--rose); animation: none; }
+  #C .rows { margin: 12px 22px 0; display: grid; gap: 8px; }
+  #C .rows div {
+    display: flex; align-items: center; gap: 10px; padding: 11px 14px; border-radius: 16px;
+    background: #fff; font-size: 13.5px; box-shadow: 0 6px 14px rgba(0,0,0,.04);
+    opacity: 0; transform: translateX(-16px); animation: in .45s forwards;
+  }
+  #C .rows .x { color: #A99EA1; text-decoration: line-through; background: #F4EFF0; box-shadow: none; }
+  #C .rows i { font-style: normal; width: 22px; height: 22px; border-radius: 50%; display: grid; place-items: center; font-size: 12px; flex: none; }
+  #C .rows .x i { background: #E9E1E2; color: #A99EA1; }
+  #C .rows .ok i { background: var(--rose); color: #fff; }
+  @keyframes spin { from { transform: rotateX(-8deg) rotateY(0) } to { transform: rotateX(-8deg) rotateY(-360deg) } }
+  @keyframes fill { to { width: 62% } }
+
+  /* tabs above the phone */
+  .tabs { display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; }
+  .tabs button { font: 600 13px "Poppins", sans-serif; border: 0; border-radius: 999px; padding: 9px 16px; background: #fff; cursor: pointer; box-shadow: 0 2px 10px rgba(0,0,0,.06); }
+  .tabs button.on { background: var(--rose); color: #fff; }
+</style>
+</head>
+<body>
+  <div class="topbar">
+    <a href="index.html">← All mockups</a>
+    <h1>"Built as a progression" · 3 directions</h1>
+    <div class="controls"><button id="replay" class="primary">Replay</button></div>
+  </div>
+  <div class="tabs">
+    <button data-v="A" class="on">A · 3D Ladder</button>
+    <button data-v="B">B · Flip Duel</button>
+    <button data-v="C">C · Climb Carousel</button>
+  </div>
+
+  <div class="phone">
+    <div class="status"><span>9:41</span><span>●●● ▮</span></div>
+
+    <!-- ===== A ===== -->
+    <section class="scr" id="A">
+      <div class="chrome"><div class="row"><div class="back">‹</div><div class="ttl">Fitness</div></div><div class="bar"><i></i></div></div>
+      <h2 class="head">Built as a <em>progression</em>.</h2>
+      <p class="sub">Every rung is a movement you master before the next.</p>
+      <div class="stage">
+        <div class="ladder" id="ladder"></div>
+        <div class="label l1">Start where <b>you</b> are</div>
+        <div class="label l2">Always a <b>next rung</b></div>
+        <div class="list" id="alist"></div>
+      </div>
+      <div class="foot"><button class="cta">Continue <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button></div>
+    </section>
+
+    <!-- ===== B ===== -->
+    <section class="scr" id="B" hidden>
+      <div class="chrome"><div class="row"><div class="back">‹</div><div class="ttl">Fitness</div></div><div class="bar"><i></i></div></div>
+      <h2 class="head">Built as a <em>progression</em>.</h2>
+      <p class="sub">Not random workouts — a path that moves with you.</p>
+      <div class="stage">
+        <div class="duel">
+          <div class="card old">
+            <div class="k">OLD WAY</div>
+            <ul>
+              <li><i>✕</i>Random workouts</li>
+              <li><i>✕</i>Same moves for everyone</li>
+              <li><i>✕</i>No clear next step</li>
+              <li><i>✕</i>Hard to see progress</li>
+            </ul>
+          </div>
+          <div class="vs">vs</div>
+          <div class="card new">
+            <div class="k">THE CALESTHETICS WAY</div>
+            <ul id="blist"></ul>
+            <div class="rungs" id="brungs"></div>
+          </div>
+        </div>
+        <img class="badge" src="https://calisthetics.b-cdn.net/onboarding/goal-screen/emoji-2.2236dbd3.webp" alt="">
+      </div>
+      <div class="foot"><button class="cta">Continue <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button></div>
+    </section>
+
+    <!-- ===== C ===== -->
+    <section class="scr" id="C" hidden>
+      <div class="chrome"><div class="row"><div class="back">‹</div><div class="ttl">Fitness</div></div><div class="bar"><i></i></div></div>
+      <h2 class="head">Built as a <em>progression</em>.</h2>
+      <div class="stage">
+        <div class="ring"><div class="carousel" id="carousel"></div><div class="floor"></div></div>
+        <div class="meter">
+          <div class="top"><span>Push-Up ladder</span><b>Rung 5 of 8</b></div>
+          <div class="track"><i></i><div class="dots"><span class="d"></span><span class="d"></span><span class="d"></span><span class="d"></span><span></span><span></span><span></span><span></span></div></div>
+        </div>
+        <div class="rows" id="crows"></div>
+      </div>
+      <div class="foot"><button class="cta">Continue <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button></div>
+    </section>
+  </div>
+
+  <p class="note" id="note"></p>
+
+<script>
+  const T = 'https://calisthetics.b-cdn.net/thumbnails/';
+  // The real Push-Up ladder, easiest first (app thumbnails on Bunny).
+  const rungs = [
+    ['Wall', 'calesthetics_001_wall_push_up_beginner_v1.6a97a95b'],
+    ['Incline', 'calesthetics_002_incline_push_up_beginner_v1.09b76ed2'],
+    ['Knee', 'calesthetics_003_knee_push_up_beginner_v1.5e2c85c5'],
+    ['Standard', 'calesthetics_004_standard_push_up_beg-int_v1.d042fa89'],
+    ['Diamond', 'calesthetics_043_diamond_push_up_intermediate_v1.e694f100'],
+    ['Decline', 'calesthetics_044_decline_push_up_intermediate_v1.7f8a9fad'],
+    ['Archer', 'calesthetics_045_archer_push_up_advanced_v1.9d401301'],
+    ['One-arm', 'calesthetics_046_assisted_one_arm_push_up_progression_advanced_v1.c5459b5a'],
+  ];
+  const ours = ['A ladder of calisthenics skills', 'Regressions for your level', 'Always a next rung', 'Progress you can see'];
+  const old = ['Random workouts', 'Same moves for everyone', 'No clear next step', 'Hard to see progress'];
+  const notes = {
+    A: '<b>3D Ladder</b> — the push-up ladder is built as raised 3D steps, rung by rung (real exercise photos), on an isometric angle. Labels point to "start where you are" and "always a next rung"; the four promises sit under it as tiles.',
+    B: '<b>Flip Duel</b> — the "old way" card falls back in 3D and greys out; the dark Calesthetics card flips in, floats and catches a light sweep, its promises check in one by one with a row of real rungs. A 3D emoji pops in to finish.',
+    C: '<b>Climb Carousel</b> — a 3D ring of all 8 push-up rungs turns slowly; a progress meter fills to "rung 5 of 8"; old-way rows are struck through and Calesthetics rows tick in.',
+  };
+
+  function buildA(root) {
+    const ladder = root.querySelector('#ladder');
+    ladder.innerHTML = rungs.slice(0, 5).map(([n, k], i) => {
+      const x = i * 46, y = 200 - i * 48, z = i * 30;
+      return `<div class="step ${i === 3 ? 'on' : ''}" style="left:${x}px;top:${y}px;--z:${z}px;--h:${z + 14}px;animation-delay:${.25 + i * .16}s">
+        <img src="${T}${k}.webp" alt="${n} push-up"><span class="n">${i + 1}</span></div>`;
+    }).join('');
+    root.querySelector('#alist').innerHTML = ours.map((t, i) =>
+      `<div style="animation-delay:${1.5 + i * .1}s"><i>✓</i>${t}</div>`).join('');
+  }
+  function buildB(root) {
+    root.querySelector('#blist').innerHTML = ours.map((t, i) =>
+      `<li style="animation-delay:${1.25 + i * .14}s"><i>✓</i>${t}</li>`).join('');
+    root.querySelector('#brungs').innerHTML = rungs.slice(0, 5).map(([n, k], i) =>
+      `<img src="${T}${k}.webp" alt="${n}" style="animation-delay:${1.8 + i * .08}s">`).join('');
+  }
+  function buildC(root) {
+    root.querySelector('#carousel').innerHTML = rungs.map(([n, k], i) =>
+      `<figure style="--i:${i}"><img src="${T}${k}.webp" alt=""><figcaption>${i + 1} · ${n}</figcaption></figure>`).join('');
+    root.querySelector('#crows').innerHTML =
+      old.slice(0, 2).map((t, i) => `<div class="x" style="animation-delay:${.9 + i * .1}s"><i>✕</i>${t}</div>`).join('') +
+      ours.slice(0, 3).map((t, i) => `<div class="ok" style="animation-delay:${1.2 + i * .12}s"><i>✓</i>${t}</div>`).join('');
+  }
+  const builders = { A: buildA, B: buildB, C: buildC };
+  let current = new URLSearchParams(location.search).get('v') || 'A';
+
+  function show(v) {
+    current = v;
+    ['A', 'B', 'C'].forEach(id => {
+      const el = document.getElementById(id);
+      if (id !== v) { el.hidden = true; return; }
+      const fresh = el.cloneNode(true);   // restart every CSS animation
+      fresh.hidden = false;
+      el.replaceWith(fresh);
+      builders[id](fresh);
+    });
+    document.querySelectorAll('.tabs button').forEach(b => b.classList.toggle('on', b.dataset.v === v));
+    document.getElementById('note').innerHTML = notes[v];
+  }
+  document.querySelectorAll('.tabs button').forEach(b => b.addEventListener('click', () => show(b.dataset.v)));
+  document.getElementById('replay').addEventListener('click', () => show(current));
+  show(current);
+</script>
+</body>
+</html>

@@ -5,10 +5,12 @@ import 'dart:ui' show FrameTiming;
 import 'package:flutter/rendering.dart';
 import 'package:flutter/widgets.dart';
 
-/// Switching light and dark as a diamond reveal: a picture of the old look
-/// sits on top while the new theme is applied underneath, and a diamond that
-/// grows from the finger opens a window onto the new look. The old picture
-/// also fades out near the end, so the edge dissolves instead of snapping.
+/// Switching light and dark as a circular reveal: a picture of the old look
+/// sits on top while the new theme is applied underneath, and a soft-edged
+/// circle grows from the finger to show the new look. As it grows, the old
+/// picture sinks back (scales down a touch, blurs and dims), and a faint
+/// light rides the circle's edge, so the switch feels like depth rather
+/// than a wipe.
 class ThemeReveal {
   ThemeReveal._();
 
@@ -18,7 +20,7 @@ class ThemeReveal {
 
   static _ThemeRevealHostState? _host;
 
-  /// Applies [apply] (which changes the theme) with the diamond reveal,
+  /// Applies [apply] (which changes the theme) with the circular reveal,
   /// starting at [origin] in global coordinates. Without a host, or when
   /// animations are off, it just applies.
   static Future<void> run(Offset origin, VoidCallback apply) async {
@@ -41,7 +43,7 @@ class ThemeRevealHost extends StatefulWidget {
 
 class _ThemeRevealHostState extends State<ThemeRevealHost>
     with SingleTickerProviderStateMixin {
-  static const duration = Duration(milliseconds: 1200);
+  static const duration = Duration(milliseconds: 820);
 
   final _boundary = GlobalKey();
   late final AnimationController _controller = AnimationController(
@@ -95,9 +97,9 @@ class _ThemeRevealHostState extends State<ThemeRevealHost>
       // show through before it.
       await WidgetsBinding.instance.endOfFrame;
       await _framesRastered(2);
-      // Start opening the diamond first and change the theme a few frames in:
+      // Start opening the circle first and change the theme a few frames in:
       // by then the window is a real shape and the old picture is certainly on
-      // screen, so the new look only ever shows inside the diamond.
+      // screen, so the new look only ever shows inside the circle.
       final running = _controller.forward(from: 0);
       while (_controller.value < 0.03) {
         await WidgetsBinding.instance.endOfFrame;
@@ -169,67 +171,87 @@ class _RevealPainter extends CustomPainter {
   final Offset origin;
   final double t;
 
+  /// Width of the soft edge, in logical pixels.
+  static const _feather = 90.0;
+
   @override
   void paint(Canvas canvas, Size size) {
-    // The diamond must grow far enough to cover the farthest corner.
-    final far =
-        [
-              Offset.zero,
-              Offset(size.width, 0),
-              Offset(0, size.height),
-              Offset(size.width, size.height),
-            ]
-            .map((c) => (c.dx - origin.dx).abs() + (c.dy - origin.dy).abs())
-            .reduce((a, b) => a > b ? a : b);
+    // The circle must grow past the farthest corner, plus its soft edge.
+    final far = [
+      Offset.zero,
+      Offset(size.width, 0),
+      Offset(0, size.height),
+      Offset(size.width, size.height),
+    ].map((c) => (c - origin).distance).reduce((a, b) => a > b ? a : b);
     final eased = Curves.easeInOutCubic.transform(t.clamp(0.0, 1.0));
-    final r = far * 1.04 * eased;
+    final r = (far + _feather) * eased;
 
-    final diamond = Path()
-      ..moveTo(origin.dx, origin.dy - r)
-      ..lineTo(origin.dx + r, origin.dy)
-      ..lineTo(origin.dx, origin.dy + r)
-      ..lineTo(origin.dx - r, origin.dy)
-      ..close();
-    final screen = Path()..addRect(Offset.zero & size);
-    final old = Path.combine(PathOperation.difference, screen, diamond);
-
-    // The old picture dims a little as the window opens, and dissolves over
-    // the last stretch so nothing is left behind.
-    final fadeOut = t < 0.7 ? 1.0 : (1 - (t - 0.7) / 0.3).clamp(0.0, 1.0);
-
-    canvas.save();
-    // A diamond of zero size is a degenerate path that clips everything away,
-    // which would show the new theme for a moment before the reveal starts.
-    // Until it has a real size the old picture is simply drawn whole.
-    if (r > 1) canvas.clipPath(old);
-    final paint = Paint()..color = Color.fromRGBO(255, 255, 255, fadeOut);
-    canvas.drawImageRect(
-      image,
-      Rect.fromLTWH(0, 0, image.width.toDouble(), image.height.toDouble()),
-      Offset.zero & size,
-      paint,
+    final bounds = Offset.zero & size;
+    final src = Rect.fromLTWH(
+      0,
+      0,
+      image.width.toDouble(),
+      image.height.toDouble(),
     );
+
+    // The old look sinks back while the new one comes forward.
+    final depth = Curves.easeOutCubic.transform(t.clamp(0.0, 1.0));
+    final scale = 1 - 0.05 * depth;
+    final blur = 7.0 * depth;
+    final dim = 0.18 * depth;
+
+    canvas.saveLayer(bounds, Paint());
+
+    // 1. The old picture, scaled toward the touch point, blurred and dimmed.
+    canvas.save();
+    canvas.translate(origin.dx, origin.dy);
+    canvas.scale(scale);
+    canvas.translate(-origin.dx, -origin.dy);
+    if (blur > 0.3) {
+      canvas.saveLayer(
+        bounds,
+        Paint()..imageFilter = ui.ImageFilter.blur(sigmaX: blur, sigmaY: blur),
+      );
+    }
+    canvas.drawImageRect(image, src, bounds, Paint());
+    if (dim > 0) {
+      canvas.drawRect(bounds, Paint()..color = Color.fromRGBO(0, 0, 0, dim));
+    }
+    if (blur > 0.3) canvas.restore();
     canvas.restore();
 
-    // A glowing edge rides the diamond's outline and fades as it grows.
-    final glow = (1 - t).clamp(0.0, 1.0);
-    if (r > 2 && glow > 0) {
-      canvas.drawPath(
-        diamond,
+    // 2. Cut the growing circle out of it with a soft, feathered edge. Until
+    // the circle has a real size the old picture stays whole, so the new
+    // theme can never flash through before the reveal starts.
+    if (r > 1) {
+      final inner = ((r - _feather) / r).clamp(0.0, 1.0);
+      canvas.drawCircle(
+        origin,
+        r,
         Paint()
-          ..style = PaintingStyle.stroke
-          ..strokeWidth = 14
-          ..strokeJoin = StrokeJoin.miter
-          ..color = Color.fromRGBO(255, 255, 255, 0.35 * glow)
-          ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 14),
+          ..blendMode = BlendMode.dstOut
+          ..shader = ui.Gradient.radial(
+            origin,
+            r,
+            const [Color(0xFF000000), Color(0xFF000000), Color(0x00000000)],
+            [0, inner, 1],
+          ),
       );
-      canvas.drawPath(
-        diamond,
+    }
+    canvas.restore();
+
+    // 3. A faint light rides the edge and fades out as the circle grows.
+    final glow = (1 - t).clamp(0.0, 1.0) * (t * 6).clamp(0.0, 1.0);
+    if (r > 2 && glow > 0) {
+      final edge = (r - _feather / 2).clamp(1.0, double.infinity);
+      canvas.drawCircle(
+        origin,
+        edge,
         Paint()
           ..style = PaintingStyle.stroke
-          ..strokeWidth = 2
-          ..strokeJoin = StrokeJoin.miter
-          ..color = Color.fromRGBO(255, 255, 255, 0.55 * glow),
+          ..strokeWidth = 26
+          ..color = Color.fromRGBO(255, 255, 255, 0.16 * glow)
+          ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 22),
       );
     }
   }

@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 
 import '../../../media/data/exercise_videos.dart';
+import '../../data/background_music.dart';
+import '../widgets/equalizer_icon.dart';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -34,6 +36,30 @@ class WorkoutScreen extends ConsumerStatefulWidget {
 
 class _WorkoutScreenState extends ConsumerState<WorkoutScreen> {
   bool _detailsOpen = false;
+
+  /// The looping background track under the videos.
+  final _music = BackgroundMusic();
+  bool? _musicPlaying;
+  bool? _musicDucked;
+
+  @override
+  void dispose() {
+    _music.dispose();
+    super.dispose();
+  }
+
+  /// Keeps the background music in step with the workout: on while the
+  /// music switch is on and the workout runs, low while a video talks.
+  void _syncMusic({required bool playing, required bool ducked}) {
+    if (_musicPlaying != playing) {
+      _musicPlaying = playing;
+      _music.setPlaying(playing);
+    }
+    if (_musicDucked != ducked) {
+      _musicDucked = ducked;
+      _music.setDucked(ducked);
+    }
+  }
 
   WorkoutRequest get request => widget.request;
 
@@ -97,8 +123,9 @@ class _WorkoutScreenState extends ConsumerState<WorkoutScreen> {
       return Scaffold(backgroundColor: c.background);
     }
     if (phase == WorkoutPhase.done) {
+      _syncMusic(playing: false, ducked: false);
       return Scaffold(
-        backgroundColor: c.cover,
+        backgroundColor: c.background,
         body: WorkoutCompleteView(request: request, onClose: _close),
       );
     }
@@ -107,6 +134,15 @@ class _WorkoutScreenState extends ConsumerState<WorkoutScreen> {
     final ctl = ref.read(provider.notifier);
     final interlude =
         phase == WorkoutPhase.preview || phase == WorkoutPhase.rest;
+    final musicOn =
+        (ref.watch(settingsProvider)['musicEnabled'] as bool?) ?? true;
+    // The set's video speaks (rest clips are silent): duck the music then.
+    _syncMusic(
+      playing: musicOn && !state.paused,
+      ducked:
+          phase == WorkoutPhase.work &&
+          ExerciseVideos.has(exerciseByNumber(state.step.exerciseNumber)),
+    );
     // Get the next exercise's clip and video onto the phone during this set.
     final upNext = state.nextStep?.exerciseNumber;
     if (phase == WorkoutPhase.work && upNext != null) {
@@ -166,11 +202,11 @@ class _WorkoutScreenState extends ConsumerState<WorkoutScreen> {
                   exerciseNumber: state.displayExercise,
                   paused: state.paused,
                   // Rest and "up next" show the short silent clip; the set
-                  // plays the full video, with its sound when music is on.
+                  // plays the full video with its own coaching sound (the
+                  // music switch only affects the background track).
                   clip: interlude,
-                  sound:
-                      (ref.watch(settingsProvider)['musicEnabled'] as bool?) ??
-                      true,
+                  onLoading: ctl.setVideoLoading,
+                  sound: true,
                 ),
               ),
             ),
@@ -186,7 +222,7 @@ class _WorkoutScreenState extends ConsumerState<WorkoutScreen> {
                     onTogglePause: () => ctl.setPaused(!state.paused),
                     onDone: ctl.finishStep,
                     onPrevious: ctl.previousStep,
-                    onAudio: () => showAudioSheet(context),
+                    onAudio: _toggleMusic,
                   ),
                   WorkoutPhase.rating => _RatingBottom(onRate: ctl.rate),
                   _ => const SizedBox.shrink(),
@@ -549,30 +585,39 @@ class _ActiveBottom extends ConsumerWidget {
               const SizedBox(height: 6),
               Row(
                 children: [
-                  InkWell(
-                    onTap: onAudio,
-                    borderRadius: BorderRadius.circular(8),
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 6,
-                        vertical: 10,
-                      ),
-                      child: Row(
-                        children: [
-                          Icon(
-                            Icons.equalizer_rounded,
-                            size: 22,
-                            color: on ? c.accentText : c.textMuted,
-                          ),
-                          const SizedBox(width: 10),
-                          Text(
-                            on ? 'Music on' : 'Music off',
-                            style: AppTypography.body(
-                              c.textSecondary,
-                              fontSize: 14,
+                  Semantics(
+                    button: true,
+                    label: on ? 'Music on' : 'Music off',
+                    child: InkWell(
+                      onTap: onAudio,
+                      borderRadius: BorderRadius.circular(999),
+                      child: AnimatedContainer(
+                        duration: const Duration(milliseconds: 250),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 12,
+                          vertical: 8,
+                        ),
+                        decoration: BoxDecoration(
+                          color: on ? c.surfaceSelected : c.surfaceMuted,
+                          borderRadius: BorderRadius.circular(999),
+                        ),
+                        child: Row(
+                          children: [
+                            EqualizerIcon(
+                              active: on && !state.paused,
+                              color: on ? c.accentText : c.textMuted,
                             ),
-                          ),
-                        ],
+                            const SizedBox(width: 10),
+                            Text(
+                              on ? 'Music on' : 'Music off',
+                              style: AppTypography.body(
+                                on ? c.textPrimary : c.textSecondary,
+                                fontSize: 14,
+                                weight: FontWeight.w500,
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
                     ),
                   ),

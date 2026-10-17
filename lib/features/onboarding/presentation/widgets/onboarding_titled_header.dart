@@ -76,7 +76,7 @@ class _OnboardingTitledHeaderState extends State<OnboardingTitledHeader>
               onDone: _typed,
               segments: [
                 TypeSegment(h.lead),
-                TypeSegment(h.accent, TextStyle(color: c.accentText)),
+                TypeSegment(h.accent, AppTypography.accentSerif(c.accentText)),
                 TypeSegment(h.tail),
               ],
             )
@@ -88,7 +88,7 @@ class _OnboardingTitledHeaderState extends State<OnboardingTitledHeader>
                   TextSpan(text: h.lead),
                   TextSpan(
                     text: h.accent,
-                    style: TextStyle(color: c.accentText),
+                    style: AppTypography.accentSerif(c.accentText),
                   ),
                   TextSpan(text: h.tail),
                 ],

@@ -1,0 +1,173 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>C · Motion Gallery</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="shared.css">
+<style>
+  :root { --cdn: "https://calisthetics.b-cdn.net/thumbnails/"; }
+
+  /* ---------- Splash ---------- */
+  #splash {
+    background: radial-gradient(110% 70% at 50% 40%, var(--rose-mist), var(--bg) 70%);
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+  }
+  .fan { position: relative; width: 240px; height: 230px; }
+  .fan .card {
+    position: absolute; left: 50%; top: 10px; width: 132px; height: 176px;
+    margin-left: -66px; border-radius: 22px; overflow: hidden;
+    background: #fff; box-shadow: 0 16px 34px rgba(0,0,0,.14);
+    transform-origin: 50% 120%;
+    transform: rotate(0deg) scale(.7); opacity: 0;
+    animation: deal .8s cubic-bezier(.2,.8,.2,1) forwards;
+  }
+  .fan .card img { width: 100%; height: 100%; object-fit: cover; }
+  .fan .card:nth-child(1) { --r: -16deg; animation-delay: .15s; }
+  .fan .card:nth-child(2) { --r: 16deg;  animation-delay: .25s; }
+  .fan .card:nth-child(3) { --r: 0deg;   animation-delay: .35s; z-index: 2; }
+  .logo {
+    margin-top: 6px; font-size: 30px; font-weight: 800; letter-spacing: -.03em;
+    opacity: 0; transform: translateY(10px); animation: lift .6s .9s cubic-bezier(.2,.8,.2,1) forwards;
+  }
+  .logo i { font-style: normal; color: var(--rose); }
+  .count {
+    margin-top: 8px; font-size: 13px; font-weight: 700; color: var(--ink-2);
+    opacity: 0; animation: fade .6s 1.2s forwards;
+  }
+
+  /* ---------- Welcome ---------- */
+  #welcome {
+    background: linear-gradient(180deg, #FBEFF1 0%, var(--bg) 55%);
+    display: flex; flex-direction: column; padding: 58px 0 28px;
+    overflow: hidden;
+  }
+  .rows { display: flex; flex-direction: column; gap: 12px; transform: rotate(-6deg) translateY(6px); margin: 0 -40px; }
+  .row { display: flex; gap: 12px; width: max-content; }
+  .row.a { animation: slide 26s linear infinite; }
+  .row.b { animation: slide 30s linear infinite reverse; }
+  .row.c { animation: slide 34s linear infinite; }
+  .tile {
+    width: 150px; height: 118px; border-radius: 22px; overflow: hidden; flex: none;
+    background: #fff; box-shadow: 0 10px 24px rgba(0,0,0,.10);
+  }
+  .tile img { width: 100%; height: 100%; object-fit: cover; }
+  .rows-wrap { position: relative; }
+  .rows-wrap::after {
+    content: ""; position: absolute; inset: auto 0 -2px 0; height: 90px;
+    background: linear-gradient(180deg, transparent, var(--bg));
+  }
+  .rows-wrap { opacity: 0; animation: fade .8s .05s forwards; }
+
+  .body { padding: 6px 22px 0; margin-top: auto; }
+  .pill {
+    display: inline-flex; align-items: center; gap: 8px; padding: 7px 12px 7px 8px;
+    border-radius: 999px; background: #fff; font-size: 12.5px; font-weight: 800;
+    box-shadow: 0 6px 16px rgba(0,0,0,.06);
+  }
+  .pill .live { width: 8px; height: 8px; border-radius: 50%; background: var(--rose); box-shadow: 0 0 0 4px var(--rose-mist); animation: pulse 1.6s infinite; }
+  .body h2 { margin-top: 14px; font-size: 38px; line-height: 1.02; letter-spacing: -.04em; font-weight: 800; }
+  .body h2 em { font-style: normal; background: linear-gradient(90deg, var(--rose), #E99AA6); -webkit-background-clip: text; background-clip: text; color: transparent; }
+  .body .sub { margin-top: 10px; font-size: 15px; line-height: 1.5; color: var(--ink-2); }
+  .steps { margin-top: 16px; display: flex; gap: 6px; }
+  .steps span {
+    flex: 1; padding: 10px 8px; border-radius: 14px; background: #fff; text-align: center;
+    font-size: 12px; font-weight: 700; color: var(--ink-2);
+  }
+  .steps span b { display: block; font-size: 15px; color: var(--ink); }
+  .body .cta { margin-top: 18px; }
+  .body .login { color: var(--ink-2); }
+  .body > * { opacity: 0; transform: translateY(14px); animation: lift .6s cubic-bezier(.2,.8,.2,1) forwards; }
+  .body > :nth-child(1) { animation-delay: .3s } .body > :nth-child(2) { animation-delay: .4s }
+  .body > :nth-child(3) { animation-delay: .5s } .body > :nth-child(4) { animation-delay: .6s }
+  .body > :nth-child(5) { animation-delay: .7s } .body > :nth-child(6) { animation-delay: .78s }
+
+  @keyframes deal { to { transform: rotate(var(--r)) scale(1); opacity: 1 } }
+  @keyframes lift { to { opacity: 1; transform: none } }
+  @keyframes fade { to { opacity: 1 } }
+  @keyframes slide { from { transform: translateX(0) } to { transform: translateX(-50%) } }
+  @keyframes pulse { 50% { box-shadow: 0 0 0 7px rgba(247,225,228,.4) } }
+</style>
+</head>
+<body>
+  <div class="topbar">
+    <a href="index.html">← All variations</a>
+    <h1>C · Motion Gallery</h1>
+    <div class="controls">
+      <button id="only-splash">Splash</button>
+      <button id="only-welcome">Welcome</button>
+      <button id="replay" class="primary">Replay</button>
+    </div>
+  </div>
+
+  <div class="phone" data-splash="2400">
+    <div class="status"><span>9:41</span><span>●●● ▮</span></div>
+
+    <section id="splash" class="screen">
+      <div class="fan">
+        <div class="card"><img src="https://calisthetics.b-cdn.net/thumbnails/calesthetics_036_strict_pull_up_intermediate_v1.47bef9e9.webp" alt=""></div>
+        <div class="card"><img src="https://calisthetics.b-cdn.net/thumbnails/calesthetics_064_chest_to_wall_handstand_intermediate_v1.eee9a93d.webp" alt=""></div>
+        <div class="card"><img src="https://calisthetics.b-cdn.net/thumbnails/calesthetics_004_standard_push_up_beg-int_v1.d042fa89.webp" alt=""></div>
+      </div>
+      <div class="logo">Cales<i>thetics</i></div>
+      <div class="count">115 exercises · 8 skill ladders</div>
+    </section>
+
+    <section id="welcome" class="screen" hidden>
+      <div class="rows-wrap">
+        <div class="rows">
+          <div class="row a" id="rowA"></div>
+          <div class="row b" id="rowB"></div>
+          <div class="row c" id="rowC"></div>
+        </div>
+      </div>
+      <div class="body">
+        <div class="pill"><span class="live"></span>Plans for every level</div>
+        <h2>Your strongest<br>self, <em>step by step</em>.</h2>
+        <p class="sub">Answer a few questions. We build a 4-week plan around your goal, your space and your time.</p>
+        <div class="steps">
+          <span><b>1</b>Tell us</span>
+          <span><b>2</b>Get a plan</span>
+          <span><b>3</b>Train 10–20 min</span>
+        </div>
+        <button class="cta">Start my journey
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+        </button>
+        <p class="login">Already training with us? <b>Log in</b></p>
+      </div>
+    </section>
+  </div>
+
+  <p class="note"><b>Motion Gallery</b> — shows the real product first. Splash: three exercise cards are dealt into a fan, then the name appears. Welcome: two rows of real exercise thumbnails drift past in opposite directions above a short "how it works" and the button.</p>
+
+  <script>
+    // Real exercise thumbnails from the app's CDN (doubled so the loop is seamless).
+    const base = 'https://calisthetics.b-cdn.net/thumbnails/';
+    const a = [
+      'calesthetics_004_standard_push_up_beg-int_v1.d042fa89',
+      'calesthetics_036_strict_pull_up_intermediate_v1.47bef9e9',
+      'calesthetics_060_full_l_sit_advanced_v1.3b74bb9b',
+      'calesthetics_064_chest_to_wall_handstand_intermediate_v1.eee9a93d',
+    ];
+    const b = [
+      'calesthetics_052_full_pistol_squat_advanced_v1.ac0c3d89',
+      'calesthetics_018_bodyweight_squat_beginner_v1.34894f1b',
+      'calesthetics_010_dead_bug_beginner_v1.6326961a',
+      'calesthetics_004_standard_push_up_beg-int_v1.d042fa89',
+    ];
+    function fill(id, list) {
+      const html = [...list, ...list, ...list, ...list]
+        .map(k => `<div class="tile"><img src="${base}${k}.webp" alt=""></div>`).join('');
+      // Rows are rebuilt each time the welcome screen is shown (shared.js clones it).
+      return html;
+    }
+    const tpl = document.getElementById('welcome');
+    tpl.querySelector('#rowA').innerHTML = fill('rowA', a);
+    tpl.querySelector('#rowB').innerHTML = fill('rowB', b);
+    tpl.querySelector('#rowC').innerHTML = fill('rowC', [...a].reverse());
+  </script>
+  <script src="shared.js"></script>
+</body>
+</html>

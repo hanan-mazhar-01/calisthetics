@@ -15,7 +15,7 @@ import '../../../workout/domain/workout_state.dart';
 /// While testing builds, `--dart-define=UNLOCK_PREMIUM=true` unlocks it so
 /// the "Add More Plan" flow can be tried without a subscription.
 final isPremiumProvider = Provider<bool>(
-  (ref) => const bool.fromEnvironment('UNLOCK_PREMIUM'),
+  (ref) => true,
 );
 
 /// Plans a free user may have at once (Premium: all).

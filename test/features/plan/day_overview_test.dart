@@ -1,5 +1,6 @@
 import 'package:calisthenics/core/storage/shared_preferences_provider.dart';
 import 'package:calisthenics/core/theme/app_theme.dart';
+import 'package:calisthenics/features/exercises/domain/exercise_lookup.dart';
 import 'package:calisthenics/features/plan/presentation/screens/day_overview_screen.dart';
 import 'package:calisthenics/features/plans/data/plan_templates.dart';
 import 'package:calisthenics/features/plans/domain/plan_builder.dart';
@@ -140,14 +141,6 @@ void main() {
     expect(pushed, isA<WorkoutRequest>());
   });
 
-  testWidgets('a row opens exercise detail', (tester) async {
-    await pump(tester);
-    final first = session.warmUp.first;
-    await tester.tap(find.byType(InkWell).first);
-    await tester.pump(const Duration(milliseconds: 500));
-    expect(find.text('exercise-$first'), findsOneWidget);
-  });
-
   testWidgets('hero fades out as the list collapses', (tester) async {
     await pump(tester);
     double heroOpacity() =>
@@ -165,5 +158,16 @@ void main() {
     await tester.pump();
     expect(find.byTooltip('Turn music on'), findsNothing);
     expect(find.bySemanticsLabel('Turn music on'), findsOneWidget);
+  });
+
+  testWidgets('tapping an exercise row only previews: nothing opens', (
+    tester,
+  ) async {
+    await pump(tester);
+    await tester.tap(find.text(exerciseByNumber(session.warmUp.first).name));
+    await tester.pump(const Duration(seconds: 1));
+    expect(find.textContaining('exercise-'), findsNothing);
+    expect(pushed, isNull);
+    expect(find.text('START'), findsOneWidget);
   });
 }

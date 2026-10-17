@@ -50,6 +50,8 @@ abstract final class AppTheme {
 
     return ThemeData(
       useMaterial3: true,
+      // Dialogs, snack bars, text fields and pickers use the app font too.
+      fontFamily: 'Poppins',
       brightness: brightness,
       colorScheme: colorScheme,
       scaffoldBackgroundColor: colorScheme.surface,

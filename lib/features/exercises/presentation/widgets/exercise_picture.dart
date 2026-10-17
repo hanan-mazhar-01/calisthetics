@@ -9,8 +9,8 @@ import '../../domain/exercise.dart';
 String exerciseThumbnailKey(Exercise e) =>
     'thumbnails/${e.videoFile.replaceFirst(RegExp(r'\.mp4$'), '')}';
 
-/// An exercise's thumbnail, filling its box. Until it loads (or if it can't,
-/// or Pike Push-Up which has none yet) the labelled placeholder shows.
+/// An exercise's thumbnail, filling its box. Until it loads (or if it can't)
+/// the labelled placeholder shows.
 class ExercisePicture extends StatelessWidget {
   const ExercisePicture({
     super.key,

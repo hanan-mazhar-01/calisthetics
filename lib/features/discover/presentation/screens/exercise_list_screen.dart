@@ -64,6 +64,7 @@ class LaddersScreen extends ConsumerWidget {
                       ladder.indexWhere((r) => r.number == rung.number) + 1;
                   return GradientProgramCard(
                     width: double.infinity,
+                    imageKey: 'thumbnails/ladder_${skill.id}',
                     colors: skillGradients[skill.id]!,
                     kicker: '${ladder.length} RUNGS',
                     title: skill.label,

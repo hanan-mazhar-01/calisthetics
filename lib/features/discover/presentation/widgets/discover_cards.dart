@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../../../core/theme/app_colors_extension.dart';
 import '../../../../core/theme/app_typography.dart';
+import '../../../../shared/widgets/bunny_image.dart';
 import '../../../exercises/domain/exercise.dart';
 import '../../../exercises/presentation/widgets/exercise_thumb.dart';
 
@@ -206,6 +207,8 @@ class _OverlayChip extends StatelessWidget {
 }
 
 /// Coloured gradient card used for skill ladders ("N RUNGS", title, blurb, button).
+/// Displays background photography from [imageKey] when provided, with an
+/// overlay ensuring typography and the action button remain crisp.
 class GradientProgramCard extends StatelessWidget {
   const GradientProgramCard({
     super.key,
@@ -216,6 +219,7 @@ class GradientProgramCard extends StatelessWidget {
     required this.buttonLabel,
     required this.onTap,
     this.width = 290,
+    this.imageKey,
   });
 
   final List<Color> colors;
@@ -225,6 +229,7 @@ class GradientProgramCard extends StatelessWidget {
   final String buttonLabel;
   final VoidCallback onTap;
   final double width;
+  final String? imageKey;
 
   @override
   Widget build(BuildContext context) {
@@ -235,68 +240,95 @@ class GradientProgramCard extends StatelessWidget {
       excludeSemantics: true,
       child: GestureDetector(
         onTap: onTap,
-        child: Container(
-          width: width,
-          padding: const EdgeInsets.all(20),
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(26),
-            gradient: LinearGradient(
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-              colors: colors,
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(26),
+          child: Container(
+            width: width,
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+                colors: colors,
+              ),
             ),
-          ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                kicker,
-                style: AppTypography.kicker(
-                  Colors.white.withValues(alpha: 0.85),
-                  fontSize: 12.5,
-                ),
-              ),
-              const SizedBox(height: 10),
-              Text(
-                title,
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis,
-                style: AppTypography.title(
-                  26,
-                  Colors.white,
-                  weight: FontWeight.w800,
-                  height: 1.1,
-                ),
-              ),
-              const SizedBox(height: 6),
-              Expanded(
-                child: Text(
-                  blurb,
-                  maxLines: 3,
-                  overflow: TextOverflow.ellipsis,
-                  style: AppTypography.body(
-                    Colors.white.withValues(alpha: 0.92),
-                    fontSize: 14,
+            child: Stack(
+              fit: StackFit.expand,
+              children: [
+                if (imageKey != null) ...[
+                  BunnyImage(
+                    imageKey!,
+                    fit: BoxFit.cover,
+                  ),
+                  DecoratedBox(
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        begin: Alignment.topCenter,
+                        end: Alignment.bottomCenter,
+                        colors: [
+                          colors.first.withValues(alpha: 0.30),
+                          Colors.black.withValues(alpha: 0.78),
+                        ],
+                      ),
+                    ),
+                  ),
+                ],
+                Padding(
+                  padding: const EdgeInsets.all(20),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        kicker,
+                        style: AppTypography.kicker(
+                          Colors.white.withValues(alpha: 0.85),
+                          fontSize: 12.5,
+                        ),
+                      ),
+                      const SizedBox(height: 10),
+                      Text(
+                        title,
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                        style: AppTypography.title(
+                          26,
+                          Colors.white,
+                          weight: FontWeight.w800,
+                          height: 1.1,
+                        ),
+                      ),
+                      const SizedBox(height: 6),
+                      Expanded(
+                        child: Text(
+                          blurb,
+                          maxLines: 3,
+                          overflow: TextOverflow.ellipsis,
+                          style: AppTypography.body(
+                            Colors.white.withValues(alpha: 0.92),
+                            fontSize: 14,
+                          ),
+                        ),
+                      ),
+                      Container(
+                        height: 48,
+                        alignment: Alignment.center,
+                        decoration: BoxDecoration(
+                          color: c.surface,
+                          borderRadius: BorderRadius.circular(14),
+                        ),
+                        child: Text(
+                          buttonLabel,
+                          style: AppTypography.title(
+                            15,
+                            c.textPrimary,
+                            weight: FontWeight.w800,
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
                 ),
-              ),
-              Container(
-                height: 48,
-                alignment: Alignment.center,
-                decoration: BoxDecoration(
-                  color: c.surface,
-                  borderRadius: BorderRadius.circular(14),
-                ),
-                child: Text(
-                  buttonLabel,
-                  style: AppTypography.title(
-                    15,
-                    c.textPrimary,
-                    weight: FontWeight.w800,
-                  ),
-                ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),
@@ -304,18 +336,20 @@ class GradientProgramCard extends StatelessWidget {
   }
 }
 
-/// Round coloured "Target Area" bubble.
+/// Round "Target Area" bubble with photo thumbnail and title.
 class AreaBubble extends StatelessWidget {
   const AreaBubble({
     super.key,
     required this.label,
     required this.colors,
     required this.onTap,
+    this.imageKey,
   });
 
   final String label;
   final List<Color> colors;
   final VoidCallback onTap;
+  final String? imageKey;
 
   @override
   Widget build(BuildContext context) {
@@ -325,28 +359,47 @@ class AreaBubble extends StatelessWidget {
       excludeSemantics: true,
       child: GestureDetector(
         onTap: onTap,
-        child: Container(
-          width: 92,
-          height: 92,
-          alignment: Alignment.center,
-          padding: const EdgeInsets.symmetric(horizontal: 6),
-          decoration: BoxDecoration(
-            shape: BoxShape.circle,
-            gradient: LinearGradient(
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-              colors: colors,
+        child: ClipOval(
+          child: Container(
+            width: 92,
+            height: 92,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              gradient: LinearGradient(
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+                colors: colors,
+              ),
             ),
-          ),
-          child: Text(
-            label.toUpperCase(),
-            textAlign: TextAlign.center,
-            maxLines: 2,
-            style: AppTypography.title(
-              13,
-              Colors.white,
-              weight: FontWeight.w900,
-              height: 1.1,
+            child: Stack(
+              fit: StackFit.expand,
+              children: [
+                if (imageKey != null) ...[
+                  BunnyImage(
+                    imageKey!,
+                    fit: BoxFit.cover,
+                  ),
+                  Container(
+                    color: Colors.black.withValues(alpha: 0.45),
+                  ),
+                ],
+                Center(
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 6),
+                    child: Text(
+                      label.toUpperCase(),
+                      textAlign: TextAlign.center,
+                      maxLines: 2,
+                      style: AppTypography.title(
+                        13,
+                        Colors.white,
+                        weight: FontWeight.w900,
+                        height: 1.1,
+                      ),
+                    ),
+                  ),
+                ),
+              ],
             ),
           ),
         ),

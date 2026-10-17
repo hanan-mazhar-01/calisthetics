@@ -52,6 +52,10 @@ abstract final class ExerciseVideos {
 
   static bool has(Exercise e) => idFor(e) != null;
 
+  /// Whether a video for [e] was uploaded at all (ignores [enabled]): used
+  /// to decide if the page offers a Play button.
+  static bool exists(Exercise e) => bunnyVideos.containsKey(_stem(e));
+
   static Uri _hls(String id) => Uri.https(host, '/$id/playlist.m3u8');
   static Uri _mp4(String id) => Uri.https(host, '/$id/play_720p.mp4');
 

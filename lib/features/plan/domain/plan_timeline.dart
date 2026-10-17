@@ -164,19 +164,23 @@ class PlanTimeline {
       for (final p in phases)
         for (final d in p.days) d.date,
     };
-    var extra = history
-        .where(
-          (s) =>
-              plan.counts(s) &&
-              !scheduled.contains(
-                DateTime(
-                  s.finishedAt.year,
-                  s.finishedAt.month,
-                  s.finishedAt.day,
-                ),
-              ),
-        )
-        .length;
+    // A scheduled day uses up one workout finished on its date; every other
+    // workout (on an unscheduled date, or a second one on the same day, e.g.
+    // doing tomorrow's session today) ticks off the earliest unfinished day.
+    final perDate = <DateTime, int>{};
+    for (final s in history) {
+      if (!plan.counts(s)) continue;
+      final d = DateTime(
+        s.finishedAt.year,
+        s.finishedAt.month,
+        s.finishedAt.day,
+      );
+      perDate[d] = (perDate[d] ?? 0) + 1;
+    }
+    var extra = 0;
+    perDate.forEach((date, count) {
+      extra += scheduled.contains(date) ? count - 1 : count;
+    });
     if (extra > 0) {
       for (var pi = 0; pi < phases.length && extra > 0; pi++) {
         final p = phases[pi];

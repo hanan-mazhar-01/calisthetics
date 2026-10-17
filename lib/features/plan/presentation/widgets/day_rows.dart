@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
 
 import '../../../../core/motion/calesthetics_motion.dart';
 import '../../../../core/theme/app_colors_extension.dart';
@@ -66,37 +65,36 @@ class DayExerciseRow extends StatelessWidget {
   Widget build(BuildContext context) {
     final c = context.appColors;
     final exercise = exerciseByNumber(number);
-    Widget row = InkWell(
-      onTap: () => context.push('/exercise/$number'),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(
-          horizontal: AppSpacing.xxl,
-          vertical: AppSpacing.sm,
-        ),
-        child: Row(
-          children: [
-            ExerciseThumb(number: number, size: 56, radiusFactor: 0.2),
-            const SizedBox(width: AppSpacing.lg),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    exercise.name,
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
-                    style: AppTypography.title(15, c.textPrimary),
-                  ),
-                  const SizedBox(height: 2),
-                  Text(
-                    target,
-                    style: AppTypography.body(c.textMuted, fontSize: 13),
-                  ),
-                ],
-              ),
+    // A preview only: tapping a row does nothing. The session starts from
+    // the Start button.
+    Widget row = Padding(
+      padding: const EdgeInsets.symmetric(
+        horizontal: AppSpacing.xxl,
+        vertical: AppSpacing.sm,
+      ),
+      child: Row(
+        children: [
+          ExerciseThumb(number: number, size: 56, radiusFactor: 0.2),
+          const SizedBox(width: AppSpacing.lg),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  exercise.name,
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                  style: AppTypography.title(15, c.textPrimary),
+                ),
+                const SizedBox(height: 2),
+                Text(
+                  target,
+                  style: AppTypography.body(c.textMuted, fontSize: 13),
+                ),
+              ],
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
     final i = index;

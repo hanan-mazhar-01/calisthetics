@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "6017591128",
+    "project_id": "calisthetics-app",
+    "storage_bucket": "calisthetics-app.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:6017591128:android:513bcf1f9bb7005bb0e72d",
+        "android_client_info": {
+          "package_name": "com.veradostudio.calisthenics"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "6017591128-t5fhqdqlbt2b9l55mmmbjtilpabnsrn4.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDYPcclvd8I6CgaWA9EML_RqdVGgeaP9cg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "6017591128-t5fhqdqlbt2b9l55mmmbjtilpabnsrn4.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

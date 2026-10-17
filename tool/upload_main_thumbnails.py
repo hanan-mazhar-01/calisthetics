@@ -1,0 +1,138 @@
+#!/usr/bin/env python3
+"""Uploads the Discover screen main thumbnails and missing exercise thumbnails to Bunny Storage.
+
+Includes:
+- 8 Skill ladder cards (Push-Up, Pull-Up, Chin-Up, Dips, Handstand, L-Sit, Pistol Squat, Toes-to-Bar)
+- 6 Target area / section covers (Upper Body, Core, Legs & Glutes, Conditioning, Warm-Up & Mobility, Extra Variations)
+- Exercise #5 Pike Push-Up thumbnail
+"""
+import hashlib, io, json, os, re, sys, urllib.error, urllib.request
+from pathlib import Path
+from PIL import Image
+
+ROOT = Path(__file__).resolve().parent.parent
+sys.path.insert(0, str(ROOT / "tool"))
+import bunny_upload_images as up
+
+ENV = Path.home() / ".config/calesthetics/bunny.env"
+OUT_DART = ROOT / "lib/features/media/data/bunny_image_versions.g.dart"
+
+MAIN_THUMBNAILS_DIR = Path("/home/hanan/Downloads/Main thumbnails")
+PIKE_THUMB = Path("/tmp/pike_pushup_thumb.jpg")
+
+# Mapping of file names in MAIN_THUMBNAILS_DIR to their Bunny image keys
+MAPPINGS = {
+    # 8 Skill Ladders
+    "Push-Up_thumbnail_.jpg": "thumbnails/ladder_push-up",
+    "Pull-Up_thumbnail_.jpg": "thumbnails/ladder_pull-up",
+    "Chin-Up_thumbnail_].jpg": "thumbnails/ladder_chin-up",
+    "Dips_thumbnail_.jpg": "thumbnails/ladder_dips",
+    "Handstand_thumbanil_.jpg": "thumbnails/ladder_handstand",
+    "L-Sit_thumbnail_.jpg": "thumbnails/ladder_l-sit",
+    "Pistol_Squat_thumbnail_.jpg": "thumbnails/ladder_pistol-squat",
+    "Toes-to-Bar_thumbnail_.jpg": "thumbnails/ladder_toes-to-bar",
+
+    # 6 Target Areas / Sections
+    "Upper_Body_Thumbnail_.jpg": "thumbnails/area_foundation-upper",
+    "Core_thumbnail.jpg": "thumbnails/area_foundation-core",
+    "Legs_&_Glutes_thumbnail.jpg": "thumbnails/area_foundation-legs",
+    "Conditioning_thumbnail_.jpg": "thumbnails/area_foundation-conditioning",
+    "Warm-Up,_Mobility_&_Cool-Down_thumbnail_.jpg": "thumbnails/area_warmup-mobility",
+    "Extra_Variations_&_Equipment_Alternatives_.jpg": "thumbnails/area_extra-variations",
+}
+
+
+def optimize_main_thumb(path: Path) -> bytes:
+    im = Image.open(path).convert("RGB")
+    # Native size is 1200x896; resize to max 1200 width keeping exact ratio
+    if im.width > 1200:
+        h = round(1200 * im.height / im.width)
+        im = im.resize((1200, h), Image.LANCZOS)
+    buf = io.BytesIO()
+    im.save(buf, "WEBP", quality=85, method=6)
+    return buf.getvalue()
+
+
+def optimize_exercise_thumb(path: Path) -> bytes:
+    im = Image.open(path).convert("RGB")
+    width = 800
+    h = round(width * 896 / 1200)
+    r = 1200 / 896
+    if im.width / im.height > r:
+        w2 = round(im.height * r)
+        x = (im.width - w2) // 2
+        im = im.crop((x, 0, x + w2, im.height))
+    else:
+        h2 = round(im.width / r)
+        y = (im.height - h2) // 2
+        im = im.crop((0, y, im.width, y + h2))
+    im = im.resize((width, h), Image.LANCZOS)
+    buf = io.BytesIO()
+    im.save(buf, "WEBP", quality=82, method=6)
+    return buf.getvalue()
+
+
+def main():
+    dry_run = "--dry-run" in sys.argv
+    if not dry_run:
+        up.load_env()
+        print(f"Loaded credentials: Storage zone={os.environ['BUNNY_STORAGE_ZONE']}, host={os.environ['BUNNY_STORAGE_HOST']}")
+
+    previous = {}
+    if OUT_DART.exists():
+        previous = {
+            m.group(1): m.group(2)
+            for m in re.finditer(r"'([^']+)'\s*:\s*'([0-9a-f]+)'", OUT_DART.read_text())
+        }
+
+    versions = {}
+    total_bytes = 0
+
+    # 1. Process 14 Main Thumbnails
+    for fname, key in sorted(MAPPINGS.items()):
+        src = MAIN_THUMBNAILS_DIR / fname
+        if not src.exists():
+            print(f"WARNING: File not found: {src}")
+            continue
+        data = optimize_main_thumb(src)
+        h = hashlib.sha1(data).hexdigest()[:8]
+        versions[key] = h
+        total_bytes += len(data)
+        print(f"{len(data)//1024:4d} KB  {key}.{h}.webp  <- {fname}")
+        if not dry_run:
+            up.put(f"{key}.{h}.webp", data)
+            if previous.get(key) not in (None, h):
+                up.delete(f"{key}.{previous[key]}.webp")
+
+    # 2. Process #5 Pike Push-Up Thumbnail
+    if PIKE_THUMB.exists():
+        pike_key = "thumbnails/calesthetics_005_pike_push_up_intermediate_v1"
+        data = optimize_exercise_thumb(PIKE_THUMB)
+        h = hashlib.sha1(data).hexdigest()[:8]
+        versions[pike_key] = h
+        total_bytes += len(data)
+        print(f"{len(data)//1024:4d} KB  {pike_key}.{h}.webp  <- Pike Push-Up (extracted)")
+        if not dry_run:
+            up.put(f"{pike_key}.{h}.webp", data)
+            if previous.get(pike_key) not in (None, h):
+                up.delete(f"{pike_key}.{previous[pike_key]}.webp")
+    else:
+        print(f"WARNING: Pike Push-Up thumbnail source not found at {PIKE_THUMB}")
+
+    print(f"\nTotal: {len(versions)} items, {total_bytes/1024:.1f} KB")
+
+    if not dry_run:
+        previous.update(versions)
+        body = "".join(f"  '{k}': '{v}',\n" for k, v in sorted(previous.items()))
+        OUT_DART.write_text(
+            "// GENERATED by tool/bunny_upload_images.py and tool/bunny_upload_thumbnails.py\n"
+            "// - do not edit by hand.\n"
+            "// Image key (folder/name, no extension) -> content hash, used in the file name.\n"
+            f"const bunnyImageVersions = <String, String>{{\n{body}}};\n"
+        )
+        print(f"Successfully updated {OUT_DART.name} with {len(previous)} total entries!")
+
+
+if __name__ == "__main__":
+    main()
+

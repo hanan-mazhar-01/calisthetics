@@ -1,0 +1,135 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>B · Night Editorial</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="shared.css">
+<style>
+  /* ---------- Splash ---------- */
+  #splash {
+    background: var(--night);
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    color: var(--night-ink); overflow: hidden;
+  }
+  #splash::before {
+    content: ""; position: absolute; width: 520px; height: 520px; border-radius: 50%;
+    background: radial-gradient(circle, rgba(226,122,136,.35), transparent 62%);
+    animation: breathe 2.4s ease-in-out both;
+  }
+  .stack { position: relative; text-align: center; }
+  .stack .line { overflow: hidden; }
+  .stack .line span {
+    display: block; font-weight: 800; font-size: 54px; line-height: .95; letter-spacing: -.045em;
+    transform: translateY(105%); animation: rise .7s cubic-bezier(.2,.8,.2,1) forwards;
+  }
+  .stack .line:nth-child(2) span { color: var(--night-rose); animation-delay: .18s; }
+  .stack .line:nth-child(3) span { animation-delay: .36s; }
+  .rule {
+    margin: 22px auto 0; height: 2px; width: 0; background: var(--night-rose);
+    animation: grow .7s .8s cubic-bezier(.2,.8,.2,1) forwards;
+  }
+  .brand {
+    margin-top: 14px; font-size: 12px; font-weight: 700; letter-spacing: .34em; color: var(--night-ink-2);
+    opacity: 0; animation: fade .6s 1.1s forwards;
+  }
+
+  /* ---------- Welcome ---------- */
+  #welcome { background: var(--night); color: var(--night-ink); overflow: hidden; }
+  .photo {
+    position: absolute; inset: 0 0 34% 0; width: 100%; height: 66%;
+    object-fit: cover; object-position: center 12%;
+    transform: scale(1.12); filter: saturate(.95);
+    animation: settle 1.6s cubic-bezier(.2,.8,.2,1) forwards;
+  }
+  .shade {
+    position: absolute; inset: 0;
+    background:
+      linear-gradient(180deg, rgba(23,21,22,.55) 0%, rgba(23,21,22,0) 18%, rgba(23,21,22,0) 38%, rgba(23,21,22,.85) 58%, var(--night) 68%);
+  }
+  .content { position: absolute; left: 22px; right: 22px; bottom: 28px; }
+  .eyebrow {
+    display: inline-flex; align-items: center; gap: 10px;
+    font-size: 12px; font-weight: 800; letter-spacing: .24em; color: var(--night-rose);
+  }
+  .eyebrow::before { content: ""; width: 22px; height: 2px; background: var(--night-rose); }
+  .content h2 { margin-top: 14px; font-size: 44px; line-height: .98; letter-spacing: -.045em; font-weight: 800; }
+  .content h2 em { font-style: normal; color: var(--night-rose); }
+  .content .sub { margin-top: 12px; font-size: 15px; line-height: 1.5; color: var(--night-ink-2); }
+  .stats {
+    margin-top: 18px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px;
+  }
+  .stats div {
+    padding: 12px 12px; border-radius: 18px;
+    background: rgba(255,255,255,.06); border: 1px solid rgba(255,255,255,.08);
+    backdrop-filter: blur(10px);
+  }
+  .stats b { display: block; font-size: 20px; font-weight: 800; }
+  .stats span { font-size: 11.5px; color: var(--night-ink-2); }
+  .content .cta { margin-top: 20px; }
+  .content .login { color: var(--night-ink-2); }
+  .content .login b { color: var(--night-ink); }
+  .content > * { opacity: 0; transform: translateY(16px); animation: lift .6s cubic-bezier(.2,.8,.2,1) forwards; }
+  .content > :nth-child(1) { animation-delay: .35s } .content > :nth-child(2) { animation-delay: .45s }
+  .content > :nth-child(3) { animation-delay: .55s } .content > :nth-child(4) { animation-delay: .65s }
+  .content > :nth-child(5) { animation-delay: .75s } .content > :nth-child(6) { animation-delay: .82s }
+
+  @keyframes breathe { 0% { transform: scale(.4); opacity: 0 } 60% { opacity: 1 } 100% { transform: scale(1.1); opacity: .8 } }
+  @keyframes rise { to { transform: translateY(0) } }
+  @keyframes grow { to { width: 64px } }
+  @keyframes fade { to { opacity: 1 } }
+  @keyframes settle { to { transform: scale(1) } }
+  @keyframes lift { to { opacity: 1; transform: none } }
+</style>
+</head>
+<body>
+  <div class="topbar">
+    <a href="index.html">← All variations</a>
+    <h1>B · Night Editorial</h1>
+    <div class="controls">
+      <button id="only-splash">Splash</button>
+      <button id="only-welcome">Welcome</button>
+      <button id="replay" class="primary">Replay</button>
+    </div>
+  </div>
+
+  <div class="phone" data-splash="2500" data-splash-status="light" data-welcome-status="light">
+    <div class="status light"><span>9:41</span><span>●●● ▮</span></div>
+
+    <section id="splash" class="screen">
+      <div class="stack">
+        <div class="line"><span>Strong.</span></div>
+        <div class="line"><span>Steady.</span></div>
+        <div class="line"><span>Skilled.</span></div>
+        <div class="rule"></div>
+        <div class="brand">CALESTHETICS</div>
+      </div>
+    </section>
+
+    <section id="welcome" class="screen" hidden>
+      <img class="photo" src="https://calisthetics.b-cdn.net/onboarding/welcome-hero.fd1b6c4a.webp" alt="Four women stretching, arms raised">
+      <div class="shade"></div>
+      <div class="content">
+        <div class="eyebrow">CALESTHETICS FOR WOMEN</div>
+        <h2>Build strength.<br><em>Master</em> your body.</h2>
+        <p class="sub">Four-week plans that build from the basics toward real calisthenics skills.</p>
+        <div class="stats">
+          <div><b>8</b><span>Skill ladders</span></div>
+          <div><b>115</b><span>Exercises</span></div>
+          <div><b>4 wk</b><span>Plans</span></div>
+        </div>
+        <button class="cta">Start my journey
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+        </button>
+        <p class="login">Already training with us? <b>Log in</b></p>
+      </div>
+    </section>
+  </div>
+
+  <p class="note"><b>Night Editorial</b> — closest to today's screen, but cleaner. Splash: three bold words rise one after another over a soft rose glow. Welcome: the photo fills the top and slowly settles, the copy and three glass stat tiles slide up under it.</p>
+
+  <script src="shared.js"></script>
+</body>
+</html>

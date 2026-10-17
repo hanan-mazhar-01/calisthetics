@@ -34,6 +34,19 @@ class WorkoutController extends Notifier<WorkoutState> {
   int _elapsed = 0;
   CompletedSession? _saved;
 
+  /// True while the exercise video on screen is still loading: the
+  /// countdown waits, so no seconds are lost to a loading screen. A slow or
+  /// failed load never freezes the workout: after [_maxHold] it moves on.
+  bool _videoLoading = false;
+  int _heldTicks = 0;
+  static const _maxHold = 12;
+
+  /// Called by the player's video when it starts or finishes loading.
+  void setVideoLoading(bool loading) {
+    _videoLoading = loading;
+    if (!loading) _heldTicks = 0;
+  }
+
   /// The session written to history (set once the workout ends or is saved).
   CompletedSession? get saved => _saved;
 
@@ -65,6 +78,10 @@ class WorkoutController extends Notifier<WorkoutState> {
   void _tick() {
     final s = state;
     if (s.paused || s.isDone) return;
+    if (_videoLoading && s.phaseSeconds != null && _heldTicks < _maxHold) {
+      _heldTicks++;
+      return;
+    }
     _elapsed++;
     if (s.phaseSeconds == null) return; // waiting on the user
     final left = countdown.value - 1;
