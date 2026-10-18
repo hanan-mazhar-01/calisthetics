@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 
 import '../../../media/data/bunny_prefetch.dart';
 
@@ -41,6 +40,7 @@ import '../widgets/reveal_step_view.dart';
 import '../widgets/typewriter_text.dart';
 import '../widgets/welcome_step_view.dart';
 import '../widgets/win_step_content.dart';
+import '../../../../core/haptics/haptics.dart';
 
 /// Stable across rebuilds (there's exactly one Name screen in the flow) so
 /// the Continue button can reach into [NameStepContentState] and await its
@@ -457,7 +457,7 @@ class _ChapterScaffoldState extends ConsumerState<_ChapterScaffold>
               label: widget.ctaLabel,
               enabled: widget.continueEnabled,
               onPressed: () async {
-                HapticFeedback.mediumImpact();
+                Haptics.medium();
                 await widget.beforeContinue?.call();
                 if (!context.mounted) return;
                 await _advance(

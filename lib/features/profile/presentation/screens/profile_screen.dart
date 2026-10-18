@@ -134,12 +134,12 @@ class ProfileScreen extends ConsumerWidget {
               _RowData(
                 icon: Icons.shield_outlined,
                 title: 'Privacy Policy',
-                onTap: () => _linkPlaceholder(context, 'Privacy Policy'),
+                onTap: () => context.push('/privacy'),
               ),
               _RowData(
                 icon: Icons.description_outlined,
                 title: 'Terms of Use',
-                onTap: () => _linkPlaceholder(context, 'Terms of Use'),
+                onTap: () => context.push('/terms'),
               ),
               if (user != null)
                 _RowData(
@@ -215,11 +215,6 @@ class ProfileScreen extends ConsumerWidget {
     );
     if (result == null) return;
     ref.read(onboardingControllerProvider.notifier).setName(result.trim());
-  }
-
-  static void _linkPlaceholder(BuildContext context, String what) {
-    // TODO: link the published URL once Verado Studio provides it.
-    _snack(context, 'The $what link is not available yet.');
   }
 
   static Future<void> _clearVideos(BuildContext context) async {

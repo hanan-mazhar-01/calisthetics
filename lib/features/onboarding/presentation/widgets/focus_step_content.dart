@@ -4,7 +4,6 @@ import 'dart:ui' as ui;
 import 'package:cached_network_image/cached_network_image.dart';
 
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../core/theme/app_colors_extension.dart';
@@ -18,6 +17,7 @@ import '../../domain/onboarding_step.dart';
 import '../providers/onboarding_controller.dart';
 import 'choice_step_content.dart';
 import 'onboarding_viewport.dart';
+import '../../../../core/haptics/haptics.dart';
 
 /// Width / height of the trimmed figure picture (`where-should-we-focus`).
 const _figureAspect = 0.5498;
@@ -293,7 +293,7 @@ class _FocusPill extends StatelessWidget {
       excludeSemantics: true,
       child: GestureDetector(
         onTap: () {
-          HapticFeedback.selectionClick();
+          Haptics.medium();
           onTap();
         },
         child: AnimatedScale(

@@ -15,11 +15,9 @@ import '../domain/auth_failure.dart';
 /// - Google Sign-In (Cross-platform)
 /// - Apple Sign-In (iOS Native & Android/Web OAuth)
 class AuthRepository {
-  AuthRepository({
-    FirebaseAuth? auth,
-    GoogleSignIn? googleSignIn,
-  })  : _authOverride = auth,
-        _googleOverride = googleSignIn;
+  AuthRepository({FirebaseAuth? auth, GoogleSignIn? googleSignIn})
+    : _authOverride = auth,
+      _googleOverride = googleSignIn;
 
   final FirebaseAuth? _authOverride;
   final GoogleSignIn? _googleOverride;
@@ -39,9 +37,7 @@ class AuthRepository {
 
   void _initGoogleSignIn() {
     if (!kIsWeb && !_googleInitialized) {
-      _googleSignIn.initialize(
-        serverClientId: _serverClientId,
-      );
+      _googleSignIn.initialize(serverClientId: _serverClientId);
       _googleInitialized = true;
     }
   }
@@ -132,7 +128,9 @@ class AuthRepository {
       if (e.code == GoogleSignInExceptionCode.canceled) {
         return null;
       }
-      throw AuthFailure('Google sign-in error: ${e.description ?? e.code.name}');
+      throw AuthFailure(
+        'Google sign-in error: ${e.description ?? e.code.name}',
+      );
     } on FirebaseAuthException catch (e) {
       throw AuthFailure.fromCode(e.code, e.message);
     } catch (e) {
@@ -147,7 +145,8 @@ class AuthRepository {
   /// Uses native Apple Authorization on iOS/macOS, and Firebase OAuth provider on other platforms.
   Future<UserCredential?> signInWithApple() async {
     try {
-      final isApplePlatform = defaultTargetPlatform == TargetPlatform.iOS ||
+      final isApplePlatform =
+          defaultTargetPlatform == TargetPlatform.iOS ||
           defaultTargetPlatform == TargetPlatform.macOS;
 
       if (isApplePlatform) {
@@ -162,17 +161,20 @@ class AuthRepository {
           nonce: shaNonce,
         );
 
-        final OAuthCredential credential = OAuthProvider('apple.com').credential(
-          idToken: appleCredential.identityToken,
-          rawNonce: rawNonce,
-        );
+        final OAuthCredential credential = OAuthProvider('apple.com')
+            .credential(
+              idToken: appleCredential.identityToken,
+              rawNonce: rawNonce,
+            );
 
         final userCredential = await _auth.signInWithCredential(credential);
 
-        if (appleCredential.givenName != null || appleCredential.familyName != null) {
-          final fullName = [appleCredential.givenName, appleCredential.familyName]
-              .where((s) => s != null && s.isNotEmpty)
-              .join(' ');
+        if (appleCredential.givenName != null ||
+            appleCredential.familyName != null) {
+          final fullName = [
+            appleCredential.givenName,
+            appleCredential.familyName,
+          ].where((s) => s != null && s.isNotEmpty).join(' ');
           if (fullName.isNotEmpty && userCredential.user != null) {
             await userCredential.user!.updateDisplayName(fullName);
           }
@@ -246,7 +248,9 @@ class AuthRepository {
       if (e.code == GoogleSignInExceptionCode.canceled) {
         throw const AuthFailure('Account deletion was cancelled.');
       }
-      throw AuthFailure('Google sign-in error: ${e.description ?? e.code.name}');
+      throw AuthFailure(
+        'Google sign-in error: ${e.description ?? e.code.name}',
+      );
     } catch (e) {
       throw AuthFailure('Could not delete the account: $e');
     }
@@ -278,15 +282,12 @@ class AuthRepository {
           nonce: sha256.convert(utf8.encode(rawNonce)).toString(),
         );
         await user.reauthenticateWithCredential(
-          OAuthProvider(
-            'apple.com',
-          ).credential(idToken: apple.identityToken, rawNonce: rawNonce),
+          OAuthProvider('apple.com')
+              .credential(idToken: apple.identityToken, rawNonce: rawNonce),
         );
         // Sign in with Apple stops trusting the app for this account.
         try {
-          await _auth.revokeTokenWithAuthorizationCode(
-            apple.authorizationCode,
-          );
+          await _auth.revokeTokenWithAuthorizationCode(apple.authorizationCode);
         } catch (e) {
           debugPrint('Apple token revoke failed: $e');
         }
@@ -313,7 +314,9 @@ class AuthRepository {
     const charset =
         '0123456789ABCDEFGHIJKLMNOPQRSTUVXYZabcdefghijklmnopqrstuvwxyz-._';
     final random = math.Random.secure();
-    return List.generate(length, (_) => charset[random.nextInt(charset.length)])
-        .join();
+    return List.generate(
+      length,
+      (_) => charset[random.nextInt(charset.length)],
+    ).join();
   }
 }

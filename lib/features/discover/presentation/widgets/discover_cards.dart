@@ -255,10 +255,7 @@ class GradientProgramCard extends StatelessWidget {
               fit: StackFit.expand,
               children: [
                 if (imageKey != null) ...[
-                  BunnyImage(
-                    imageKey!,
-                    fit: BoxFit.cover,
-                  ),
+                  BunnyImage(imageKey!, fit: BoxFit.cover),
                   DecoratedBox(
                     decoration: BoxDecoration(
                       gradient: LinearGradient(
@@ -375,13 +372,8 @@ class AreaBubble extends StatelessWidget {
               fit: StackFit.expand,
               children: [
                 if (imageKey != null) ...[
-                  BunnyImage(
-                    imageKey!,
-                    fit: BoxFit.cover,
-                  ),
-                  Container(
-                    color: Colors.black.withValues(alpha: 0.45),
-                  ),
+                  BunnyImage(imageKey!, fit: BoxFit.cover),
+                  Container(color: Colors.black.withValues(alpha: 0.45)),
                 ],
                 Center(
                   child: Padding(

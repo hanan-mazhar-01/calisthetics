@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../core/theme/app_colors_extension.dart';
@@ -7,6 +6,7 @@ import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/theme/app_typography.dart';
 import '../../../../shared/widgets/glass/glass_card.dart';
 import '../providers/onboarding_controller.dart';
+import '../../../../core/haptics/haptics.dart';
 
 const healthNoteStepId = 'health-note';
 const healthNoteAcknowledged = 'acknowledged';
@@ -75,7 +75,7 @@ class HealthNoteStepContent extends ConsumerWidget {
           GlassCard(
             selected: acknowledged,
             onTap: () {
-              HapticFeedback.selectionClick();
+              Haptics.light();
               ref
                   .read(onboardingControllerProvider.notifier)
                   .toggleOption(

@@ -18,12 +18,17 @@ class ExercisePicture extends StatelessWidget {
     this.compact = false,
     this.borderRadius,
     this.fit = BoxFit.cover,
+    this.cacheWidth,
   });
 
   final Exercise exercise;
   final bool compact;
   final BorderRadius? borderRadius;
   final BoxFit fit;
+
+  /// Decode width in pixels. Small thumbnails (compact) default to 360,
+  /// big pictures keep their full size.
+  final int? cacheWidth;
 
   @override
   Widget build(BuildContext context) {
@@ -37,6 +42,7 @@ class ExercisePicture extends StatelessWidget {
       child: BunnyImage(
         exerciseThumbnailKey(exercise),
         fit: fit,
+        cacheWidth: cacheWidth ?? (compact ? 360 : null),
         fallback: placeholder,
       ),
     );

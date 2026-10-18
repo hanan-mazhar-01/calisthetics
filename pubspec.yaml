@@ -52,6 +52,7 @@ dependencies:
   crypto: ^3.0.7
   cloud_firestore: ^7.0.0
   purchases_flutter: ^10.16.0
+  vibration: ^3.2.1
 
 dev_dependencies:
   flutter_test:

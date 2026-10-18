@@ -58,14 +58,21 @@ class _PrimaryButtonState extends State<PrimaryButton> {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(
-                widget.label,
-                style: AppTypography.title(
-                  17,
-                  c.onAccent,
-                  weight: FontWeight.w700,
+              Flexible(
+                child: FittedBox(
+                  fit: BoxFit.scaleDown,
+                  alignment: Alignment.centerLeft,
+                  child: Text(
+                    widget.label,
+                    style: AppTypography.title(
+                      17,
+                      c.onAccent,
+                      weight: FontWeight.w700,
+                    ),
+                  ),
                 ),
               ),
+              if (widget.trailingIcon != null) const SizedBox(width: 12),
               if (widget.trailingIcon != null)
                 Icon(widget.trailingIcon, color: c.onAccent, size: 22),
             ],

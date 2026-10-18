@@ -1,12 +1,12 @@
 import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 
 import '../../../../core/theme/app_colors_extension.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/theme/app_typography.dart';
 import '../../domain/onboarding_step.dart';
+import '../../../../core/haptics/haptics.dart';
 
 /// How many of the gauge's ten blocks are lit at each slider stop (stops are
 /// spread over four levels; in between the fill is interpolated).
@@ -127,7 +127,7 @@ class _LevelSliderContentState extends State<LevelSliderContent>
     final before = _nearest;
     setState(() => _pos = value.clamp(0, _last.toDouble()));
     if (_nearest != before) {
-      HapticFeedback.selectionClick();
+      Haptics.light();
       widget.onSelect(widget.options[_nearest].id);
     }
   }
@@ -253,7 +253,7 @@ class _LevelSliderContentState extends State<LevelSliderContent>
             onDrag: _drag,
             onRelease: _release,
             onTapLevel: (i) {
-              if (i != _nearest) HapticFeedback.selectionClick();
+              if (i != _nearest) Haptics.light();
               _dragging = false;
               _animateTo(i);
               widget.onSelect(widget.options[i].id);

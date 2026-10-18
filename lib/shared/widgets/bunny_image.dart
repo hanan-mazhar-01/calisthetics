@@ -14,12 +14,17 @@ class BunnyImage extends StatelessWidget {
     this.fit = BoxFit.contain,
     this.alignment = Alignment.center,
     this.fallback,
+    this.cacheWidth,
   });
 
   final String imageKey;
   final BoxFit fit;
   final Alignment alignment;
   final Widget? fallback;
+
+  /// Decode the picture at this width (pixels) instead of its full size:
+  /// far less memory and drawing work for small thumbnails.
+  final int? cacheWidth;
 
   @override
   Widget build(BuildContext context) {
@@ -30,6 +35,7 @@ class BunnyImage extends StatelessWidget {
       imageUrl: url.toString(),
       fit: fit,
       alignment: alignment,
+      memCacheWidth: cacheWidth,
       fadeInDuration: const Duration(milliseconds: 180),
       fadeOutDuration: Duration.zero,
       placeholder: (_, _) => const SizedBox.shrink(),

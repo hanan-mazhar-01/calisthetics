@@ -74,10 +74,17 @@ Future<void> _writeCache(SharedPreferences prefs, SubscriptionStatus s) =>
 /// Test store: no payment, same behaviour as the real one. Monthly starts
 /// with a 7-day trial and then renews monthly; yearly renews yearly.
 class LocalSubscriptionService implements SubscriptionService {
-  LocalSubscriptionService(this.prefs, {DateTime Function()? clock})
-    : _now = clock ?? DateTime.now;
+  LocalSubscriptionService(
+    this.prefs, {
+    DateTime Function()? clock,
+    this.allowPurchases = true,
+  }) : _now = clock ?? DateTime.now;
 
   final SharedPreferences prefs;
+
+  /// False in a release build made without RevenueCat keys: nobody may get
+  /// Premium for free by accident.
+  final bool allowPurchases;
   final DateTime Function() _now;
 
   static const trialDays = 7;
@@ -86,10 +93,12 @@ class LocalSubscriptionService implements SubscriptionService {
   bool get isLive => false;
 
   @override
-  bool get canCancelInApp => true;
+  bool get canCancelInApp => allowPurchases;
 
   @override
-  SubscriptionStatus get cached => _advance(_readCache(prefs));
+  SubscriptionStatus get cached => allowPurchases
+      ? _advance(_readCache(prefs))
+      : const SubscriptionStatus.free();
 
   /// Moves the stored status to "now": an ended trial becomes the paid
   /// monthly plan; a passed renewal date rolls on (or ends if cancelled).
@@ -131,6 +140,11 @@ class LocalSubscriptionService implements SubscriptionService {
 
   @override
   Future<SubscriptionStatus> purchase(PremiumPlan plan) async {
+    if (!allowPurchases) {
+      throw const PurchaseFailure(
+        'Subscriptions are not available right now. Please try again later.',
+      );
+    }
     await Future<void>.delayed(const Duration(milliseconds: 900));
     final now = _now();
     final current = cached;

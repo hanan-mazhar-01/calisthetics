@@ -20,8 +20,8 @@ class BackgroundMusic {
   static bool enabled = true;
 
   /// Volume while nothing else is speaking, and while a video talks.
-  static const fullVolume = 0.55;
-  static const duckedVolume = 0.12;
+  static const fullVolume = 0.6;
+  static const duckedVolume = 0.22;
 
   AudioPlayer? _player;
   bool _failed = false;

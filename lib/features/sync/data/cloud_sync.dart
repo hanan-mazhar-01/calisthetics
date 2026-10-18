@@ -137,9 +137,8 @@ class CloudSync with WidgetsBindingObserver {
     try {
       // Always ask the server: an empty offline cache must never be taken
       // for "new account" (that would overwrite their online data).
-      final snap = await _doc(
-        user.uid,
-      ).get(const GetOptions(source: Source.server));
+      final snap = await _doc(user.uid)
+          .get(const GetOptions(source: Source.server));
       final remote = snap.data()?['data'];
       if (remote is Map && remote.isNotEmpty) {
         // Existing account: its data is what they see on this phone.
@@ -178,9 +177,8 @@ class CloudSync with WidgetsBindingObserver {
       return;
     }
     try {
-      final snap = await _doc(
-        user.uid,
-      ).get(const GetOptions(source: Source.server));
+      final snap = await _doc(user.uid)
+          .get(const GetOptions(source: Source.server));
       final remote = snap.data()?['data'];
       if (remote is! Map || remote.isEmpty) return;
       // Something changed here while we waited: keep it.

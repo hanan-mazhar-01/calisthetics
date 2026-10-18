@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../core/storage/shared_preferences_provider.dart';
@@ -11,7 +12,7 @@ final subscriptionServiceProvider = Provider<SubscriptionService>((ref) {
   final prefs = ref.watch(sharedPreferencesProvider);
   final key = RevenueCatSubscriptionService.platformKey();
   return key == null
-      ? LocalSubscriptionService(prefs)
+      ? LocalSubscriptionService(prefs, allowPurchases: !kReleaseMode)
       : RevenueCatSubscriptionService(prefs, key);
 });
 

@@ -48,9 +48,11 @@ class _AuthModalSheetState extends ConsumerState<AuthModalSheet> {
 
   final _formKey = GlobalKey<FormState>();
   late final TextEditingController _nameController = TextEditingController();
-  late final TextEditingController _emailController =
-      TextEditingController(text: widget.initialEmail ?? '');
-  late final TextEditingController _passwordController = TextEditingController();
+  late final TextEditingController _emailController = TextEditingController(
+    text: widget.initialEmail ?? '',
+  );
+  late final TextEditingController _passwordController =
+      TextEditingController();
 
   @override
   void dispose() {
@@ -92,10 +94,7 @@ class _AuthModalSheetState extends ConsumerState<AuthModalSheet> {
       );
       if (user != null) _onSuccess();
     } else {
-      final user = await ctl.signInWithEmail(
-        email: email,
-        password: password,
-      );
+      final user = await ctl.signInWithEmail(email: email, password: password);
       if (user != null) _onSuccess();
     }
   }
@@ -197,7 +196,9 @@ class _AuthModalSheetState extends ConsumerState<AuthModalSheet> {
               Text(
                 _showEmailForm
                     ? (_isSignUp ? 'Create account' : 'Welcome back')
-                    : (_isSignUp ? 'Join Calesthetics' : 'Sign in to Calesthetics'),
+                    : (_isSignUp
+                          ? 'Join Calesthetics'
+                          : 'Sign in to Calesthetics'),
                 style: AppTypography.display(
                   fontSize: 28,
                   color: c.textPrimary,
@@ -209,8 +210,8 @@ class _AuthModalSheetState extends ConsumerState<AuthModalSheet> {
               Text(
                 _showEmailForm
                     ? (_isSignUp
-                        ? 'Enter your details to keep your workouts synced.'
-                        : 'Sign in with your email and password.')
+                          ? 'Enter your details to keep your workouts synced.'
+                          : 'Sign in with your email and password.')
                     : 'Save your customized plan, streak, and progress.',
                 style: AppTypography.body(c.textSecondary, fontSize: 14),
               ),
@@ -255,7 +256,9 @@ class _AuthModalSheetState extends ConsumerState<AuthModalSheet> {
                 // Apple Button
                 _SocialButton(
                   icon: Icons.apple_rounded,
-                  label: _isSignUp ? 'Sign up with Apple' : 'Continue with Apple',
+                  label: _isSignUp
+                      ? 'Sign up with Apple'
+                      : 'Continue with Apple',
                   color: Colors.black,
                   textColor: Colors.white,
                   isLoading: isBusy,
@@ -266,7 +269,9 @@ class _AuthModalSheetState extends ConsumerState<AuthModalSheet> {
                 // Google Button
                 _SocialButton(
                   icon: Icons.g_mobiledata_rounded,
-                  label: _isSignUp ? 'Sign up with Google' : 'Continue with Google',
+                  label: _isSignUp
+                      ? 'Sign up with Google'
+                      : 'Continue with Google',
                   color: c.surface,
                   textColor: c.textPrimary,
                   borderColor: c.divider,
@@ -279,7 +284,9 @@ class _AuthModalSheetState extends ConsumerState<AuthModalSheet> {
                 // Email Button
                 _SocialButton(
                   icon: Icons.mail_outline_rounded,
-                  label: _isSignUp ? 'Sign up with Email' : 'Continue with Email',
+                  label: _isSignUp
+                      ? 'Sign up with Email'
+                      : 'Continue with Email',
                   color: c.surface,
                   textColor: c.textPrimary,
                   borderColor: c.divider,
@@ -309,7 +316,10 @@ class _AuthModalSheetState extends ConsumerState<AuthModalSheet> {
                           },
                     child: Text.rich(
                       TextSpan(
-                        style: AppTypography.body(c.textSecondary, fontSize: 14),
+                        style: AppTypography.body(
+                          c.textSecondary,
+                          fontSize: 14,
+                        ),
                         children: [
                           TextSpan(
                             text: _isSignUp
@@ -341,7 +351,9 @@ class _AuthModalSheetState extends ConsumerState<AuthModalSheet> {
                           decoration: InputDecoration(
                             labelText: 'Your Name',
                             hintText: 'e.g. Maya',
-                            prefixIcon: const Icon(Icons.person_outline_rounded),
+                            prefixIcon: const Icon(
+                              Icons.person_outline_rounded,
+                            ),
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(16),
                             ),
@@ -441,8 +453,10 @@ class _AuthModalSheetState extends ConsumerState<AuthModalSheet> {
                               },
                         child: Text.rich(
                           TextSpan(
-                            style: AppTypography.body(c.textSecondary,
-                                fontSize: 14),
+                            style: AppTypography.body(
+                              c.textSecondary,
+                              fontSize: 14,
+                            ),
                             children: [
                               TextSpan(
                                 text: _isSignUp
@@ -516,7 +530,11 @@ class _SocialButton extends StatelessWidget {
             const SizedBox(width: 12),
             Text(
               label,
-              style: AppTypography.title(15, textColor, weight: FontWeight.w600),
+              style: AppTypography.title(
+                15,
+                textColor,
+                weight: FontWeight.w600,
+              ),
             ),
           ],
         ),

@@ -1,8 +1,11 @@
+import 'dart:async';
 import 'dart:math' as math;
 
+import 'package:flutter/foundation.dart' show kReleaseMode;
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../../../core/theme/app_colors_extension.dart';
 import '../../../../core/theme/app_typography.dart';
@@ -15,6 +18,7 @@ import '../../data/subscription_service.dart';
 import '../../domain/paywall_offer.dart';
 import '../../domain/subscription.dart';
 import '../providers/subscription_providers.dart';
+import '../../../../core/haptics/haptics.dart';
 
 const _pinkA = Color(0xFFFF7E98);
 const _pinkB = Color(0xFFEF5B82);
@@ -52,12 +56,12 @@ class _PaywallContentState extends ConsumerState<PaywallContent> {
 
   Future<void> _buy() async {
     if (_busy) return;
-    HapticFeedback.mediumImpact();
+    Haptics.medium();
     setState(() => _busy = true);
     try {
       final s = await ref.read(subscriptionProvider.notifier).purchase(_choice);
       if (!mounted) return;
-      HapticFeedback.heavyImpact();
+      Haptics.heavy();
       setState(() => _bought = s);
     } on PurchaseFailure catch (e) {
       if (mounted && !e.cancelled) _say(e.message);
@@ -169,7 +173,7 @@ class _PaywallContentState extends ConsumerState<PaywallContent> {
                               value: _choice,
                               yearlyTag: 'Save 58%',
                               onChanged: (p) {
-                                HapticFeedback.selectionClick();
+                                Haptics.light();
                                 setState(() => _choice = p);
                               },
                             ),
@@ -187,15 +191,20 @@ class _PaywallContentState extends ConsumerState<PaywallContent> {
                         padding: const EdgeInsets.fromLTRB(22, 14, 22, 12),
                         child: Column(
                           children: [
-                            _BuyButton(
-                              label: cta,
-                              busy: _busy,
-                              onTap: current.plan == _choice ? null : _buy,
+                            RepaintBoundary(
+                              child: _BuyButton(
+                                label: cta,
+                                busy: _busy,
+                                onTap: current.plan == _choice ? null : _buy,
+                              ),
                             ),
                             const SizedBox(height: 7),
                             Text(
-                              ref.read(subscriptionServiceProvider).isLive
-                                  ? 'Cancel any time. Your free plan stays if you skip.'
+                              (kReleaseMode ||
+                                      ref
+                                          .read(subscriptionServiceProvider)
+                                          .isLive)
+                                  ? 'Renews automatically until you cancel in your store settings.'
                                   : 'Test mode: no payment is taken.',
                               textAlign: TextAlign.center,
                               style: AppTypography.body(
@@ -203,8 +212,8 @@ class _PaywallContentState extends ConsumerState<PaywallContent> {
                                 fontSize: 11.5,
                               ),
                             ),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
+                            Wrap(
+                              alignment: WrapAlignment.center,
                               children: [
                                 _LinkButton(
                                   label: 'Not now',
@@ -213,14 +222,11 @@ class _PaywallContentState extends ConsumerState<PaywallContent> {
                                 _LinkButton(label: 'Restore', onTap: _restore),
                                 _LinkButton(
                                   label: 'Terms',
-                                  onTap: () =>
-                                      _say('The Terms link is coming soon.'),
+                                  onTap: () => context.push('/terms'),
                                 ),
                                 _LinkButton(
                                   label: 'Privacy',
-                                  onTap: () => _say(
-                                    'The Privacy Policy link is coming soon.',
-                                  ),
+                                  onTap: () => context.push('/privacy'),
                                 ),
                               ],
                             ),
@@ -255,32 +261,39 @@ class _OrbitHero extends StatefulWidget {
   State<_OrbitHero> createState() => _OrbitHeroState();
 }
 
-class _OrbitHeroState extends State<_OrbitHero> with TickerProviderStateMixin {
-  late final AnimationController _turn = AnimationController(
-    vsync: this,
-    duration: const Duration(seconds: 40),
-  );
-  late final AnimationController _pulse = AnimationController(
-    vsync: this,
-    duration: const Duration(milliseconds: 2800),
-  );
+class _OrbitHeroState extends State<_OrbitHero>
+    with SingleTickerProviderStateMixin {
+  static const _turnSeconds = 40.0;
+  static const _pulseSeconds = 2.8;
+
+  /// Seconds since the orbit started, updated about 30 times a second: the
+  /// ring turns so slowly that 60 fps would only double the drawing work.
+  final _time = ValueNotifier<double>(0);
+  late final Ticker _ticker = createTicker((elapsed) {
+    final t = elapsed.inMicroseconds / 1e6;
+    if (t - _time.value >= 0.032) _time.value = t;
+  });
+
+  /// 0 to 1: one full turn of the ring.
+  double get _turnValue => (_time.value / _turnSeconds) % 1;
+
+  /// 0 to 1: one beat of the zoom in and out.
+  double get _pulseValue => (_time.value / _pulseSeconds) % 1;
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
     if (MediaQuery.disableAnimationsOf(context)) {
-      _turn.stop();
-      _pulse.stop();
-    } else if (!_turn.isAnimating) {
-      _turn.repeat();
-      _pulse.repeat();
+      _ticker.stop();
+    } else if (!_ticker.isActive) {
+      _ticker.start();
     }
   }
 
   @override
   void dispose() {
-    _turn.dispose();
-    _pulse.dispose();
+    _ticker.dispose();
+    _time.dispose();
     super.dispose();
   }
 
@@ -314,27 +327,32 @@ class _OrbitHeroState extends State<_OrbitHero> with TickerProviderStateMixin {
                 ),
               ),
               Positioned.fill(
-                child: AnimatedBuilder(
-                  animation: _turn,
-                  builder: (context, _) => CustomPaint(
-                    painter: _DashedRing(
-                      center: center,
-                      radius: radius,
-                      turn: _turn.value,
-                      color: c.accent.withValues(alpha: 0.35),
+                child: RepaintBoundary(
+                  child: AnimatedBuilder(
+                    animation: _time,
+                    builder: (context, _) => CustomPaint(
+                      painter: _DashedRing(
+                        center: center,
+                        radius: radius,
+                        turn: _turnValue,
+                        color: c.accent.withValues(alpha: 0.35),
+                      ),
                     ),
                   ),
                 ),
               ),
-              // Thumbnails ride the ring (behind the photo).
-              AnimatedBuilder(
-                animation: Listenable.merge([_turn, _pulse]),
-                builder: (context, _) => Stack(
-                  clipBehavior: Clip.none,
-                  children: [
-                    for (var i = 0; i < _orbitExercises.length; i++)
-                      _orbitThumb(i, center, radius, thumb),
-                  ],
+              // Thumbnails ride the ring (behind the photo). Their own layer,
+              // so the animation never repaints the rest of the page.
+              RepaintBoundary(
+                child: AnimatedBuilder(
+                  animation: _time,
+                  builder: (context, _) => Stack(
+                    clipBehavior: Clip.none,
+                    children: [
+                      for (var i = 0; i < _orbitExercises.length; i++)
+                        _orbitThumb(i, center, radius, thumb),
+                    ],
+                  ),
                 ),
               ),
               Positioned(
@@ -342,19 +360,38 @@ class _OrbitHeroState extends State<_OrbitHero> with TickerProviderStateMixin {
                 right: 0,
                 bottom: 0,
                 height: h * 0.9,
-                child: _Rise(
-                  child: ShaderMask(
-                    blendMode: BlendMode.dstIn,
-                    shaderCallback: (r) => const LinearGradient(
-                      begin: Alignment.topCenter,
-                      end: Alignment.bottomCenter,
-                      colors: [Colors.black, Colors.black, Colors.transparent],
-                      stops: [0, 0.8, 1],
-                    ).createShader(r),
-                    child: const BunnyImage(
-                      'onboarding/your-plan/after',
-                      fit: BoxFit.contain,
-                      alignment: Alignment.bottomCenter,
+                child: RepaintBoundary(
+                  child: _Rise(
+                    // The photo fades into the page at the bottom with a plain
+                    // gradient in the page colour (a mask would force an extra
+                    // full-size drawing pass on every frame).
+                    child: Stack(
+                      fit: StackFit.expand,
+                      children: [
+                        const BunnyImage(
+                          'onboarding/your-plan/after',
+                          fit: BoxFit.contain,
+                          alignment: Alignment.bottomCenter,
+                        ),
+                        Positioned(
+                          left: 0,
+                          right: 0,
+                          bottom: -1,
+                          height: h * 0.2,
+                          child: DecoratedBox(
+                            decoration: BoxDecoration(
+                              gradient: LinearGradient(
+                                begin: Alignment.topCenter,
+                                end: Alignment.bottomCenter,
+                                colors: [
+                                  c.background.withValues(alpha: 0),
+                                  c.background,
+                                ],
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                 ),
@@ -392,38 +429,54 @@ class _OrbitHeroState extends State<_OrbitHero> with TickerProviderStateMixin {
 
   Widget _orbitThumb(int i, Offset center, Size radius, double size) {
     final n = _orbitExercises.length;
-    final a = 2 * math.pi * (i / n + _turn.value) - math.pi / 2;
+    final a = 2 * math.pi * (i / n + _turnValue) - math.pi / 2;
     // Each one breathes on its own beat, so they twinkle around the ring.
-    final beat = math.sin(2 * math.pi * (_pulse.value + i / n));
-    final scale = 0.9 + 0.12 * beat;
-    final glow = 0.5 + 0.5 * beat;
-    final c = context.appColors;
+    final beat = math.sin(2 * math.pi * (_pulseValue + i / n));
     return Positioned(
       left: center.dx + radius.width * math.cos(a) - size / 2,
       top: center.dy + radius.height * math.sin(a) - size / 2,
       child: Transform.scale(
-        scale: scale,
-        child: Container(
-          width: size,
-          height: size,
-          decoration: BoxDecoration(
-            shape: BoxShape.circle,
-            color: c.surface,
-            border: Border.all(color: c.surface, width: 2.5),
-            boxShadow: [
-              BoxShadow(
-                color: _pinkB.withValues(alpha: 0.12 + 0.22 * glow),
-                blurRadius: 8 + 10 * glow,
-                offset: const Offset(0, 4),
-              ),
-            ],
-          ),
-          child: ClipOval(
-            child: ExercisePicture(
-              exercise: exerciseByNumber(_orbitExercises[i]),
-              compact: true,
-            ),
-          ),
+        scale: 0.9 + 0.12 * beat,
+        // The thumbnail itself never changes, so it is drawn once and only
+        // moved and scaled afterwards.
+        child: RepaintBoundary(child: _thumbs[i]),
+      ),
+    );
+  }
+
+  late final List<Widget> _thumbs = [
+    for (final n in _orbitExercises) _OrbitThumb(number: n, size: 46),
+  ];
+}
+
+class _OrbitThumb extends StatelessWidget {
+  const _OrbitThumb({required this.number, required this.size});
+
+  final int number;
+  final double size;
+
+  @override
+  Widget build(BuildContext context) {
+    final c = context.appColors;
+    return Container(
+      width: size,
+      height: size,
+      decoration: BoxDecoration(
+        shape: BoxShape.circle,
+        color: c.surface,
+        // A rose ring instead of a blurred shadow: blurs are costly to redraw
+        // on every frame of the orbit on modest phones.
+        border: Border.all(color: c.surface, width: 3),
+      ),
+      foregroundDecoration: BoxDecoration(
+        shape: BoxShape.circle,
+        border: Border.all(color: _pinkB.withValues(alpha: 0.35), width: 1),
+      ),
+      child: ClipOval(
+        child: ExercisePicture(
+          exercise: exerciseByNumber(number),
+          compact: true,
+          cacheWidth: 160,
         ),
       ),
     );
@@ -563,43 +616,47 @@ class _PlanToggle extends StatelessWidget {
             onTap: () => onChanged(p),
             child: SizedBox(
               height: 42,
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  AnimatedDefaultTextStyle(
-                    duration: const Duration(milliseconds: 250),
-                    style: AppTypography.title(
-                      14.5,
-                      on ? Colors.white : c.textSecondary,
-                      weight: FontWeight.w600,
-                    ),
-                    child: Text(label),
-                  ),
-                  if (tag != null) ...[
-                    const SizedBox(width: 5),
-                    AnimatedContainer(
+              child: FittedBox(
+                fit: BoxFit.scaleDown,
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    AnimatedDefaultTextStyle(
                       duration: const Duration(milliseconds: 250),
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 6,
-                        vertical: 2,
+                      style: AppTypography.title(
+                        14.5,
+                        on ? Colors.white : c.textSecondary,
+                        weight: FontWeight.w600,
                       ),
-                      decoration: BoxDecoration(
-                        color: on
-                            ? Colors.white.withValues(alpha: 0.25)
-                            : c.softRose,
-                        borderRadius: BorderRadius.circular(99),
-                      ),
-                      child: Text(
-                        tag,
-                        style: AppTypography.title(
-                          9.5,
-                          on ? Colors.white : c.accentText,
-                          weight: FontWeight.w600,
+                      child: Text(label),
+                    ),
+                    if (tag != null) ...[
+                      const SizedBox(width: 5),
+                      AnimatedContainer(
+                        duration: const Duration(milliseconds: 250),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 6,
+                          vertical: 2,
+                        ),
+                        decoration: BoxDecoration(
+                          color: on
+                              ? Colors.white.withValues(alpha: 0.25)
+                              : c.softRose,
+                          borderRadius: BorderRadius.circular(99),
+                        ),
+                        child: Text(
+                          tag,
+                          style: AppTypography.title(
+                            9.5,
+                            on ? Colors.white : c.accentText,
+                            weight: FontWeight.w600,
+                          ),
                         ),
                       ),
-                    ),
+                    ],
                   ],
-                ],
+                ),
               ),
             ),
           ),
@@ -724,23 +781,27 @@ class _BuyButton extends StatefulWidget {
 
 class _BuyButtonState extends State<_BuyButton>
     with SingleTickerProviderStateMixin {
+  /// One sweep of light, about 0.9 s. It runs every few seconds and rests
+  /// in between, so a waiting screen draws nothing most of the time.
   late final AnimationController _shine = AnimationController(
     vsync: this,
-    duration: const Duration(milliseconds: 3200),
+    duration: const Duration(milliseconds: 900),
   );
+  Timer? _every;
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    if (MediaQuery.disableAnimationsOf(context)) {
-      _shine.stop();
-    } else if (!_shine.isAnimating) {
-      _shine.repeat();
-    }
+    _every?.cancel();
+    if (MediaQuery.disableAnimationsOf(context)) return;
+    _every = Timer.periodic(const Duration(milliseconds: 3600), (_) {
+      if (mounted) _shine.forward(from: 0);
+    });
   }
 
   @override
   void dispose() {
+    _every?.cancel();
     _shine.dispose();
     super.dispose();
   }
@@ -782,8 +843,7 @@ class _BuyButtonState extends State<_BuyButton>
                     child: AnimatedBuilder(
                       animation: _shine,
                       builder: (context, _) {
-                        // Sweeps across in the last 40% of each cycle.
-                        final t = ((_shine.value - 0.6) / 0.4).clamp(0.0, 1.0);
+                        final t = _shine.value;
                         return FractionalTranslation(
                           translation: Offset(-1 + 2 * t, 0),
                           child: const DecoratedBox(

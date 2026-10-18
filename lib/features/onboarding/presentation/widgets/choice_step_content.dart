@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../core/theme/app_spacing.dart';
@@ -10,6 +9,7 @@ import 'choice_grid_tile.dart';
 import 'choice_list_tile.dart';
 import 'level_slider_content.dart';
 import 'typewriter_text.dart';
+import '../../../../core/haptics/haptics.dart';
 
 /// Renders a [ChoiceStep] as either a vertical list or a photo grid, wiring
 /// taps to [OnboardingController.toggleOption] and auto-advancing single-select
@@ -37,7 +37,7 @@ class ChoiceStepContent extends ConsumerWidget {
     String optionId, {
     Duration advanceDelay = _defaultAdvanceDelay,
   }) {
-    HapticFeedback.mediumImpact();
+    Haptics.medium();
     if (binding != null) {
       binding!.onToggle(optionId);
       return;

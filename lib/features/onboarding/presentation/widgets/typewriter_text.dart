@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 
 import 'intro_motion.dart';
+import '../../../../core/haptics/haptics.dart';
 
 /// A run of text drawn in [style] (the base style when null).
 class TypeSegment {
@@ -90,7 +90,7 @@ class _TypewriterTextState extends State<TypewriterText>
       for (var i = _shown; i < next && i < all.length; i++) {
         if (all[i].trim().isEmpty) continue;
         // A tick on every second letter: felt as typing, not as a buzz.
-        if (_ticks++ % 2 == 0) HapticFeedback.selectionClick();
+        if (_ticks++ % 2 == 0) Haptics.tick();
       }
     }
     setState(() => _shown = next);

@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 
 import '../../../../core/theme/app_colors_extension.dart';
 import '../../../../core/theme/app_typography.dart';
+import '../../../../core/haptics/haptics.dart';
 
 /// Shown after signing in from the welcome screen when the account has no
 /// finished plan yet: the account is ready, now set up the journey. The only
@@ -12,7 +12,7 @@ Future<void> showAccountReadyDialog(
   required bool isNew,
   String? email,
 }) {
-  HapticFeedback.mediumImpact();
+  Haptics.medium();
   return showDialog<void>(
     context: context,
     barrierDismissible: false,

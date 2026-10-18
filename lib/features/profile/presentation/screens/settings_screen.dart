@@ -125,12 +125,12 @@ class SettingsScreen extends ConsumerWidget {
           _Row(
             icon: Icons.privacy_tip_outlined,
             title: 'Privacy Policy',
-            onTap: () => _linkPlaceholder(context, 'Privacy Policy'),
+            onTap: () => context.push('/privacy'),
           ),
           _Row(
             icon: Icons.description_outlined,
             title: 'Terms',
-            onTap: () => _linkPlaceholder(context, 'Terms'),
+            onTap: () => context.push('/terms'),
           ),
           _Row(
             icon: Icons.mail_outline_rounded,
@@ -147,23 +147,6 @@ class SettingsScreen extends ConsumerWidget {
           ),
         ]),
       ],
-    );
-  }
-
-  void _linkPlaceholder(BuildContext context, String what) {
-    showDialog<void>(
-      context: context,
-      builder: (ctx) => AlertDialog(
-        title: Text(what),
-        // TODO: link the published URL once Verado Studio provides it.
-        content: Text('The $what link is not available yet.'),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(ctx).pop(),
-            child: const Text('OK'),
-          ),
-        ],
-      ),
     );
   }
 

@@ -40,7 +40,9 @@ class AuthFailure {
       case '12501': // Google Sign In canceled
         return const AuthFailure('Sign in was canceled.');
       default:
-        return AuthFailure(fallbackMessage ?? 'Authentication failed. Please try again.');
+        return AuthFailure(
+          fallbackMessage ?? 'Authentication failed. Please try again.',
+        );
     }
   }
 

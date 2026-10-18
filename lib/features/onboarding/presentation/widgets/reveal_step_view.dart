@@ -442,6 +442,7 @@ class _CenterCard extends StatelessWidget {
           ),
         ],
       ),
+      // ignore: avoid_unnecessary_containers
       child: Container(
         margin: EdgeInsets.all(size * 0.06),
         decoration: BoxDecoration(
@@ -449,33 +450,35 @@ class _CenterCard extends StatelessWidget {
           border: Border.all(color: colors.onAccent.withValues(alpha: 0.35)),
         ),
         alignment: Alignment.center,
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(
-              Icons.fitness_center_rounded,
-              color: colors.onAccent,
-              size: size * 0.26,
-            ),
-            SizedBox(height: size * 0.04),
-            Text(
-              'Your plan',
-              style: AppTypography.title(
-                size * 0.15,
-                colors.onAccent,
-                weight: FontWeight.w800,
+        child: MediaQuery.withNoTextScaling(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(
+                Icons.fitness_center_rounded,
+                color: colors.onAccent,
+                size: size * 0.26,
               ),
-            ),
-            SizedBox(height: size * 0.02),
-            Text(
-              'READY',
-              style: AppTypography.kicker(
-                colors.onAccent.withValues(alpha: 0.9),
-                fontSize: size * 0.085,
-                letterSpacingEm: 0.12,
+              SizedBox(height: size * 0.04),
+              Text(
+                'Your plan',
+                style: AppTypography.title(
+                  size * 0.15,
+                  colors.onAccent,
+                  weight: FontWeight.w800,
+                ),
               ),
-            ),
-          ],
+              SizedBox(height: size * 0.02),
+              Text(
+                'READY',
+                style: AppTypography.kicker(
+                  colors.onAccent.withValues(alpha: 0.9),
+                  fontSize: size * 0.085,
+                  letterSpacingEm: 0.12,
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );

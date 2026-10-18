@@ -2,6 +2,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../features/exercises/presentation/screens/exercise_detail_screen.dart';
+import '../../features/legal/presentation/screens/legal_screen.dart';
 import '../../features/onboarding/presentation/providers/onboarding_completed_provider.dart';
 import '../../features/onboarding/presentation/screens/onboarding_flow_screen.dart';
 import '../../features/paywall/presentation/screens/paywall_screen.dart';
@@ -18,7 +19,7 @@ const _onboardingPath = '/';
 const _homePath = '/home';
 
 /// Routes anyone may open, finished onboarding or not.
-const _publicPaths = {'/paywall'};
+const _publicPaths = {'/paywall', '/privacy', '/terms'};
 
 /// Centralized route table. Onboarding and the workout player manage their
 /// own internal step/phase state rather than pushing a route per step.
@@ -68,6 +69,14 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: '/paywall',
         builder: (context, state) => const PaywallScreen(),
+      ),
+      GoRoute(
+        path: '/privacy',
+        builder: (context, state) => const LegalScreen(kind: LegalKind.privacy),
+      ),
+      GoRoute(
+        path: '/terms',
+        builder: (context, state) => const LegalScreen(kind: LegalKind.terms),
       ),
       GoRoute(
         path: '/settings',

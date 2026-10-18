@@ -49,14 +49,17 @@ class _LoadingStepViewState extends State<LoadingStepView>
       animation: _controller,
       builder: (context, _) {
         final percent = (_controller.value * 100).floor();
+        // Short phones (iPhone SE class): a smaller number, less space above
+        // and no exercise strip, so everything fits without scrolling.
+        final short = MediaQuery.sizeOf(context).height < 760;
         return Column(
           children: [
             Expanded(
               child: Container(
                 width: double.infinity,
-                padding: const EdgeInsets.fromLTRB(
+                padding: EdgeInsets.fromLTRB(
                   AppSpacing.xxxl,
-                  110,
+                  short ? 56 : 110,
                   AppSpacing.xxxl,
                   AppSpacing.xxl,
                 ),
@@ -72,97 +75,101 @@ class _LoadingStepViewState extends State<LoadingStepView>
                   ),
                   color: context.appColors.background,
                 ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'BUILDING YOUR PLAN',
-                      style: AppTypography.kicker(
-                        context.appColors.accent,
-                        letterSpacingEm: 0.12,
-                      ),
-                    ),
-                    const SizedBox(height: AppSpacing.xxl),
-                    RichText(
-                      text: TextSpan(
-                        style: AppTypography.display(
-                          fontSize: 120,
-                          color: context.appColors.textPrimary,
-                          stretchPercent: 62,
-                          letterSpacingEm: -0.04,
+                child: SingleChildScrollView(
+                  physics: const ClampingScrollPhysics(),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'BUILDING YOUR PLAN',
+                        style: AppTypography.kicker(
+                          context.appColors.accent,
+                          letterSpacingEm: 0.12,
                         ),
-                        children: [
-                          TextSpan(text: '$percent'),
-                          TextSpan(
-                            text: '%',
-                            style: AppTypography.display(
-                              fontSize: 48,
-                              color: context.appColors.accent,
-                              stretchPercent: 62,
+                      ),
+                      const SizedBox(height: AppSpacing.xxl),
+                      RichText(
+                        text: TextSpan(
+                          style: AppTypography.display(
+                            fontSize: short ? 84 : 120,
+                            color: context.appColors.textPrimary,
+                            stretchPercent: 62,
+                            letterSpacingEm: -0.04,
+                          ),
+                          children: [
+                            TextSpan(text: '$percent'),
+                            TextSpan(
+                              text: '%',
+                              style: AppTypography.display(
+                                fontSize: short ? 34 : 48,
+                                color: context.appColors.accent,
+                                stretchPercent: 62,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(height: AppSpacing.lg),
+                      ClipRRect(
+                        borderRadius: BorderRadius.circular(3),
+                        child: LinearProgressIndicator(
+                          value: _controller.value,
+                          minHeight: 6,
+                          backgroundColor: context.appColors.surfaceMuted,
+                          valueColor: AlwaysStoppedAnimation(
+                            context.appColors.accent,
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: AppSpacing.xxl),
+                      for (var i = 0; i < widget.step.stages.length; i++)
+                        _StageRow(
+                          label: widget.step.stages[i],
+                          index: i,
+                          percent: percent,
+                        ),
+                      if (!short) const SizedBox(height: AppSpacing.xl),
+                      if (!short)
+                        SizedBox(
+                          height: 120,
+                          child: ListView.separated(
+                            scrollDirection: Axis.horizontal,
+                            itemCount: widget.step.previewExercises.length,
+                            separatorBuilder: (_, _) =>
+                                const SizedBox(width: AppSpacing.md),
+                            itemBuilder: (context, i) => SizedBox(
+                              width: 120,
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  ClipRRect(
+                                    borderRadius: BorderRadius.circular(16),
+                                    child: SizedBox(
+                                      height: 90,
+                                      child: _previewPicture(
+                                        widget.step.previewExercises[i],
+                                        i < widget.step.previewNumbers.length
+                                            ? widget.step.previewNumbers[i]
+                                            : null,
+                                      ),
+                                    ),
+                                  ),
+                                  const SizedBox(height: 6),
+                                  Text(
+                                    widget.step.previewExercises[i],
+                                    style: AppTypography.body(
+                                      context.appColors.textPrimary,
+                                      fontSize: 13,
+                                      weight: FontWeight.w700,
+                                    ),
+                                  ),
+                                ],
+                              ),
                             ),
                           ),
-                        ],
-                      ),
-                    ),
-                    const SizedBox(height: AppSpacing.lg),
-                    ClipRRect(
-                      borderRadius: BorderRadius.circular(3),
-                      child: LinearProgressIndicator(
-                        value: _controller.value,
-                        minHeight: 6,
-                        backgroundColor: context.appColors.surfaceMuted,
-                        valueColor: AlwaysStoppedAnimation(
-                          context.appColors.accent,
                         ),
-                      ),
-                    ),
-                    const SizedBox(height: AppSpacing.xxl),
-                    for (var i = 0; i < widget.step.stages.length; i++)
-                      _StageRow(
-                        label: widget.step.stages[i],
-                        index: i,
-                        percent: percent,
-                      ),
-                    const SizedBox(height: AppSpacing.xl),
-                    SizedBox(
-                      height: 120,
-                      child: ListView.separated(
-                        scrollDirection: Axis.horizontal,
-                        itemCount: widget.step.previewExercises.length,
-                        separatorBuilder: (_, _) =>
-                            const SizedBox(width: AppSpacing.md),
-                        itemBuilder: (context, i) => SizedBox(
-                          width: 120,
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              ClipRRect(
-                                borderRadius: BorderRadius.circular(16),
-                                child: SizedBox(
-                                  height: 90,
-                                  child: _previewPicture(
-                                    widget.step.previewExercises[i],
-                                    i < widget.step.previewNumbers.length
-                                        ? widget.step.previewNumbers[i]
-                                        : null,
-                                  ),
-                                ),
-                              ),
-                              const SizedBox(height: 6),
-                              Text(
-                                widget.step.previewExercises[i],
-                                style: AppTypography.body(
-                                  context.appColors.textPrimary,
-                                  fontSize: 13,
-                                  weight: FontWeight.w700,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               ),
             ),
@@ -227,12 +234,16 @@ class _StageRow extends StatelessWidget {
             ),
           ),
           const SizedBox(width: AppSpacing.md),
-          Text(
-            label,
-            style: AppTypography.body(
-              color,
-              fontSize: 16,
-              weight: FontWeight.w600,
+          Expanded(
+            child: Text(
+              label,
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+              style: AppTypography.body(
+                color,
+                fontSize: 16,
+                weight: FontWeight.w600,
+              ),
             ),
           ),
         ],

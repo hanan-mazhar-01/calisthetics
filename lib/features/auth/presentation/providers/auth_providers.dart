@@ -22,10 +22,7 @@ final currentUserProvider = Provider<User?>((ref) {
 
 /// State for the auth controller.
 class AuthState {
-  const AuthState({
-    this.isLoading = false,
-    this.errorMessage,
-  });
+  const AuthState({this.isLoading = false, this.errorMessage});
 
   final bool isLoading;
   final String? errorMessage;
@@ -154,5 +151,6 @@ class AuthController extends Notifier<AuthState> {
   }
 }
 
-final authControllerProvider =
-    NotifierProvider<AuthController, AuthState>(AuthController.new);
+final authControllerProvider = NotifierProvider<AuthController, AuthState>(
+  AuthController.new,
+);
