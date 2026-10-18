@@ -18,7 +18,6 @@ import '../providers/plan_providers.dart';
 import '../../../exercises/presentation/widgets/exercise_thumb.dart';
 import '../widgets/day_locked_dialog.dart';
 import '../widgets/plan_dropdown.dart';
-import '../widgets/plan_sheets.dart';
 
 const _weekdayShort = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
 
@@ -338,7 +337,7 @@ class _EmptyPlan extends StatelessWidget {
           const SizedBox(height: AppSpacing.xxl),
           _PrimaryPill(
             label: 'Choose a plan',
-            onTap: () => showPlanPicker(context),
+            onTap: () => context.push('/plans'),
           ),
         ],
       ),
@@ -377,7 +376,7 @@ class _LevelUpCard extends ConsumerWidget {
               Expanded(
                 child: _PrimaryPill(
                   label: 'Pick next plan',
-                  onTap: () => showPlanPicker(context, title: 'Level 2'),
+                  onTap: () => context.push('/plans'),
                 ),
               ),
               const SizedBox(width: AppSpacing.md),

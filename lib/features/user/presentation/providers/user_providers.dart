@@ -143,16 +143,35 @@ class ActivePlanNotifier extends Notifier<ActivePlan?> {
   /// Starts [template] today and makes it the current plan. Other plans the
   /// user added stay. The starting stage follows the user's level.
   Future<void> start(PlanTemplate template, UserProfile profile) async {
+    await ref
+        .read(ownedPlansProvider.notifier)
+        .upsert(_newPlan(template, profile));
+    await ref.read(currentPlanIdProvider.notifier).set(template.id);
+  }
+
+  ActivePlan _newPlan(PlanTemplate template, UserProfile profile) {
     final now = ref.read(clockProvider)();
-    final plan = ActivePlan(
+    return ActivePlan(
       templateId: template.id,
       startDate: DateTime(now.year, now.month, now.day),
       progressFrom: now,
       profile: profile,
       stageIndex: const PlanBuilder().startingStage(template, profile),
     );
-    await ref.read(ownedPlansProvider.notifier).upsert(plan);
-    await ref.read(currentPlanIdProvider.notifier).set(template.id);
+  }
+
+  /// Adds [template] starting today and keeps following the current plan.
+  /// With no current plan yet, the new one becomes it. Returns whether
+  /// another plan is still current (so the caller can offer to switch).
+  Future<bool> join(PlanTemplate template, UserProfile profile) async {
+    final hadCurrent = state != null;
+    await ref
+        .read(ownedPlansProvider.notifier)
+        .upsert(_newPlan(template, profile));
+    if (!hadCurrent) {
+      await ref.read(currentPlanIdProvider.notifier).set(template.id);
+    }
+    return hadCurrent;
   }
 
   /// Makes an already-added plan the current one.

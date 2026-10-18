@@ -167,6 +167,9 @@ void main() {
             '/exercise/1',
             '/day/0',
             '/day/2',
+            '/plans',
+            '/plans/core-control',
+            '/plans/skill-pull-up',
           ]) {
             push(route);
             await settle(1500);

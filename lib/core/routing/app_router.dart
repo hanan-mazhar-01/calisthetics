@@ -6,7 +6,9 @@ import '../../features/legal/presentation/screens/legal_screen.dart';
 import '../../features/onboarding/presentation/providers/onboarding_completed_provider.dart';
 import '../../features/onboarding/presentation/screens/onboarding_flow_screen.dart';
 import '../../features/paywall/presentation/screens/paywall_screen.dart';
+import '../../features/plan/presentation/screens/all_plans_screen.dart';
 import '../../features/plan/presentation/screens/day_overview_screen.dart';
+import '../../features/plan/presentation/screens/plan_details_screen.dart';
 import '../../features/plan/presentation/screens/plan_settings_screen.dart';
 import '../../features/profile/presentation/screens/favorites_screen.dart';
 import '../../features/profile/presentation/screens/history_screen.dart';
@@ -69,6 +71,15 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: '/paywall',
         builder: (context, state) => const PaywallScreen(),
+      ),
+      GoRoute(
+        path: '/plans',
+        builder: (context, state) => const AllPlansScreen(),
+      ),
+      GoRoute(
+        path: '/plans/:id',
+        builder: (context, state) =>
+            PlanDetailsScreen(templateId: state.pathParameters['id']!),
       ),
       GoRoute(
         path: '/privacy',

@@ -8,7 +8,6 @@ import '../../../../core/theme/app_typography.dart';
 import '../../../plans/domain/plan_template.dart';
 import '../../../user/presentation/providers/user_providers.dart';
 import '../providers/plan_providers.dart';
-import 'plan_sheets.dart';
 
 /// Colours per plan, in the app's warm family plus two cool accents.
 List<Color> planGradient(PlanTemplate t) {
@@ -65,14 +64,11 @@ class PlanDropdownPanel extends ConsumerWidget {
       ...all.where((c) => !c.isCurrent),
     ];
 
-    Future<void> addMore() async {
-      if (ref.read(canAddPlanProvider)) {
-        onClose();
-        await showPlanPicker(context, title: 'Add a plan');
-      } else {
-        onClose();
-        context.push('/paywall'); // Free: 1 plan. Premium: all.
-      }
+    // Add More Plan opens the plans page; joining a second plan asks for
+    // Premium there (Free keeps one plan).
+    void addMore() {
+      onClose();
+      context.push('/plans');
     }
 
     return Material(
