@@ -8,7 +8,12 @@ import '../../../../core/theme/app_typography.dart';
 import '../../../../shared/widgets/bunny_image.dart';
 import '../../../../shared/widgets/media_placeholder.dart';
 import '../../../../shared/widgets/primary_button.dart';
+
+import 'package:firebase_auth/firebase_auth.dart';
+
+import '../../../auth/presentation/providers/auth_providers.dart';
 import '../../../auth/presentation/widgets/auth_modal_sheet.dart';
+import 'account_ready_dialog.dart';
 import 'intro_motion.dart';
 import 'typewriter_text.dart';
 import '../../../sync/presentation/providers/sync_providers.dart';
@@ -38,6 +43,48 @@ class _WelcomeStepViewState extends ConsumerState<WelcomeStepView>
     super.dispose();
   }
 
+  bool _signingIn = false;
+
+  /// "Log in": an account with a finished plan goes straight home with its
+  /// data. A new account (or one without a plan yet) gets the "account is
+  /// ready" popup, whose "Get started" continues into onboarding.
+  Future<void> _logIn() async {
+    if (_signingIn) return;
+    final router = GoRouter.of(context);
+    final session = ref.read(accountSessionProvider);
+    if (ref.read(authRepositoryProvider).currentUser == null) {
+      final ok = await showAuthModalSheet(context, initialIsSignUp: false);
+      if (ok != true || !mounted) return;
+    }
+    setState(() => _signingIn = true);
+    final bool home;
+    try {
+      home = await session.afterSignIn();
+    } finally {
+      if (mounted) setState(() => _signingIn = false);
+    }
+    if (!mounted) return;
+    if (home) {
+      router.go('/home');
+      return;
+    }
+    final user = ref.read(authRepositoryProvider).currentUser;
+    await showAccountReadyDialog(
+      context,
+      isNew: _isNewAccount(user),
+      email: user?.email,
+    );
+    if (mounted) widget.onStart();
+  }
+
+  /// Made just now (sign-up, or a first Google/Apple sign-in).
+  static bool _isNewAccount(User? user) {
+    final made = user?.metadata.creationTime;
+    final last = user?.metadata.lastSignInTime;
+    if (made == null || last == null) return true;
+    return last.difference(made).abs() < const Duration(minutes: 2);
+  }
+
   void _typed() {
     if (!mounted) return;
     MediaQuery.disableAnimationsOf(context) ? _body.value = 1 : _body.forward();
@@ -46,6 +93,8 @@ class _WelcomeStepViewState extends ConsumerState<WelcomeStepView>
   @override
   Widget build(BuildContext context) {
     final p = _WelcomePalette.of(context);
+    final user = ref.watch(currentUserProvider);
+    final signedIn = user != null;
     return Stack(
       fit: StackFit.expand,
       children: [
@@ -179,45 +228,69 @@ class _WelcomeStepViewState extends ConsumerState<WelcomeStepView>
                 ),
               ),
               const SizedBox(height: AppSpacing.lg),
-              GestureDetector(
-                behavior: HitTestBehavior.opaque,
-                onTap: () async {
-                  final success = await showAuthModalSheet(
-                    context,
-                    initialIsSignUp: false,
-                  );
-                  if (success == true && context.mounted) {
-                    // Their account's plan and progress are now on the
-                    // phone; a new or unfinished account continues here.
-                    final home = await ref
-                        .read(accountSessionProvider)
-                        .afterSignIn();
-                    if (home && context.mounted) context.go('/home');
-                  }
-                },
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(vertical: AppSpacing.sm),
-                  child: Text.rich(
-                    TextSpan(
-                      style: AppTypography.body(p.muted, fontSize: 14),
-                      children: [
-                        const TextSpan(text: 'Already training with us? '),
-                        TextSpan(
-                          text: 'Log in',
-                          style: TextStyle(
-                            color: p.fg,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
+              _LoginLink(
+                palette: p,
+                busy: _signingIn,
+                signedInAs: signedIn ? (user.email ?? 'your account') : null,
+                onTap: _logIn,
               ),
             ],
           ),
         ),
       ],
+    );
+  }
+}
+
+/// "Already training with us? Log in", or, once signed in on this screen,
+/// "Signed in as ... Continue" (never a second sign-in on top of the first).
+class _LoginLink extends StatelessWidget {
+  const _LoginLink({
+    required this.palette,
+    required this.busy,
+    required this.signedInAs,
+    required this.onTap,
+  });
+
+  final _WelcomePalette palette;
+  final bool busy;
+  final String? signedInAs;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final p = palette;
+    final strong = TextStyle(color: p.fg, fontWeight: FontWeight.w600);
+    return GestureDetector(
+      behavior: HitTestBehavior.opaque,
+      onTap: busy ? null : onTap,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: AppSpacing.sm),
+        child: busy
+            ? SizedBox(
+                height: 20,
+                width: 20,
+                child: CircularProgressIndicator(
+                  strokeWidth: 2.4,
+                  color: p.accent,
+                ),
+              )
+            : Text.rich(
+                textAlign: TextAlign.center,
+                TextSpan(
+                  style: AppTypography.body(p.muted, fontSize: 14),
+                  children: signedInAs == null
+                      ? [
+                          const TextSpan(text: 'Already training with us? '),
+                          TextSpan(text: 'Log in', style: strong),
+                        ]
+                      : [
+                          TextSpan(text: 'Signed in as $signedInAs \u00b7 '),
+                          TextSpan(text: 'Continue', style: strong),
+                        ],
+                ),
+              ),
+      ),
     );
   }
 }
