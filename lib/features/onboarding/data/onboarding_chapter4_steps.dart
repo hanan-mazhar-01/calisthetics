@@ -24,59 +24,69 @@ final List<OnboardingStep> onboardingChapter4Steps = [
     id: 'focus-areas',
     chapter: 4,
     headline: Headline('Where should we ', 'focus', '?'),
-    // Positions are fractions of the (trimmed) figure image: the pill's side
-    // and height, and the spots of the body that light up when it is chosen.
+    // Positions are fractions of the figure image: pills alternate left and
+    // right down the body (like the reference), each glow sits on the part
+    // it names.
     areas: [
       FocusArea(
         id: 'shoulders',
         label: 'Shoulders',
         xFraction: 0,
         yFraction: 0.15,
-        glow: [GlowSpot(0.366, 0.205, 0.08), GlowSpot(0.634, 0.205, 0.08)],
+        glow: [
+          GlowSpot(0.365, 0.205, 0.075, stretch: 0.8, angle: -30),
+          GlowSpot(0.585, 0.195, 0.075, stretch: 0.8, angle: 30),
+        ],
       ),
       FocusArea(
         id: 'back',
         label: 'Back',
-        xFraction: 0,
-        yFraction: 0.255,
-        glow: [GlowSpot(0.40, 0.265, 0.08), GlowSpot(0.60, 0.255, 0.08)],
-      ),
-      FocusArea(
-        id: 'core',
-        label: 'Core',
-        xFraction: 0,
-        yFraction: 0.36,
-        glow: [GlowSpot(0.48, 0.34, 0.1)],
+        xFraction: 0.99,
+        yFraction: 0.225,
+        glow: [
+          GlowSpot(0.40, 0.255, 0.06, stretch: 1.9, angle: 8),
+          GlowSpot(0.585, 0.25, 0.06, stretch: 1.9, angle: -8),
+        ],
       ),
       FocusArea(
         id: 'arms',
         label: 'Arms',
-        xFraction: 0.99,
-        yFraction: 0.25,
+        xFraction: 0,
+        yFraction: 0.305,
         glow: [
-          GlowSpot(0.71, 0.245, 0.065),
-          GlowSpot(0.78, 0.30, 0.06),
-          GlowSpot(0.39, 0.30, 0.055),
-          GlowSpot(0.33, 0.37, 0.055),
+          GlowSpot(0.335, 0.30, 0.05, stretch: 2.6, angle: 8),
+          GlowSpot(0.30, 0.40, 0.042, stretch: 2.4, angle: 14),
+          GlowSpot(0.715, 0.265, 0.05, stretch: 2.4, angle: -58),
+          GlowSpot(0.74, 0.31, 0.042, stretch: 2.2, angle: 62),
         ],
+      ),
+      FocusArea(
+        id: 'core',
+        label: 'Core',
+        xFraction: 0.99,
+        yFraction: 0.385,
+        glow: [GlowSpot(0.49, 0.335, 0.115, stretch: 0.62)],
       ),
       FocusArea(
         id: 'glutes',
         label: 'Glutes',
-        xFraction: 0.99,
-        yFraction: 0.44,
-        glow: [GlowSpot(0.41, 0.44, 0.09), GlowSpot(0.64, 0.45, 0.09)],
+        xFraction: 0,
+        yFraction: 0.47,
+        glow: [
+          GlowSpot(0.635, 0.445, 0.075, stretch: 1.35, angle: -10),
+          GlowSpot(0.405, 0.43, 0.065, stretch: 1.2, angle: 20),
+        ],
       ),
       FocusArea(
         id: 'legs',
         label: 'Legs',
         xFraction: 0.99,
-        yFraction: 0.6,
+        yFraction: 0.58,
         glow: [
-          GlowSpot(0.437, 0.535, 0.09),
-          GlowSpot(0.603, 0.55, 0.09),
-          GlowSpot(0.38, 0.66, 0.07),
-          GlowSpot(0.576, 0.66, 0.07),
+          GlowSpot(0.33, 0.535, 0.06, stretch: 2.4, angle: 38),
+          GlowSpot(0.305, 0.64, 0.05, stretch: 2.4, angle: -12),
+          GlowSpot(0.57, 0.53, 0.07, stretch: 2.4, angle: -4),
+          GlowSpot(0.58, 0.655, 0.05, stretch: 2.6, angle: 4),
         ],
       ),
     ],

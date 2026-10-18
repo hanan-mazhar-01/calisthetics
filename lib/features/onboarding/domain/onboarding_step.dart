@@ -265,11 +265,23 @@ class MilestonesStep extends OnboardingStep {
 
 /// A soft glow over part of the body figure, in fractions of the figure's
 /// width (x, y measured from the top-left of the figure; radius of its width).
+/// A soft glow on the figure: an ellipse centred at ([x], [y]) (fractions
+/// of the figure's width and height), [radius] wide and [radius] x
+/// [stretch] tall (fractions of the figure's width), turned by [angle]
+/// degrees, so it can follow an arm or a thigh.
 class GlowSpot {
-  const GlowSpot(this.x, this.y, this.radius);
+  const GlowSpot(
+    this.x,
+    this.y,
+    this.radius, {
+    this.stretch = 1,
+    this.angle = 0,
+  });
   final double x;
   final double y;
   final double radius;
+  final double stretch;
+  final double angle;
 }
 
 class FocusArea {
