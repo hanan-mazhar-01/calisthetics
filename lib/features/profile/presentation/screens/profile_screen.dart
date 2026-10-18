@@ -8,6 +8,7 @@ import '../../../../core/motion/calesthetics_motion.dart';
 import '../../../../core/theme/app_colors_extension.dart';
 import '../../../../core/theme/app_typography.dart';
 import '../../../../core/theme/theme_reveal.dart';
+import '../../../auth/domain/auth_failure.dart';
 import '../../../auth/presentation/providers/auth_providers.dart';
 import '../../../auth/presentation/widgets/auth_modal_sheet.dart';
 import '../../../media/data/exercise_videos.dart';
@@ -16,7 +17,6 @@ import '../../../plan/presentation/providers/plan_providers.dart';
 import '../../../plan/presentation/widgets/plan_confirm_dialog.dart';
 import '../../../sync/presentation/providers/sync_providers.dart';
 import '../../../user/presentation/providers/user_providers.dart';
-import '../providers/profile_providers.dart';
 import '../widgets/reminder_sheet.dart';
 
 const _supportEmail = 'support@veradostudio.com';
@@ -72,7 +72,7 @@ class ProfileScreen extends ConsumerWidget {
                 name: name.trim(),
                 user: user,
                 onEdit: () => _editName(context, ref),
-                onConnect: () => showAuthModalSheet(context),
+                onConnect: () => _connect(context, ref),
               ),
             ),
             const SizedBox(height: 14),
@@ -144,7 +144,7 @@ class ProfileScreen extends ConsumerWidget {
                   icon: Icons.login_rounded,
                   title: 'Sign in / Sign up',
                   value: 'Connect account',
-                  onTap: () => showAuthModalSheet(context),
+                  onTap: () => _connect(context, ref),
                 ),
               _RowData(
                 icon: Icons.delete_outline_rounded,
@@ -227,25 +227,47 @@ class ProfileScreen extends ConsumerWidget {
     if (context.mounted) _snack(context, 'Downloaded videos cleared.');
   }
 
+  static Future<void> _connect(BuildContext context, WidgetRef ref) async {
+    final ok = await showAuthModalSheet(context);
+    if (ok != true || !context.mounted) return;
+    final router = GoRouter.of(context);
+    // An existing account brings its own data; if that account never
+    // finished onboarding, continue it there.
+    final home = await ref.read(accountSessionProvider).afterSignIn();
+    if (!home) router.go('/');
+  }
+
   static Future<void> _confirmDelete(
     BuildContext context,
     WidgetRef ref,
   ) async {
+    final signedIn = ref.read(authRepositoryProvider).currentUser != null;
     final ok = await showPlanConfirmDialog(
       context,
       title: 'Delete account?',
-      message:
-          'This erases your plan, history, favorites and settings from this '
-          'device and takes you back to the start. It cannot be undone.',
+      message: signedIn
+          ? 'Your account and everything in it (plans, history, favorites, '
+                'records and settings) are deleted from our servers and this '
+                'phone. It cannot be undone.'
+          : 'This erases your plan, history, favorites and settings from this '
+                'phone and takes you back to the start. It cannot be undone.',
       confirmLabel: 'Delete',
     );
     if (!ok || !context.mounted) return;
     final router = GoRouter.of(context);
-    await ref.read(cloudSyncProvider).deleteRemote();
-    await ref.read(accountActionsProvider).deleteLocalData();
     try {
-      await ref.read(authRepositoryProvider).currentUser?.delete();
-    } catch (_) {}
+      await ref
+          .read(accountSessionProvider)
+          .deleteAccount(
+            askPassword: () => showDialog<String>(
+              context: context,
+              builder: (_) => const _NameDialog.password(),
+            ),
+          );
+    } on AuthFailure catch (e) {
+      if (context.mounted) _snack(context, e.message);
+      return;
+    }
     router.go('/');
   }
 
@@ -256,16 +278,15 @@ class ProfileScreen extends ConsumerWidget {
     final ok = await showPlanConfirmDialog(
       context,
       title: 'Sign out?',
-      message: 'Are you sure you want to sign out of your account on this device?',
+      message:
+          'Your plan and progress stay saved in your account. Sign in again '
+          'to get them back.',
       confirmLabel: 'Sign out',
     );
     if (!ok || !context.mounted) return;
     final router = GoRouter.of(context);
-    await ref.read(authControllerProvider.notifier).signOut();
-    await ref.read(cloudSyncProvider).handleSignOut();
-    if (context.mounted) {
-      router.go('/');
-    }
+    await ref.read(accountSessionProvider).signOut();
+    router.go('/');
   }
 }
 
@@ -663,8 +684,13 @@ class _RowState extends State<_Row> {
 }
 
 class _NameDialog extends StatefulWidget {
-  const _NameDialog({required this.initial});
+  const _NameDialog({required this.initial}) : password = false;
+
+  /// Asks for the account password before the account is deleted.
+  const _NameDialog.password() : initial = '', password = true;
+
   final String initial;
+  final bool password;
 
   @override
   State<_NameDialog> createState() => _NameDialogState();
@@ -715,7 +741,7 @@ class _NameDialogState extends State<_NameDialog> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'Your name',
+              widget.password ? 'Confirm your password' : 'Your name',
               style: AppTypography.title(
                 22,
                 c.textPrimary,
@@ -726,12 +752,18 @@ class _NameDialogState extends State<_NameDialog> {
             TextField(
               controller: _ctrl,
               autofocus: true,
-              textCapitalization: TextCapitalization.words,
+              obscureText: widget.password,
+              keyboardType: widget.password
+                  ? TextInputType.visiblePassword
+                  : TextInputType.name,
+              textCapitalization: widget.password
+                  ? TextCapitalization.none
+                  : TextCapitalization.words,
               textInputAction: TextInputAction.done,
-              maxLength: 40,
+              maxLength: widget.password ? null : 40,
               style: AppTypography.body(c.textPrimary, fontSize: 17),
               decoration: InputDecoration(
-                hintText: 'First name',
+                hintText: widget.password ? 'Password' : 'First name',
                 counterText: '',
                 filled: true,
                 fillColor: c.surfaceMuted,
@@ -752,7 +784,7 @@ class _NameDialogState extends State<_NameDialog> {
                 button('Cancel', () => Navigator.of(context).pop()),
                 const SizedBox(width: 12),
                 button(
-                  'Save',
+                  widget.password ? 'Delete' : 'Save',
                   () => Navigator.of(context).pop(_ctrl.text),
                   primary: true,
                 ),

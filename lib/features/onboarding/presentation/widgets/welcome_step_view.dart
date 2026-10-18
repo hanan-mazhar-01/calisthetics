@@ -9,9 +9,9 @@ import '../../../../shared/widgets/bunny_image.dart';
 import '../../../../shared/widgets/media_placeholder.dart';
 import '../../../../shared/widgets/primary_button.dart';
 import '../../../auth/presentation/widgets/auth_modal_sheet.dart';
-import '../providers/onboarding_completed_provider.dart';
 import 'intro_motion.dart';
 import 'typewriter_text.dart';
+import '../../../sync/presentation/providers/sync_providers.dart';
 
 /// Screen 1: full-bleed dark cover — the only onboarding screen with no
 /// chrome header, matching the reference's cinematic first impression.
@@ -187,11 +187,12 @@ class _WelcomeStepViewState extends ConsumerState<WelcomeStepView>
                     initialIsSignUp: false,
                   );
                   if (success == true && context.mounted) {
-                    await ref
-                        .read(onboardingCompletedProvider.notifier)
-                        .complete();
-                    if (!context.mounted) return;
-                    context.go('/home');
+                    // Their account's plan and progress are now on the
+                    // phone; a new or unfinished account continues here.
+                    final home = await ref
+                        .read(accountSessionProvider)
+                        .afterSignIn();
+                    if (home && context.mounted) context.go('/home');
                   }
                 },
                 child: Padding(

@@ -59,10 +59,15 @@ class AccountActions {
   final Ref _ref;
 
   void _refreshAll() {
+    _ref.invalidate(ownedPlansProvider);
+    _ref.invalidate(currentPlanIdProvider);
     _ref.invalidate(activePlanProvider);
     _ref.invalidate(historyProvider);
     _ref.invalidate(favoritesProvider);
     _ref.invalidate(recordsProvider);
+    _ref.invalidate(plankHistoryProvider);
+    _ref.invalidate(partialProgressProvider);
+    _ref.invalidate(partialLogProvider);
     _ref.invalidate(settingsProvider);
     _ref.invalidate(onboardingControllerProvider);
     _ref.invalidate(onboardingCompletedProvider);

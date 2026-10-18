@@ -240,10 +240,15 @@
   }
  },
  "calesthetics_021_glute_bridge_beginner_v1": {
+  "clip": {
+   "guid": "8a0daaa2-263a-4b8d-83c4-69a66f015f02",
+   "sha": "8767acf22214",
+   "source": "Glute bridge clip 1.mp4"
+  },
   "main": {
-   "guid": "3c8aadb1-6c28-41a0-bb8b-b6c839db8871",
+   "guid": "8feaf68c-ce60-4b13-b0b3-d27c22a428e3",
    "sha": "78e78daa7203",
-   "source": "Foundation_Legs_&_Glutes/Glute Bridge.mp4"
+   "source": "Glute Bridge.mp4"
   }
  },
  "calesthetics_022_single_leg_glute_bridge_intermediate_v1": {
@@ -676,6 +681,18 @@
    "guid": "1580233f-9911-4d34-9203-755272d6dfc9",
    "sha": "2d7b28b7baa8",
    "source": "Skill_Handstand/Pike hold.mp4"
+  }
+ },
+ "calesthetics_063_wall_walk_intermediate_v1": {
+  "clip": {
+   "guid": "4d9456ac-161b-4c36-8f4b-4f88463d7359",
+   "sha": "ed5eb654a2ce",
+   "source": "Wall walk clip 1.mp4"
+  },
+  "main": {
+   "guid": "dcf0f540-0f6c-469d-84af-7d223b6475d5",
+   "sha": "2b31902f4aa3",
+   "source": "Wall walk.mp4"
   }
  },
  "calesthetics_064_chest_to_wall_handstand_intermediate_v1": {

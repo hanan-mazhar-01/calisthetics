@@ -10,6 +10,10 @@ import '../../../../shared/widgets/primary_button.dart';
 import '../../../auth/presentation/providers/auth_providers.dart';
 import '../../../auth/presentation/widgets/auth_modal_sheet.dart';
 
+import 'package:go_router/go_router.dart';
+
+import '../../../sync/presentation/providers/sync_providers.dart';
+
 /// Optional account creation step at the end of onboarding.
 /// Connects to Apple, Google, or Email Authentication via Firebase.
 class AccountStepView extends ConsumerStatefulWidget {
@@ -34,25 +38,28 @@ class _AccountStepViewState extends ConsumerState<AccountStepView> {
   Future<void> _handleGoogle() async {
     final ctl = ref.read(authControllerProvider.notifier);
     final user = await ctl.signInWithGoogle();
-    if (user != null && mounted) {
-      widget.onSkip();
-    }
+    if (user != null) await _signedIn();
   }
 
   Future<void> _handleApple() async {
     final ctl = ref.read(authControllerProvider.notifier);
     final user = await ctl.signInWithApple();
-    if (user != null && mounted) {
-      widget.onSkip();
-    }
+    if (user != null) await _signedIn();
   }
 
   Future<void> _handleEmail() async {
-    final success = await showAuthModalSheet(
-      context,
-      initialIsSignUp: true,
-    );
-    if (success == true && mounted) {
+    final success = await showAuthModalSheet(context, initialIsSignUp: true);
+    if (success == true) await _signedIn();
+  }
+
+  /// An existing account with a finished plan goes straight home with its
+  /// own data; a new account keeps what was answered so far and continues.
+  Future<void> _signedIn() async {
+    final home = await ref.read(accountSessionProvider).afterSignIn();
+    if (!mounted) return;
+    if (home) {
+      context.go('/home');
+    } else {
       widget.onSkip();
     }
   }
@@ -64,7 +71,8 @@ class _AccountStepViewState extends ConsumerState<AccountStepView> {
     final isBusy = widget.busy || authState.isLoading;
 
     ref.listen(authControllerProvider, (prev, next) {
-      if (next.errorMessage != null && next.errorMessage != prev?.errorMessage) {
+      if (next.errorMessage != null &&
+          next.errorMessage != prev?.errorMessage) {
         ScaffoldMessenger.of(context)
           ..hideCurrentSnackBar()
           ..showSnackBar(
@@ -156,7 +164,9 @@ class _AccountStepViewState extends ConsumerState<AccountStepView> {
                             Icon(
                               item.icon,
                               color: c.textPrimary,
-                              size: item.icon == Icons.g_mobiledata_rounded ? 28 : 22,
+                              size: item.icon == Icons.g_mobiledata_rounded
+                                  ? 28
+                                  : 22,
                             ),
                             const SizedBox(width: AppSpacing.lg),
                             Expanded(
@@ -173,7 +183,9 @@ class _AccountStepViewState extends ConsumerState<AccountStepView> {
                               const SizedBox(
                                 width: 18,
                                 height: 18,
-                                child: CircularProgressIndicator(strokeWidth: 2),
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2,
+                                ),
                               )
                             else
                               Icon(

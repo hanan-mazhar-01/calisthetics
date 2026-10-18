@@ -139,27 +139,15 @@ void main() {
       expect(p.canViewPage(rung), isTrue);
     });
 
-    test('free: ladder video locked unless in own plan; foundation free', () {
-      const free = ExerciseAccessPolicy(isPremium: false);
-      expect(free.canPlayVideo(rung), isFalse);
-      expect(free.canPlayVideo(foundation), isTrue);
-      expect(
-        ExerciseAccessPolicy(
-          isPremium: false,
-          planExerciseNumbers: {rung.number},
-        ).canPlayVideo(rung),
-        isTrue,
-      );
-    });
-
-    test('premium plays everything and can start plans', () {
-      const p = ExerciseAccessPolicy(isPremium: true);
-      expect(p.canPlayVideo(rung), isTrue);
-      expect(p.canStartPlan, isTrue);
-      expect(
-        const ExerciseAccessPolicy(isPremium: false).canStartPlan,
-        isFalse,
-      );
+    test('paywall off: every video plays and plans can start', () {
+      for (final p in const [
+        ExerciseAccessPolicy(isPremium: false),
+        ExerciseAccessPolicy(isPremium: true),
+      ]) {
+        expect(p.canPlayVideo(rung), isTrue);
+        expect(p.canPlayVideo(foundation), isTrue);
+        expect(p.canStartPlan, isTrue);
+      }
     });
   });
 

@@ -11,6 +11,8 @@ import '../../../user/presentation/providers/user_providers.dart';
 import '../widgets/reminder_sheet.dart';
 import '../providers/profile_providers.dart';
 import '../widgets/profile_chrome.dart';
+import '../../../auth/domain/auth_failure.dart';
+import '../../../sync/presentation/providers/sync_providers.dart';
 
 const _supportEmail = 'support@veradostudio.com';
 
@@ -176,7 +178,18 @@ class SettingsScreen extends ConsumerWidget {
     );
     if (ok != true || !context.mounted) return;
     final router = GoRouter.of(context);
-    await ref.read(accountActionsProvider).deleteLocalData();
+    try {
+      await ref
+          .read(accountSessionProvider)
+          .deleteAccount(askPassword: () async => null);
+    } on AuthFailure catch (e) {
+      if (context.mounted) {
+        ScaffoldMessenger.of(context)
+          ..hideCurrentSnackBar()
+          ..showSnackBar(SnackBar(content: Text(e.message)));
+      }
+      return;
+    }
     router.go('/');
   }
 

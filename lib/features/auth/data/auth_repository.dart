@@ -2,6 +2,7 @@ import 'dart:convert' show utf8;
 import 'dart:math' as math;
 
 import 'package:crypto/crypto.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:google_sign_in/google_sign_in.dart';
@@ -17,13 +18,18 @@ class AuthRepository {
   AuthRepository({
     FirebaseAuth? auth,
     GoogleSignIn? googleSignIn,
-  })  : _auth = auth ?? FirebaseAuth.instance,
-        _googleSignIn = googleSignIn ?? GoogleSignIn.instance {
-    _initGoogleSignIn();
-  }
+  })  : _authOverride = auth,
+        _googleOverride = googleSignIn;
 
-  final FirebaseAuth _auth;
-  final GoogleSignIn _googleSignIn;
+  final FirebaseAuth? _authOverride;
+  final GoogleSignIn? _googleOverride;
+
+  FirebaseAuth get _auth => _authOverride ?? FirebaseAuth.instance;
+  GoogleSignIn get _googleSignIn => _googleOverride ?? GoogleSignIn.instance;
+
+  /// False until Firebase is set up (and in widget tests): everyone is a
+  /// guest then.
+  bool get _ready => _authOverride != null || Firebase.apps.isNotEmpty;
 
   // Server Web Client ID from google-services.json for OAuth token exchange
   static const String _serverClientId =
@@ -41,13 +47,14 @@ class AuthRepository {
   }
 
   /// Stream of authentication state changes.
-  Stream<User?> get authStateChanges => _auth.authStateChanges();
+  Stream<User?> get authStateChanges =>
+      _ready ? _auth.authStateChanges() : Stream.value(null);
 
   /// Currently signed in user, if any.
-  User? get currentUser => _auth.currentUser;
+  User? get currentUser => _ready ? _auth.currentUser : null;
 
   /// Whether a user is currently authenticated.
-  bool get isAuthenticated => _auth.currentUser != null;
+  bool get isAuthenticated => currentUser != null;
 
   /// Sign in using Email and Password.
   Future<UserCredential> signInWithEmailAndPassword({
@@ -196,12 +203,109 @@ class AuthRepository {
 
   /// Sign out from all providers.
   Future<void> signOut() async {
+    if (!_ready) return;
     try {
       if (!kIsWeb) {
         await _googleSignIn.signOut();
       }
     } catch (_) {}
     await _auth.signOut();
+  }
+
+  /// Deletes the signed-in Firebase user. The user first confirms who they
+  /// are with their provider (Google, Apple) or password ([askPassword]),
+  /// since Firebase only deletes a fresh sign-in; on iPhone this also
+  /// revokes the app's Sign in with Apple token, as the App Store requires.
+  /// [deleteData] runs after that and before the user is deleted, while
+  /// Firestore still lets them delete their own document. If anything up
+  /// to and including [deleteData] fails, nothing has been deleted.
+  Future<void> deleteAccount({
+    required Future<String?> Function() askPassword,
+    required Future<void> Function() deleteData,
+  }) async {
+    final user = currentUser;
+    if (user == null) return;
+    final providers = {for (final p in user.providerData) p.providerId};
+    try {
+      await _reauthenticate(user, providers, askPassword);
+      await deleteData();
+      await user.delete();
+      try {
+        if (!kIsWeb) await _googleSignIn.signOut();
+      } catch (_) {}
+    } on AuthFailure {
+      rethrow;
+    } on FirebaseAuthException catch (e) {
+      throw AuthFailure.fromCode(e.code, e.message);
+    } on SignInWithAppleAuthorizationException catch (e) {
+      if (e.code == AuthorizationErrorCode.canceled) {
+        throw const AuthFailure('Account deletion was cancelled.');
+      }
+      throw AuthFailure('Apple sign-in error: ${e.message}');
+    } on GoogleSignInException catch (e) {
+      if (e.code == GoogleSignInExceptionCode.canceled) {
+        throw const AuthFailure('Account deletion was cancelled.');
+      }
+      throw AuthFailure('Google sign-in error: ${e.description ?? e.code.name}');
+    } catch (e) {
+      throw AuthFailure('Could not delete the account: $e');
+    }
+  }
+
+  Future<void> _reauthenticate(
+    User user,
+    Set<String> providers,
+    Future<String?> Function() askPassword,
+  ) async {
+    if (providers.contains('google.com') && !kIsWeb) {
+      _initGoogleSignIn();
+      final account = await _googleSignIn.authenticate();
+      final idToken = account.authentication.idToken;
+      if (idToken == null) {
+        throw const AuthFailure('Failed to obtain Google ID token.');
+      }
+      await user.reauthenticateWithCredential(
+        GoogleAuthProvider.credential(idToken: idToken),
+      );
+    } else if (providers.contains('apple.com')) {
+      final isApplePlatform =
+          defaultTargetPlatform == TargetPlatform.iOS ||
+          defaultTargetPlatform == TargetPlatform.macOS;
+      if (isApplePlatform && !kIsWeb) {
+        final rawNonce = _generateNonce();
+        final apple = await SignInWithApple.getAppleIDCredential(
+          scopes: const [],
+          nonce: sha256.convert(utf8.encode(rawNonce)).toString(),
+        );
+        await user.reauthenticateWithCredential(
+          OAuthProvider(
+            'apple.com',
+          ).credential(idToken: apple.identityToken, rawNonce: rawNonce),
+        );
+        // Sign in with Apple stops trusting the app for this account.
+        try {
+          await _auth.revokeTokenWithAuthorizationCode(
+            apple.authorizationCode,
+          );
+        } catch (e) {
+          debugPrint('Apple token revoke failed: $e');
+        }
+      } else {
+        await user.reauthenticateWithProvider(OAuthProvider('apple.com'));
+      }
+    } else if (providers.contains('password') && user.email != null) {
+      final password = await askPassword();
+      if (password == null || password.isEmpty) {
+        throw const AuthFailure('Account deletion was cancelled.');
+      }
+      await user.reauthenticateWithCredential(
+        EmailAuthProvider.credential(email: user.email!, password: password),
+      );
+    } else {
+      throw const AuthFailure(
+        'Please sign out, sign in again, then delete your account.',
+      );
+    }
   }
 
   /// Helper to generate cryptographically secure nonce for Apple Sign In.

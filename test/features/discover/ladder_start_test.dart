@@ -21,6 +21,7 @@ void main() {
       planExerciseNumbers: {1, 2, 3, 4},
     );
     expect(policy.canPlayVideo(exerciseByNumber(39)), isTrue);
-    expect(policy.canPlayVideo(exerciseByNumber(46)), isFalse);
+    // Paywall off: rungs outside the plan play too.
+    expect(policy.canPlayVideo(exerciseByNumber(46)), isTrue);
   });
 }

@@ -146,10 +146,10 @@ void main() {
     );
   });
 
-  test('free by default', () {
+  test('everything unlocked while the paywall is off', () {
     final c = ProviderContainer();
     addTearDown(c.dispose);
-    expect(c.read(isPremiumProvider), isFalse);
+    expect(c.read(isPremiumProvider), isTrue);
   });
 
   Future<ProviderScope> scope(
