@@ -114,129 +114,132 @@ class _PaywallContentState extends ConsumerState<PaywallContent> {
 
     return Stack(
       children: [
-        LayoutBuilder(
-          builder: (context, box) {
-            final heroH = (box.maxHeight * 0.47).clamp(240.0, 400.0);
-            return SingleChildScrollView(
-              child: ConstrainedBox(
-                constraints: BoxConstraints(minHeight: box.maxHeight),
-                child: IntrinsicHeight(
+        Builder(
+          builder: (context) {
+            // Short phones (iPhone SE class): a smaller photo and no chips,
+            // so the price and the buy button stay in view.
+            final screenH = MediaQuery.sizeOf(context).height;
+            final short = screenH < 700;
+            final heroH = (screenH * (short ? 0.35 : 0.40)).clamp(210.0, 400.0);
+            return Column(
+              children: [
+                // The photo, the title and the plans scroll if they must...
+                Expanded(
+                  child: SingleChildScrollView(
+                    child: Column(
+                      children: [
+                        _OrbitHero(height: heroH, onClose: widget.onClose),
+                        const SizedBox(height: 10),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 22),
+                          child: Column(
+                            children: [
+                              Text.rich(
+                                textAlign: TextAlign.center,
+                                TextSpan(
+                                  style: AppTypography.title(
+                                    25,
+                                    c.textPrimary,
+                                    weight: FontWeight.w600,
+                                    height: 1.15,
+                                  ),
+                                  children: [
+                                    const TextSpan(text: 'Unlock your full '),
+                                    TextSpan(
+                                      text: 'journey',
+                                      style: AppTypography.accentSerif(
+                                        c.accentText,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              if (!short) const SizedBox(height: 12),
+                              if (!short)
+                                Wrap(
+                                  alignment: WrapAlignment.center,
+                                  spacing: 6,
+                                  runSpacing: 6,
+                                  children: [
+                                    for (final (i, label) in [
+                                      'All ${planTemplates.length} plans',
+                                      '${exerciseCatalog.length} exercises',
+                                      'Video coaching',
+                                    ].indexed)
+                                      _Pop(
+                                        delay: Duration(
+                                          milliseconds: 300 + 120 * i,
+                                        ),
+                                        child: _Chip(label: label),
+                                      ),
+                                  ],
+                                ),
+                              const SizedBox(height: 18),
+                              _PlanToggle(
+                                value: _choice,
+                                yearlyTag: 'Save 58%',
+                                onChanged: (p) {
+                                  Haptics.light();
+                                  setState(() => _choice = p);
+                                },
+                              ),
+                              const SizedBox(height: 14),
+                              _Price(
+                                price: chosen.price,
+                                period: chosen.period,
+                                hint: hint,
+                              ),
+                            ],
+                          ),
+                        ),
+                        const SizedBox(height: 8),
+                      ],
+                    ),
+                  ),
+                ),
+                // ...while the buy button and the links always stay visible.
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(22, 14, 22, 12),
                   child: Column(
                     children: [
-                      _OrbitHero(height: heroH, onClose: widget.onClose),
-                      const SizedBox(height: 10),
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 22),
-                        child: Column(
-                          children: [
-                            Text.rich(
-                              textAlign: TextAlign.center,
-                              TextSpan(
-                                style: AppTypography.title(
-                                  25,
-                                  c.textPrimary,
-                                  weight: FontWeight.w600,
-                                  height: 1.15,
-                                ),
-                                children: [
-                                  const TextSpan(text: 'Unlock your full '),
-                                  TextSpan(
-                                    text: 'journey',
-                                    style: AppTypography.accentSerif(
-                                      c.accentText,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                            const SizedBox(height: 12),
-                            Wrap(
-                              alignment: WrapAlignment.center,
-                              spacing: 6,
-                              runSpacing: 6,
-                              children: [
-                                for (final (i, label) in [
-                                  'All ${planTemplates.length} plans',
-                                  '${exerciseCatalog.length} exercises',
-                                  'Video coaching',
-                                ].indexed)
-                                  _Pop(
-                                    delay: Duration(
-                                      milliseconds: 300 + 120 * i,
-                                    ),
-                                    child: _Chip(label: label),
-                                  ),
-                              ],
-                            ),
-                            const SizedBox(height: 18),
-                            _PlanToggle(
-                              value: _choice,
-                              yearlyTag: 'Save 58%',
-                              onChanged: (p) {
-                                Haptics.light();
-                                setState(() => _choice = p);
-                              },
-                            ),
-                            const SizedBox(height: 14),
-                            _Price(
-                              price: chosen.price,
-                              period: chosen.period,
-                              hint: hint,
-                            ),
-                          ],
+                      RepaintBoundary(
+                        child: _BuyButton(
+                          label: cta,
+                          busy: _busy,
+                          onTap: current.plan == _choice ? null : _buy,
                         ),
                       ),
-                      const Spacer(),
-                      Padding(
-                        padding: const EdgeInsets.fromLTRB(22, 14, 22, 12),
-                        child: Column(
-                          children: [
-                            RepaintBoundary(
-                              child: _BuyButton(
-                                label: cta,
-                                busy: _busy,
-                                onTap: current.plan == _choice ? null : _buy,
-                              ),
-                            ),
-                            const SizedBox(height: 7),
-                            Text(
-                              (kReleaseMode ||
-                                      ref
-                                          .read(subscriptionServiceProvider)
-                                          .isLive)
-                                  ? 'Renews automatically until you cancel in your store settings.'
-                                  : 'Test mode: no payment is taken.',
-                              textAlign: TextAlign.center,
-                              style: AppTypography.body(
-                                c.textSecondary,
-                                fontSize: 11.5,
-                              ),
-                            ),
-                            Wrap(
-                              alignment: WrapAlignment.center,
-                              children: [
-                                _LinkButton(
-                                  label: 'Not now',
-                                  onTap: widget.onClose,
-                                ),
-                                _LinkButton(label: 'Restore', onTap: _restore),
-                                _LinkButton(
-                                  label: 'Terms',
-                                  onTap: () => context.push('/terms'),
-                                ),
-                                _LinkButton(
-                                  label: 'Privacy',
-                                  onTap: () => context.push('/privacy'),
-                                ),
-                              ],
-                            ),
-                          ],
+                      const SizedBox(height: 7),
+                      Text(
+                        (kReleaseMode ||
+                                ref.read(subscriptionServiceProvider).isLive)
+                            ? 'Renews automatically until you cancel in your store settings.'
+                            : 'Test mode: no payment is taken.',
+                        textAlign: TextAlign.center,
+                        style: AppTypography.body(
+                          c.textSecondary,
+                          fontSize: 11.5,
                         ),
+                      ),
+                      Wrap(
+                        alignment: WrapAlignment.center,
+                        children: [
+                          _LinkButton(label: 'Not now', onTap: widget.onClose),
+                          _LinkButton(label: 'Restore', onTap: _restore),
+                          _LinkButton(
+                            label: 'Terms',
+                            onTap: () => context.push('/terms'),
+                          ),
+                          _LinkButton(
+                            label: 'Privacy',
+                            onTap: () => context.push('/privacy'),
+                          ),
+                        ],
                       ),
                     ],
                   ),
                 ),
-              ),
+              ],
             );
           },
         ),

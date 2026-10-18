@@ -332,7 +332,7 @@ class _HeroState extends State<_Hero> with TickerProviderStateMixin {
                               ? (widget.locked
                                     ? 'Premium video'
                                     : 'Tap to try it · ${PlanBuilder.drillSeconds} s')
-                              : 'Video coming soon',
+                              : 'No video for this exercise',
                           style: AppTypography.body(
                             Colors.white,
                             fontSize: 13,

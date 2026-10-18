@@ -24,6 +24,11 @@ Future<void> main() async {
   }
   final prefs = await SharedPreferences.getInstance();
 
+  // Every screen is designed for a portrait phone.
+  await SystemChrome.setPreferredOrientations(const [
+    DeviceOrientation.portraitUp,
+  ]);
+
   // Without this, Android draws its own opaque system navigation bar behind
   // the bottom of the screen — visible as a flat panel behind any CTA that
   // sits near the edge (e.g. the onboarding Continue button), independent of

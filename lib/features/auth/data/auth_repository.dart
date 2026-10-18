@@ -8,6 +8,7 @@ import 'package:flutter/foundation.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 
+import '../../../firebase_options.dart';
 import '../domain/auth_failure.dart';
 
 /// Repository for handling all Firebase Authentication operations:
@@ -37,7 +38,13 @@ class AuthRepository {
 
   void _initGoogleSignIn() {
     if (!kIsWeb && !_googleInitialized) {
-      _googleSignIn.initialize(serverClientId: _serverClientId);
+      // iPhone needs the iOS client ID too (Android reads it from
+      // google-services.json).
+      final isIos = defaultTargetPlatform == TargetPlatform.iOS;
+      _googleSignIn.initialize(
+        clientId: isIos ? DefaultFirebaseOptions.ios.iosClientId : null,
+        serverClientId: _serverClientId,
+      );
       _googleInitialized = true;
     }
   }
