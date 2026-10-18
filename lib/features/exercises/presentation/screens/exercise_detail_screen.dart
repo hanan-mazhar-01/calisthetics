@@ -42,7 +42,9 @@ class ExerciseDetailScreen extends ConsumerWidget {
       if (locked) {
         showPremiumSheet(
           context,
-          message: 'Videos for this ladder rung are part of Premium.',
+          message:
+              'All Discover exercises are part of Premium. The exercises in '
+              'your free plan stay free.',
         );
         return;
       }

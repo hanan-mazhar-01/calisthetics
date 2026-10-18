@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../core/storage/shared_preferences_provider.dart';
 import '../../../onboarding/presentation/providers/onboarding_completed_provider.dart';
 import '../../../onboarding/presentation/providers/onboarding_controller.dart';
+import '../../../paywall/presentation/providers/subscription_providers.dart';
 import '../../../plans/domain/plan_builder.dart';
 import '../../../user/presentation/providers/user_providers.dart';
 import '../../domain/achievement_evaluator.dart';
@@ -71,6 +72,7 @@ class AccountActions {
     _ref.invalidate(settingsProvider);
     _ref.invalidate(onboardingControllerProvider);
     _ref.invalidate(onboardingCompletedProvider);
+    _ref.invalidate(subscriptionProvider);
   }
 
   /// Wipes every local preference; the app returns to onboarding.

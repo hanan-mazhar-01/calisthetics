@@ -5,6 +5,7 @@ import '../../../auth/domain/auth_failure.dart';
 import '../../../auth/presentation/providers/auth_providers.dart';
 import '../../../onboarding/presentation/providers/onboarding_completed_provider.dart';
 import '../../../onboarding/presentation/providers/onboarding_controller.dart';
+import '../../../paywall/presentation/providers/subscription_providers.dart';
 import '../../../profile/presentation/providers/profile_providers.dart';
 import '../../../user/presentation/providers/user_providers.dart';
 import '../../data/cloud_sync.dart';
@@ -28,6 +29,7 @@ final cloudSyncProvider = Provider<CloudSync>((ref) {
     ref.invalidate(settingsProvider);
     ref.invalidate(onboardingControllerProvider);
     ref.invalidate(onboardingCompletedProvider);
+    ref.invalidate(subscriptionProvider);
   }
 
   final sync = CloudSync(
@@ -49,6 +51,7 @@ final cloudSyncProvider = Provider<CloudSync>((ref) {
   ref.listen(partialLogProvider, (_, _) => sync.schedulePush());
   ref.listen(settingsProvider, (_, _) => sync.schedulePush());
   ref.listen(onboardingControllerProvider, (_, _) => sync.schedulePush());
+  ref.listen(subscriptionProvider, (_, _) => sync.schedulePush());
 
   ref.onDispose(sync.dispose);
 
@@ -68,7 +71,10 @@ class AccountSession {
   /// Returns whether onboarding is finished, i.e. the app should go home.
   Future<bool> afterSignIn() async {
     final user = _ref.read(authRepositoryProvider).currentUser;
-    if (user != null) await _sync.adopt(user);
+    if (user != null) {
+      await _sync.adopt(user);
+      await _ref.read(subscriptionProvider.notifier).setAccount(user.uid);
+    }
     return _ref.read(onboardingCompletedProvider);
   }
 
@@ -78,6 +84,7 @@ class AccountSession {
     await _sync.syncNow();
     await _ref.read(authControllerProvider.notifier).signOut();
     await _sync.handleSignOut();
+    await _ref.read(subscriptionProvider.notifier).setAccount(null);
   }
 
   /// Deletes the account everywhere: the Firestore document, the Firebase
@@ -106,6 +113,7 @@ class AccountSession {
       await _sync.finishDelete();
     }
     await _ref.read(accountActionsProvider).deleteLocalData();
+    await _ref.read(subscriptionProvider.notifier).setAccount(null);
   }
 }
 

@@ -139,21 +139,28 @@ void main() {
       expect(p.canViewPage(rung), isTrue);
     });
 
-    test('paywall off: every video plays and plans can start', () {
-      for (final p in const [
-        ExerciseAccessPolicy(isPremium: false),
-        ExerciseAccessPolicy(isPremium: true),
-      ]) {
-        expect(p.canPlayVideo(rung), isTrue);
-        expect(p.canPlayVideo(foundation), isTrue);
-        expect(p.canStartPlan, isTrue);
-      }
+    test('free: only the own plan plays; premium plays everything', () {
+      const free = ExerciseAccessPolicy(isPremium: false);
+      expect(free.canPlayVideo(rung), isFalse);
+      expect(free.canPlayVideo(foundation), isFalse);
+      expect(free.canStartPlan, isFalse);
+      expect(
+        ExerciseAccessPolicy(
+          isPremium: false,
+          planExerciseNumbers: {rung.number},
+        ).canPlayVideo(rung),
+        isTrue,
+      );
+      const premium = ExerciseAccessPolicy(isPremium: true);
+      expect(premium.canPlayVideo(rung), isTrue);
+      expect(premium.canPlayVideo(foundation), isTrue);
+      expect(premium.canStartPlan, isTrue);
     });
   });
 
   group('widgets', () {
-    Future<Widget> app(Widget home) async {
-      SharedPreferences.setMockInitialValues({});
+    Future<Widget> app(Widget home, {bool premium = true}) async {
+      SharedPreferences.setMockInitialValues(premium ? _premium : {});
       final prefs = await SharedPreferences.getInstance();
       return ProviderScope(
         overrides: [sharedPreferencesProvider.overrideWithValue(prefs)],
@@ -212,5 +219,21 @@ void main() {
       expect(find.textContaining('Tap to try it'), findsOneWidget);
       expect(find.text('How to'), findsOneWidget);
     });
+
+    testWidgets('free: a Discover exercise outside the plan is locked', (
+      tester,
+    ) async {
+      tester.view.physicalSize = const Size(1000, 4000);
+      tester.view.devicePixelRatio = 1;
+      addTearDown(tester.view.reset);
+      await tester.pumpWidget(
+        await app(ExerciseDetailScreen(number: 1), premium: false),
+      );
+      await tester.pump(const Duration(seconds: 1));
+      expect(find.text('Unlock with Premium'), findsOneWidget);
+    });
   });
 }
+
+/// A yearly subscription, as the app stores it.
+const Map<String, Object> _premium = {'user_subscription': '{"plan":"yearly","inTrial":false,"trialEndsAt":null,"renewsAt":"2099-01-01T00:00:00.000","willRenew":true}'};

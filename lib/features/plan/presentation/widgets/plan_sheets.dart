@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../../../core/theme/app_colors_extension.dart';
 import '../../../../core/theme/app_typography.dart';
@@ -9,6 +10,7 @@ import '../../../plans/data/plan_templates.dart';
 import '../../../plans/domain/plan_template.dart';
 import '../../../plans/domain/user_profile.dart';
 import '../../../user/presentation/providers/user_providers.dart';
+import '../providers/plan_providers.dart';
 
 /// Lets the user pick a plan; starting it replaces the current one.
 Future<void> showPlanPicker(
@@ -60,10 +62,18 @@ class _PlanPickerSheet extends ConsumerWidget {
                   selected: t.id == active?.templateId,
                   onTap: () {
                     final notifier = ref.read(activePlanProvider.notifier);
-                    // Already added: just switch to it; otherwise add and start it.
-                    ownedIds.contains(t.id)
-                        ? notifier.switchTo(t.id)
-                        : notifier.start(t, profile);
+                    if (ownedIds.contains(t.id)) {
+                      // Already added: just switch to it.
+                      notifier.switchTo(t.id);
+                    } else if (!ref.read(canAddPlanProvider)) {
+                      // Free keeps one plan; more need Premium.
+                      final router = GoRouter.of(context);
+                      Navigator.of(context).pop();
+                      router.push('/paywall');
+                      return;
+                    } else {
+                      notifier.start(t, profile);
+                    }
                     Navigator.of(context).pop();
                   },
                   child: Row(

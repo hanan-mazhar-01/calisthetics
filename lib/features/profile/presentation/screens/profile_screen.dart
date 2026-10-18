@@ -12,8 +12,11 @@ import '../../../auth/domain/auth_failure.dart';
 import '../../../auth/presentation/providers/auth_providers.dart';
 import '../../../auth/presentation/widgets/auth_modal_sheet.dart';
 import '../../../media/data/exercise_videos.dart';
+import '../../../paywall/data/subscription_service.dart';
+import '../../../paywall/domain/subscription.dart';
+import '../../../paywall/presentation/providers/subscription_providers.dart';
+import '../../../paywall/presentation/widgets/subscription_pill.dart';
 import '../../../onboarding/presentation/providers/onboarding_controller.dart';
-import '../../../plan/presentation/providers/plan_providers.dart';
 import '../../../plan/presentation/widgets/plan_confirm_dialog.dart';
 import '../../../sync/presentation/providers/sync_providers.dart';
 import '../../../user/presentation/providers/user_providers.dart';
@@ -32,8 +35,8 @@ class ProfileScreen extends ConsumerWidget {
     final user = ref.watch(currentUserProvider);
     final name = ref.watch(onboardingControllerProvider.select((s) => s.name));
     final settings = ref.watch(settingsProvider);
-    final isPremium = ref.watch(isPremiumProvider);
-    final hasPlan = ref.watch(activePlanProvider) != null;
+    final subscription = ref.watch(subscriptionProvider);
+    final planCount = ref.watch(ownedPlansProvider).length;
     final reminder = settings['reminderTime'] as String?;
     final reminderOn = settings['reminderEnabled'] == true;
 
@@ -71,6 +74,7 @@ class ProfileScreen extends ConsumerWidget {
               child: _AccountCard(
                 name: name.trim(),
                 user: user,
+                status: subscription,
                 onEdit: () => _editName(context, ref),
                 onConnect: () => _connect(context, ref),
               ),
@@ -89,7 +93,12 @@ class ProfileScreen extends ConsumerWidget {
             const SizedBox(height: 16),
             _Enter(
               delay: d(2),
-              child: _PlanCard(isPremium: isPremium, hasPlan: hasPlan),
+              child: _PlanCard(
+                status: subscription,
+                planCount: planCount,
+                onUpgrade: () => context.push('/paywall'),
+                onManage: () => _manageSubscription(context, ref),
+              ),
             ),
             const SizedBox(height: 16),
             ..._rows(context, ref, [
@@ -237,6 +246,104 @@ class ProfileScreen extends ConsumerWidget {
     if (!home) router.go('/');
   }
 
+  static Future<void> _manageSubscription(
+    BuildContext context,
+    WidgetRef ref,
+  ) async {
+    final service = ref.read(subscriptionServiceProvider);
+    final status = ref.read(subscriptionProvider);
+    final other = status.plan == PremiumPlan.yearly ? 'Monthly' : 'Yearly';
+    final choice = await showModalBottomSheet<String>(
+      context: context,
+      backgroundColor: context.appColors.surface,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
+      ),
+      builder: (context) {
+        final c = context.appColors;
+        Widget item(
+          String id,
+          IconData icon,
+          String label, {
+          bool red = false,
+        }) => ListTile(
+          leading: Icon(icon, color: red ? Colors.red.shade700 : c.accentText),
+          title: Text(
+            label,
+            style: AppTypography.title(
+              15,
+              red ? Colors.red.shade700 : c.textPrimary,
+              weight: FontWeight.w600,
+            ),
+          ),
+          onTap: () => Navigator.pop(context, id),
+        );
+        return SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(8, 18, 8, 8),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  'Your subscription',
+                  style: AppTypography.title(
+                    18,
+                    c.textPrimary,
+                    weight: FontWeight.w600,
+                  ),
+                ),
+                const SizedBox(height: 10),
+                item('change', Icons.swap_horiz_rounded, 'Switch to $other'),
+                item('restore', Icons.refresh_rounded, 'Restore purchases'),
+                if (service.canCancelInApp)
+                  item(
+                    'cancel',
+                    Icons.cancel_outlined,
+                    'Cancel subscription (test mode)',
+                    red: true,
+                  )
+                else
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
+                    child: Text(
+                      'To cancel, open your App Store or Google Play subscriptions.',
+                      textAlign: TextAlign.center,
+                      style: AppTypography.body(c.textSecondary, fontSize: 13),
+                    ),
+                  ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+    if (!context.mounted || choice == null) return;
+    final notifier = ref.read(subscriptionProvider.notifier);
+    switch (choice) {
+      case 'change':
+        context.push('/paywall');
+      case 'restore':
+        final s = await notifier.restore();
+        if (context.mounted) {
+          _snack(
+            context,
+            s.isPremium
+                ? 'Your Premium is active.'
+                : 'No active subscription was found.',
+          );
+        }
+      case 'cancel':
+        final ok = await showPlanConfirmDialog(
+          context,
+          title: 'Cancel Premium?',
+          message:
+              'You go back to Free: one plan, and Discover videos lock again.',
+          confirmLabel: 'Cancel it',
+        );
+        if (ok) await notifier.cancel();
+    }
+  }
+
   static Future<void> _confirmDelete(
     BuildContext context,
     WidgetRef ref,
@@ -307,12 +414,14 @@ class _AccountCard extends StatelessWidget {
   const _AccountCard({
     required this.name,
     this.user,
+    required this.status,
     required this.onEdit,
     required this.onConnect,
   });
 
   final String name;
   final User? user;
+  final SubscriptionStatus status;
   final VoidCallback onEdit;
   final VoidCallback onConnect;
 
@@ -386,6 +495,8 @@ class _AccountCard extends StatelessWidget {
                     textAlign: TextAlign.center,
                     style: AppTypography.body(c.textMuted, fontSize: 15),
                   ),
+                  const SizedBox(height: 10),
+                  SubscriptionPill(status: status),
                   if (user == null) ...[
                     const SizedBox(height: 14),
                     OutlinedButton.icon(
@@ -474,94 +585,161 @@ class _AppearanceTabs extends StatelessWidget {
   }
 }
 
+/// Free: what Premium adds and an Upgrade button. Premium: the plan, its
+/// trial days or renewal date, and Manage.
 class _PlanCard extends StatelessWidget {
-  const _PlanCard({required this.isPremium, required this.hasPlan});
-  final bool isPremium;
-  final bool hasPlan;
+  const _PlanCard({
+    required this.status,
+    required this.planCount,
+    required this.onUpgrade,
+    required this.onManage,
+  });
+
+  final SubscriptionStatus status;
+  final int planCount;
+  final VoidCallback onUpgrade;
+  final VoidCallback onManage;
 
   @override
   Widget build(BuildContext context) {
     final c = context.appColors;
+    final now = DateTime.now();
+    final premium = status.isPremium;
+    final fg = premium ? Colors.white : c.textPrimary;
+    final fg2 = premium
+        ? Colors.white.withValues(alpha: 0.88)
+        : c.textSecondary;
+    final plan = status.plan == PremiumPlan.yearly ? 'Yearly' : 'Monthly';
+    final price = status.plan == PremiumPlan.yearly
+        ? r'$49.99/year'
+        : r'$9.99/month';
+    final days = status.trialDaysLeft(now);
+    final kicker = !premium
+        ? 'YOUR PLAN'
+        : status.inTrial
+        ? 'PREMIUM · FREE TRIAL'
+        : 'PREMIUM';
+    final title = !premium
+        ? 'Free'
+        : status.inTrial
+        ? '$days ${days == 1 ? 'day' : 'days'} left'
+        : '$plan · Active';
+    final renew = status.renewsAt == null
+        ? null
+        : formatShortDate(status.renewsAt!);
+    final text = !premium
+        ? '1 plan included${planCount > 0 ? ' ($planCount in use)' : ''}. '
+              'Upgrade to unlock every plan and all exercises.'
+        : status.inTrial
+        ? 'Then $price. Cancel any time before it ends.'
+        : !status.willRenew && renew != null
+        ? 'Ends on $renew.'
+        : renew != null
+        ? '$price. Renews on $renew.'
+        : price;
+
     return Semantics(
-      button: !isPremium,
-      label: isPremium ? 'Premium active' : 'Free plan. Upgrade',
+      button: true,
+      label: '$kicker. $title. $text',
       excludeSemantics: true,
       child: GestureDetector(
         behavior: HitTestBehavior.opaque,
-        onTap: isPremium ? null : () => context.push('/paywall'),
-        child: Container(
-          padding: const EdgeInsets.fromLTRB(16, 16, 16, 16),
+        onTap: premium ? onManage : onUpgrade,
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 350),
+          padding: const EdgeInsets.all(18),
           decoration: BoxDecoration(
-            color: c.softRose,
-            borderRadius: BorderRadius.circular(20),
-            border: Border.all(color: c.accent, width: 1.6),
+            color: premium ? null : c.surface,
+            gradient: premium
+                ? LinearGradient(
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                    colors: [
+                      const Color(0xFFFF8FA5),
+                      const Color(0xFFEF5B82),
+                      c.accent,
+                    ],
+                  )
+                : null,
+            borderRadius: BorderRadius.circular(24),
+            border: premium ? null : Border.all(color: c.divider),
+            boxShadow: [
+              if (premium)
+                BoxShadow(
+                  color: const Color(0xFFEF5B82).withValues(alpha: 0.3),
+                  blurRadius: 26,
+                  offset: const Offset(0, 12),
+                ),
+            ],
           ),
           child: Row(
-            crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              Container(
-                width: 56,
-                height: 56,
-                decoration: BoxDecoration(
-                  color: c.accent,
-                  shape: BoxShape.circle,
-                ),
-                child: Icon(
-                  Icons.workspace_premium_outlined,
-                  color: c.onAccent,
-                  size: 28,
-                ),
-              ),
-              const SizedBox(width: 14),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Row(
-                      children: [
-                        Flexible(
-                          child: Text(
-                            isPremium ? 'Premium' : 'Free plan',
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                            style: AppTypography.title(
-                              17,
-                              c.textPrimary,
-                              weight: FontWeight.w800,
-                            ),
-                          ),
-                        ),
-                        const SizedBox(width: 8),
-                        Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 8,
-                            vertical: 3,
-                          ),
-                          decoration: BoxDecoration(
-                            color: c.accent,
-                            borderRadius: BorderRadius.circular(6),
-                          ),
-                          child: Text(
-                            isPremium ? 'ACTIVE' : 'UPGRADE',
-                            style: AppTypography.title(
-                              10.5,
-                              c.onAccent,
-                              weight: FontWeight.w800,
-                            ).copyWith(letterSpacing: 0.4),
-                          ),
-                        ),
-                      ],
+                    Text(
+                      kicker,
+                      style: AppTypography.kicker(fg2, letterSpacingEm: 0.14),
+                    ),
+                    const SizedBox(height: 6),
+                    Text(
+                      title,
+                      style: AppTypography.title(
+                        20,
+                        fg,
+                        weight: FontWeight.w600,
+                      ),
                     ),
                     const SizedBox(height: 3),
                     Text(
-                      hasPlan ? '1 active plan' : 'No active plan',
-                      style: AppTypography.body(c.textSecondary, fontSize: 14),
+                      text,
+                      style: AppTypography.body(fg2, fontSize: 13, height: 1.4),
+                    ),
+                    if (status.inTrial) ...[
+                      const SizedBox(height: 12),
+                      ClipRRect(
+                        borderRadius: BorderRadius.circular(6),
+                        child: LinearProgressIndicator(
+                          value: (1 - days / LocalSubscriptionService.trialDays)
+                              .clamp(0.05, 1.0),
+                          minHeight: 6,
+                          backgroundColor: Colors.white.withValues(alpha: 0.3),
+                          color: Colors.white,
+                        ),
+                      ),
+                    ],
+                    const SizedBox(height: 14),
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 16,
+                        vertical: 9,
+                      ),
+                      decoration: BoxDecoration(
+                        color: premium
+                            ? Colors.white.withValues(alpha: 0.22)
+                            : c.accent,
+                        borderRadius: BorderRadius.circular(99),
+                      ),
+                      child: Text(
+                        premium ? 'Manage' : 'Upgrade',
+                        style: AppTypography.title(
+                          13.5,
+                          premium ? Colors.white : c.onAccent,
+                          weight: FontWeight.w600,
+                        ),
+                      ),
                     ),
                   ],
                 ),
               ),
-              if (!isPremium)
-                Icon(Icons.chevron_right_rounded, color: c.accentText),
+              Icon(
+                Icons.workspace_premium_rounded,
+                size: 54,
+                color: premium
+                    ? Colors.white.withValues(alpha: 0.35)
+                    : c.softRose,
+              ),
             ],
           ),
         ),

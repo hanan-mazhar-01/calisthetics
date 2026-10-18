@@ -146,10 +146,14 @@ void main() {
     );
   });
 
-  test('everything unlocked while the paywall is off', () {
-    final c = ProviderContainer();
+  test('free by default', () async {
+    SharedPreferences.setMockInitialValues({});
+    final prefs = await SharedPreferences.getInstance();
+    final c = ProviderContainer(
+      overrides: [sharedPreferencesProvider.overrideWithValue(prefs)],
+    );
     addTearDown(c.dispose);
-    expect(c.read(isPremiumProvider), isTrue);
+    expect(c.read(isPremiumProvider), isFalse);
   });
 
   Future<ProviderScope> scope(

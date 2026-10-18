@@ -1,14 +1,12 @@
 import '../../exercises/domain/exercise.dart';
+import '../../exercises/domain/exercise_lookup.dart';
 
-/// THE one place that decides what a free user can open. Owner has not yet
-/// confirmed the rule, so it lives here and nowhere else.
+/// THE one place that decides what a free user can open.
 ///
-/// Default rule:
-///  * every exercise page is visible to everyone;
-///  * video on a skill-ladder rung that is not part of the user's own plan
-///    needs premium (foundation / warm-up videos are free);
-///  * exercises in the user's own plan always play;
-///  * starting a plan needs premium.
+///  * Free: one plan, and the exercises in that plan play;
+///  * every other Discover exercise video needs Premium;
+///  * exercise pages stay visible to everyone (with a lock on the video);
+///  * starting plans beyond the free one needs Premium.
 class ExerciseAccessPolicy {
   const ExerciseAccessPolicy({
     required this.isPremium,
@@ -22,8 +20,14 @@ class ExerciseAccessPolicy {
 
   bool canViewPage(Exercise e) => true;
 
-  /// Paywall testing disabled: every video plays directly.
-  bool canPlayVideo(Exercise e) => true;
+  bool canPlayVideo(Exercise e) {
+    if (isPremium) return true;
+    if (planExerciseNumbers.contains(e.number)) return true;
+    // A plan may use the foundation twin of a ladder rung (same video).
+    return planExerciseNumbers.any(
+      (n) => exerciseByNumber(n).videoNumber == e.videoNumber,
+    );
+  }
 
-  bool get canStartPlan => true;
+  bool get canStartPlan => isPremium;
 }

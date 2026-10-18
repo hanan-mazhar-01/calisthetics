@@ -1,5 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../paywall/presentation/providers/subscription_providers.dart';
+
 import '../../../user/presentation/providers/user_providers.dart';
 import '../../../plans/domain/plan_builder.dart';
 import '../../../plans/data/plan_templates.dart';
@@ -9,13 +11,10 @@ import '../../domain/plan_overview.dart';
 import '../../domain/plan_timeline.dart';
 import '../../../workout/domain/workout_state.dart';
 
-/// Whether the user has premium. Entitlements aren't wired yet, so everyone
-/// is treated as free; the paywall gate reads only this provider.
-///
-/// While testing builds, `--dart-define=UNLOCK_PREMIUM=true` unlocks it so
-/// the "Add More Plan" flow can be tried without a subscription.
+/// Whether the user has Premium (free trial, monthly or yearly). Every
+/// gate (extra plans, Discover videos) reads only this provider.
 final isPremiumProvider = Provider<bool>(
-  (ref) => true,
+  (ref) => ref.watch(subscriptionProvider).isPremium,
 );
 
 /// Plans a free user may have at once (Premium: all).

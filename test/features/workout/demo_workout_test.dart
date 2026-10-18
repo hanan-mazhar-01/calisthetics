@@ -45,7 +45,10 @@ void main() {
       t.view.physicalSize = const Size(800, 1600);
       t.view.devicePixelRatio = 2;
       addTearDown(t.view.reset);
-      SharedPreferences.setMockInitialValues({});
+      SharedPreferences.setMockInitialValues({
+        'user_subscription':
+            '{"plan":"yearly","renewsAt":"2099-01-01T00:00:00.000"}',
+      });
       final sp = await SharedPreferences.getInstance();
       final container = ProviderContainer(
         overrides: [sharedPreferencesProvider.overrideWithValue(sp)],
