@@ -86,6 +86,14 @@ class PlanTimeline {
   /// the block is finished.
   final TimelineDay? hero;
 
+  /// A day is locked until the one to do now ([hero]) is finished: every day
+  /// after the hero. Days before it are done or already missed (a missed day
+  /// never blocks the rest, or one skipped day would stall the whole plan).
+  bool isLocked(TimelineDay day) {
+    final next = hero;
+    return next != null && day.dayNumber > next.dayNumber;
+  }
+
   /// Training days in this 4-week block, and how many are done.
   int get totalDays => phases.fold(0, (sum, p) => sum + p.days.length);
   int get doneDays => phases.fold(0, (sum, p) => sum + p.doneCount);

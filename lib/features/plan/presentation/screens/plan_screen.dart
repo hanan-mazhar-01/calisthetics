@@ -16,6 +16,7 @@ import '../../domain/cover_pictures.dart';
 import '../../domain/plan_timeline.dart';
 import '../providers/plan_providers.dart';
 import '../../../exercises/presentation/widgets/exercise_thumb.dart';
+import '../widgets/day_locked_dialog.dart';
 import '../widgets/plan_dropdown.dart';
 import '../widgets/plan_sheets.dart';
 
@@ -199,6 +200,8 @@ class _PlanScreenState extends ConsumerState<PlanScreen> {
                       day: day,
                       templateId: templateId,
                       cover: covers[day.dayNumber] ?? day.session.cover,
+                      // Locked until the day to do now is finished.
+                      mustFinishDay: t.isLocked(day) ? t.hero!.dayNumber : null,
                     ),
             ),
           ),
@@ -825,9 +828,14 @@ class _CompactDay extends ConsumerWidget {
     required this.day,
     required this.templateId,
     required this.cover,
+    this.mustFinishDay,
   });
   final TimelineDay day;
   final String templateId;
+
+  /// The day that has to be finished before this one opens, or null when
+  /// this day is open.
+  final int? mustFinishDay;
 
   /// Catalog number of the exercise whose picture heads the card.
   final int cover;
@@ -843,7 +851,18 @@ class _CompactDay extends ConsumerWidget {
     return GlassCard(
       padding: const EdgeInsets.all(10),
       borderRadius: BorderRadius.circular(22),
-      onTap: () => context.push('/day/${day.weekday}?week=${day.weekNumber}'),
+      onTap: () {
+        final first = mustFinishDay;
+        if (first != null) {
+          showDayLockedDialog(
+            context,
+            finishDay: first,
+            tappedDay: day.dayNumber,
+          );
+          return;
+        }
+        context.push('/day/${day.weekday}?week=${day.weekNumber}');
+      },
       child: Row(
         children: [
           ExerciseThumb(number: cover, size: 90, radiusFactor: 0.16),
@@ -893,7 +912,12 @@ class _CompactDay extends ConsumerWidget {
               ],
             ),
           ),
-          Icon(Icons.chevron_right_rounded, color: c.textSecondary),
+          Icon(
+            mustFinishDay != null
+                ? Icons.lock_outline_rounded
+                : Icons.chevron_right_rounded,
+            color: c.textSecondary,
+          ),
         ],
       ),
     );
