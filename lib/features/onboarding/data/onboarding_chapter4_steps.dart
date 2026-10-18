@@ -32,7 +32,7 @@ final List<OnboardingStep> onboardingChapter4Steps = [
         id: 'shoulders',
         label: 'Shoulders',
         xFraction: 0,
-        yFraction: 0.15,
+        yFraction: 0.13,
         glow: [
           GlowSpot(0.365, 0.205, 0.075, stretch: 0.8, angle: -30),
           GlowSpot(0.585, 0.195, 0.075, stretch: 0.8, angle: 30),
@@ -42,7 +42,7 @@ final List<OnboardingStep> onboardingChapter4Steps = [
         id: 'back',
         label: 'Back',
         xFraction: 0.99,
-        yFraction: 0.225,
+        yFraction: 0.22,
         glow: [
           GlowSpot(0.40, 0.255, 0.06, stretch: 1.9, angle: 8),
           GlowSpot(0.585, 0.25, 0.06, stretch: 1.9, angle: -8),
@@ -52,7 +52,7 @@ final List<OnboardingStep> onboardingChapter4Steps = [
         id: 'arms',
         label: 'Arms',
         xFraction: 0,
-        yFraction: 0.305,
+        yFraction: 0.31,
         glow: [
           GlowSpot(0.335, 0.30, 0.05, stretch: 2.6, angle: 8),
           GlowSpot(0.30, 0.40, 0.042, stretch: 2.4, angle: 14),
@@ -64,14 +64,14 @@ final List<OnboardingStep> onboardingChapter4Steps = [
         id: 'core',
         label: 'Core',
         xFraction: 0.99,
-        yFraction: 0.385,
+        yFraction: 0.40,
         glow: [GlowSpot(0.49, 0.335, 0.115, stretch: 0.62)],
       ),
       FocusArea(
         id: 'glutes',
         label: 'Glutes',
         xFraction: 0,
-        yFraction: 0.47,
+        yFraction: 0.49,
         glow: [
           GlowSpot(0.635, 0.445, 0.075, stretch: 1.35, angle: -10),
           GlowSpot(0.405, 0.43, 0.065, stretch: 1.2, angle: 20),

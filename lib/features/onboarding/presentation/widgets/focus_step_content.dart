@@ -280,7 +280,7 @@ class _FocusPill extends StatelessWidget {
   final double sideInset;
   final VoidCallback onTap;
 
-  static const _pillHeight = 52.0;
+  static const _pillHeight = 44.0;
 
   @override
   Widget build(BuildContext context) {
@@ -304,8 +304,8 @@ class _FocusPill extends StatelessWidget {
             duration: AppDurations.selection,
             curve: AppCurves.standard,
             height: _pillHeight,
-            constraints: const BoxConstraints(minWidth: 128),
-            padding: const EdgeInsets.fromLTRB(8, 0, 22, 0),
+            constraints: const BoxConstraints(minWidth: 104),
+            padding: const EdgeInsets.fromLTRB(6, 0, 18, 0),
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(_pillHeight),
               color: selected ? null : c.surface,
@@ -327,8 +327,8 @@ class _FocusPill extends StatelessWidget {
                   color: selected
                       ? const Color(0xFFEF5B82).withValues(alpha: 0.38)
                       : c.textPrimary.withValues(alpha: 0.08),
-                  blurRadius: selected ? 18 : 12,
-                  offset: const Offset(0, 6),
+                  blurRadius: selected ? 14 : 10,
+                  offset: const Offset(0, 4),
                 ),
               ],
             ),
@@ -337,8 +337,8 @@ class _FocusPill extends StatelessWidget {
               children: [
                 AnimatedContainer(
                   duration: AppDurations.selection,
-                  width: 34,
-                  height: 34,
+                  width: 30,
+                  height: 30,
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
                     color: selected
@@ -360,13 +360,13 @@ class _FocusPill extends StatelessWidget {
                         ? const Icon(
                             Icons.check_rounded,
                             key: ValueKey('on'),
-                            size: 20,
+                            size: 17,
                             color: Colors.white,
                           )
                         : Container(
                             key: const ValueKey('off'),
-                            width: 10,
-                            height: 10,
+                            width: 8,
+                            height: 8,
                             decoration: const BoxDecoration(
                               shape: BoxShape.circle,
                               color: Color(0xFFEF5B82),
@@ -374,11 +374,11 @@ class _FocusPill extends StatelessWidget {
                           ),
                   ),
                 ),
-                const SizedBox(width: 12),
+                const SizedBox(width: 10),
                 Text(
                   area.label,
                   style: AppTypography.title(
-                    16,
+                    14.5,
                     selected ? Colors.white : c.textPrimary,
                     weight: FontWeight.w600,
                   ),
