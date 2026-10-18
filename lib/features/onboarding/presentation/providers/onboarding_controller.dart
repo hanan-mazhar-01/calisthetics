@@ -77,6 +77,10 @@ class OnboardingController extends Notifier<OnboardingState> {
   bool get isFirstStep => state.index == 0;
   bool get isLastStep => state.index == onboardingSteps.length - 1;
 
+  /// The step after this one is the sign-in step (skipped when signed in).
+  bool get nextStepIsAccount =>
+      !isLastStep && onboardingSteps[state.index + 1] is AccountStep;
+
   /// 1-based position of the current step within its chapter, and how many
   /// steps that chapter has in total — drives the segmented progress bar.
   ({int step, int total}) get chapterProgress {

@@ -9,6 +9,7 @@ import 'package:go_router/go_router.dart';
 import '../../../../core/motion/calesthetics_motion.dart';
 import '../../../../core/theme/app_colors_extension.dart';
 import '../../../../core/theme/app_motion.dart';
+import '../../../auth/presentation/providers/auth_providers.dart';
 import '../../../paywall/presentation/widgets/paywall_content.dart';
 import '../../../user/presentation/providers/user_providers.dart';
 import '../../domain/onboarding_plan_summary.dart';
@@ -165,7 +166,10 @@ class _StepBody extends ConsumerWidget {
       plankSeconds: plankSeconds,
     );
 
-    Future<void> advance() => _advance(context, controller);
+    // Someone already signed in (e.g. from "Log in" on the welcome screen)
+    // never sees the sign-in step at the end: the paywall finishes it.
+    final signedIn = ref.watch(currentUserProvider) != null;
+    Future<void> advance() => _advance(context, controller, signedIn: signedIn);
 
     return switch (current) {
       WelcomeStep() => WelcomeStepView(onStart: advance),
@@ -287,6 +291,7 @@ class _StepBody extends ConsumerWidget {
       PlanContentStep() => PlanContentStepView(step: current, onNext: advance),
       PlanPreviewStep() => PlanPreviewStepView(step: current, onNext: advance),
       PaywallStep() => PaywallContent(onClose: advance),
+      AccountStep() when signedIn => _FinishNow(onFinish: advance),
       AccountStep() => AccountStepView(
         onSkip: advance,
         onBack: controller.back,
@@ -300,15 +305,38 @@ class _StepBody extends ConsumerWidget {
 /// the main app.
 Future<void> _advance(
   BuildContext context,
-  OnboardingController controller,
-) async {
-  if (controller.isLastStep) {
+  OnboardingController controller, {
+  required bool signedIn,
+}) async {
+  if (controller.isLastStep || (signedIn && controller.nextStepIsAccount)) {
     await controller.startPlanAndFinish();
     if (!context.mounted) return;
     context.go('/home');
   } else {
     controller.next();
   }
+}
+
+/// Shown for a moment if a signed-in user lands on the sign-in step (e.g.
+/// the app was closed there): finishes onboarding straight away.
+class _FinishNow extends StatefulWidget {
+  const _FinishNow({required this.onFinish});
+  final Future<void> Function() onFinish;
+
+  @override
+  State<_FinishNow> createState() => _FinishNowState();
+}
+
+class _FinishNowState extends State<_FinishNow> {
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) => widget.onFinish());
+  }
+
+  @override
+  Widget build(BuildContext context) =>
+      const Center(child: CircularProgressIndicator());
 }
 
 /// Shared chrome + titled header + scrollable content + optional continue
@@ -432,7 +460,11 @@ class _ChapterScaffoldState extends ConsumerState<_ChapterScaffold>
                 HapticFeedback.mediumImpact();
                 await widget.beforeContinue?.call();
                 if (!context.mounted) return;
-                await _advance(context, controller);
+                await _advance(
+                  context,
+                  controller,
+                  signedIn: ref.read(currentUserProvider) != null,
+                );
               },
             ),
           ),
