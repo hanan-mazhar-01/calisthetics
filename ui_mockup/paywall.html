@@ -5,346 +5,285 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Calesthetics Paywall</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&family=Lora:ital,wght@0,500;1,500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&family=Lora:wght@500&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="shared.css">
 <style>
   :root {
-    --pw-bg: #FBF6F6;
-    --pw-surface: #FFFFFF;
-    --pw-ink: #191719;
-    --pw-ink-2: #746D70;
-    --pw-ink-3: #A79C9F;
-    --pw-line: #EEE3E4;
-    --pw-rose: #D85F70;
-    --pw-rose-2: #EF5B82;
-    --pw-rose-soft: #F7E1E4;
-    --pw-glow: rgba(216, 95, 112, .28);
-    --pw-hero-a: #F6D3D8;
-    --pw-hero-b: #FBF6F6;
+    --bg: #FBF6F6; --card: #FFFFFF; --ink: #191719; --ink2: #746D70; --ink3: #A79C9F;
+    --line: #EFE5E6; --rose: #D85F70; --pinkA: #FF7E98; --pinkB: #EF5B82; --mist: #F7E1E4;
+    --glow: rgba(239, 91, 130, .30);
   }
   @media (prefers-color-scheme: dark) {
-    :root:not([data-theme="light"]) {
-      --pw-bg: #141213; --pw-surface: #1F1C1D; --pw-ink: #FAF6F4; --pw-ink-2: #B3AAAC;
-      --pw-ink-3: #7D7476; --pw-line: #2E2A2B; --pw-rose-soft: #3A2328;
-      --pw-glow: rgba(239, 91, 130, .35); --pw-hero-a: #3A2328; --pw-hero-b: #141213;
-    }
+    :root:not([data-theme="light"]) { --bg: #141213; --card: #1F1C1D; --ink: #FAF6F4; --ink2: #B3AAAC; --ink3: #7D7476; --line: #2E2A2B; --mist: #3A2328; }
   }
-  :root[data-theme="dark"] {
-    --pw-bg: #141213; --pw-surface: #1F1C1D; --pw-ink: #FAF6F4; --pw-ink-2: #B3AAAC;
-    --pw-ink-3: #7D7476; --pw-line: #2E2A2B; --pw-rose-soft: #3A2328;
-    --pw-glow: rgba(239, 91, 130, .35); --pw-hero-a: #3A2328; --pw-hero-b: #141213;
-  }
+  :root[data-theme="dark"] { --bg: #141213; --card: #1F1C1D; --ink: #FAF6F4; --ink2: #B3AAAC; --ink3: #7D7476; --line: #2E2A2B; --mist: #3A2328; }
 
-  .stage { display: flex; gap: 40px; flex-wrap: wrap; justify-content: center; align-items: flex-start; width: 100%; }
-  .col { display: flex; flex-direction: column; align-items: center; gap: 12px; }
+  .stage { display: flex; gap: 34px; flex-wrap: wrap; justify-content: center; width: 100%; }
+  .col { display: flex; flex-direction: column; align-items: center; gap: 10px; }
   .col h2 { font-size: 13px; font-weight: 600; letter-spacing: .12em; color: #8a8083; }
-  .col .phone { width: 390px; max-width: calc(100vw - 32px); background: var(--pw-bg); }
-  .phone .status { color: var(--pw-ink); }
+  .col p.d { max-width: 330px; text-align: center; font-size: 12.5px; color: #8a8083; line-height: 1.45; }
+  .col .phone { width: 360px; max-width: calc(100vw - 32px); background: var(--bg); }
+  .phone .status { color: var(--ink); }
+  .scr { position: absolute; inset: 0; display: flex; flex-direction: column; color: var(--ink); overflow: hidden; }
+  em.s { font-family: "Lora", serif; font-style: normal; color: var(--rose); }
 
-  /* ---------- paywall ---------- */
-  .pw { position: absolute; inset: 0; display: flex; flex-direction: column; color: var(--pw-ink); }
-  .pw-scroll { flex: 1; overflow-y: auto; scrollbar-width: none; padding-bottom: 8px; }
-  .pw-scroll::-webkit-scrollbar { display: none; }
-  .hero { position: relative; height: 236px; background: linear-gradient(180deg, var(--pw-hero-a), var(--pw-hero-b)); overflow: hidden; }
-  .hero img { position: absolute; left: 50%; bottom: -6px; height: 226px; transform: translateX(-50%); animation: rise .9s cubic-bezier(.2,.8,.2,1) both; }
-  .close { position: absolute; top: 52px; right: 18px; width: 36px; height: 36px; border-radius: 50%; border: 0; background: rgba(255,255,255,.7); backdrop-filter: blur(8px); display: grid; place-items: center; cursor: pointer; z-index: 5; color: #191719; }
-  .chip { position: absolute; z-index: 3; display: flex; align-items: center; gap: 8px; padding: 8px 12px 8px 8px; border-radius: 999px; background: var(--pw-surface); box-shadow: 0 10px 24px rgba(0,0,0,.10); font-size: 12px; font-weight: 600; animation: pop .6s cubic-bezier(.2,1.4,.4,1) both; }
-  .chip i { width: 26px; height: 26px; border-radius: 50%; background: var(--pw-rose-soft); display: grid; place-items: center; font-style: normal; font-size: 13px; color: var(--pw-rose); }
-  .chip.c1 { left: 14px; top: 98px; animation-delay: .35s; }
-  .chip.c2 { right: 12px; top: 132px; animation-delay: .5s; }
-  .chip.c3 { left: 20px; top: 172px; animation-delay: .65s; }
-  .badge-pro { position: absolute; top: 56px; left: 20px; z-index: 3; font-size: 11px; font-weight: 600; letter-spacing: .14em; color: var(--pw-rose); background: var(--pw-surface); padding: 6px 12px; border-radius: 999px; box-shadow: 0 6px 16px rgba(0,0,0,.06); }
+  .x { position: absolute; top: 50px; right: 16px; z-index: 6; width: 32px; height: 32px; border-radius: 50%; border: 0; display: grid; place-items: center; background: color-mix(in srgb, var(--card) 75%, transparent); color: var(--ink); cursor: pointer; backdrop-filter: blur(6px); }
+  .x svg { width: 14px; height: 14px; }
+  .buy { position: relative; overflow: hidden; width: 100%; height: 54px; border: 0; border-radius: 999px; cursor: pointer; color: #fff; font: 600 16px "Poppins", sans-serif; background: linear-gradient(90deg, var(--pinkA), var(--pinkB) 60%, var(--rose)); box-shadow: 0 12px 26px var(--glow); }
+  .buy::after { content: ""; position: absolute; inset: 0; background: linear-gradient(100deg, transparent 35%, rgba(255,255,255,.35) 50%, transparent 65%); transform: translateX(-100%); animation: shine 3.4s ease-in-out infinite 1s; }
+  .buy.busy span { visibility: hidden; }
+  .buy.busy::before { content: ""; position: absolute; left: 50%; top: 50%; width: 20px; height: 20px; margin: -10px; border: 3px solid rgba(255,255,255,.4); border-top-color: #fff; border-radius: 50%; animation: rot .8s linear infinite; }
+  .fine { margin-top: 7px; text-align: center; font-size: 11px; color: var(--ink2); }
+  .links { margin-top: 6px; display: flex; justify-content: center; gap: 14px; font-size: 11.5px; font-weight: 600; color: var(--ink2); }
+  .links a { cursor: pointer; }
+  .tick { flex: none; width: 20px; height: 20px; border-radius: 50%; display: grid; place-items: center; background: linear-gradient(135deg, var(--pinkA), var(--pinkB)); }
+  .tick svg { width: 11px; height: 11px; }
 
-  .body { padding: 6px 22px 0; }
-  h1 { font-size: 25px; line-height: 1.15; font-weight: 600; letter-spacing: -.02em; }
-  h1 em { font-family: "Lora", serif; font-style: normal; font-weight: 500; color: var(--pw-rose); }
-  .sub { margin-top: 8px; font-size: 13.5px; line-height: 1.5; color: var(--pw-ink-2); }
+  /* ===== A · Pill toggle ===== */
+  .a .top { position: relative; height: 300px; flex: none; background: radial-gradient(120% 90% at 50% 0%, #F6CDD5 0%, var(--bg) 70%); }
+  .a .top img { position: absolute; left: 50%; bottom: 0; height: 262px; transform: translateX(-50%); animation: rise .9s cubic-bezier(.2,.8,.2,1) both; -webkit-mask-image: linear-gradient(#000 78%, transparent); mask-image: linear-gradient(#000 78%, transparent); }
+  .a .ring { position: absolute; left: 50%; top: 66px; width: 230px; height: 230px; margin-left: -115px; border-radius: 50%; border: 1.5px dashed rgba(216,95,112,.35); animation: spin 30s linear infinite; }
+  .a .body { padding: 0 22px; margin-top: -6px; flex: 1; display: flex; flex-direction: column; }
+  .a h1 { font-size: 24px; font-weight: 600; line-height: 1.15; text-align: center; letter-spacing: -.02em; }
+  .a .chips { margin-top: 12px; display: flex; gap: 6px; justify-content: center; flex-wrap: wrap; }
+  .a .chips span { display: inline-flex; align-items: center; gap: 5px; padding: 5px 10px 5px 6px; border-radius: 999px; background: var(--card); font-size: 11.5px; font-weight: 500; box-shadow: 0 4px 12px rgba(0,0,0,.05); }
+  .a .chips span .tick { width: 16px; height: 16px; }
+  .a .chips span .tick svg { width: 9px; height: 9px; }
+  .a .seg { margin-top: 18px; position: relative; display: grid; grid-template-columns: 1fr 1fr; padding: 4px; border-radius: 999px; background: var(--card); box-shadow: inset 0 0 0 1.5px var(--line); }
+  .a .seg i { position: absolute; top: 4px; bottom: 4px; left: 4px; width: calc(50% - 4px); border-radius: 999px; background: linear-gradient(90deg, var(--pinkA), var(--pinkB)); box-shadow: 0 6px 16px var(--glow); transition: transform .35s cubic-bezier(.2,.9,.3,1.2); }
+  .a .seg[data-v="yearly"] i { transform: translateX(100%); }
+  .a .seg button { position: relative; z-index: 1; border: 0; background: none; height: 40px; font: 600 14px "Poppins", sans-serif; color: var(--ink2); cursor: pointer; transition: color .3s; }
+  .a .seg button.on { color: #fff; }
+  .a .seg button small { font-size: 10px; font-weight: 600; opacity: .9; margin-left: 4px; }
+  .a .price { margin-top: 16px; text-align: center; }
+  .a .price b { font-size: 34px; font-weight: 600; letter-spacing: -.02em; }
+  .a .price span { font-size: 14px; color: var(--ink2); }
+  .a .price p { margin-top: 2px; font-size: 12.5px; color: var(--rose); font-weight: 500; min-height: 18px; }
+  .a .foot { margin-top: auto; padding: 0 0 22px; }
 
-  .feats { margin-top: 12px; display: grid; gap: 7px; }
-  .feat { display: flex; gap: 12px; align-items: center; font-size: 14px; font-weight: 500; opacity: 0; animation: fade .5s ease both; }
-  .feat:nth-child(1) { animation-delay: .5s } .feat:nth-child(2) { animation-delay: .6s } .feat:nth-child(3) { animation-delay: .7s } .feat:nth-child(4) { animation-delay: .8s }
-  .tick { flex: none; width: 24px; height: 24px; border-radius: 50%; background: linear-gradient(135deg, #FF7E98, var(--pw-rose-2)); display: grid; place-items: center; }
-  .tick svg { width: 14px; height: 14px; }
-  .feat small { display: block; font-size: 12px; font-weight: 400; color: var(--pw-ink-2); }
+  /* ===== B · Night photo ===== */
+  .b { background: #121011; color: #FAF6F4; }
+  .b .photo { position: absolute; inset: 0 0 auto 0; height: 520px; background: radial-gradient(90% 70% at 50% 30%, #4A2430, #121011 75%); }
+  .b .photo img { position: absolute; left: 50%; top: 70px; height: 420px; transform: translateX(-50%); animation: rise 1s cubic-bezier(.2,.8,.2,1) both; }
+  .b .photo::after { content: ""; position: absolute; inset: 0; background: linear-gradient(transparent 45%, #121011 92%); }
+  .b .x { background: rgba(255,255,255,.12); color: #fff; }
+  .b .badge { position: absolute; top: 54px; left: 20px; z-index: 5; font-size: 10.5px; letter-spacing: .16em; font-weight: 600; padding: 6px 11px; border-radius: 999px; background: rgba(255,255,255,.1); color: #FFB3C1; backdrop-filter: blur(6px); }
+  .b .body { position: relative; z-index: 2; margin-top: auto; padding: 0 20px 22px; }
+  .b h1 { font-size: 26px; font-weight: 600; line-height: 1.12; letter-spacing: -.02em; }
+  .b h1 em.s { color: #FF8FA5; }
+  .b .sub { margin-top: 6px; font-size: 13px; color: #B3AAAC; }
+  .b .tiles { margin-top: 16px; display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .b .tile { position: relative; padding: 14px 12px 12px; border-radius: 20px; cursor: pointer; background: rgba(255,255,255,.06); border: 1.5px solid rgba(255,255,255,.12); backdrop-filter: blur(10px); transition: .3s; }
+  .b .tile.on { background: rgba(239,91,130,.16); border-color: #FF7E98; box-shadow: 0 10px 28px rgba(239,91,130,.25); }
+  .b .tile .n { font-size: 13px; font-weight: 600; color: #D8CFD1; }
+  .b .tile b { display: block; margin-top: 6px; font-size: 22px; font-weight: 600; }
+  .b .tile .p { font-size: 11.5px; color: #B3AAAC; }
+  .b .tile .tg { position: absolute; top: -9px; left: 12px; font-size: 9.5px; font-weight: 600; letter-spacing: .08em; padding: 3px 8px; border-radius: 999px; color: #fff; background: linear-gradient(90deg, var(--pinkA), var(--pinkB)); }
+  .b .tile .tg.alt { background: #FAF6F4; color: #B94A5B; }
+  .b .tile .r { position: absolute; top: 12px; right: 12px; width: 18px; height: 18px; border-radius: 50%; border: 2px solid rgba(255,255,255,.3); transition: .3s; }
+  .b .tile.on .r { border-color: #FF7E98; background: #FF7E98 url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='3.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 12.5l4.5 4.5L19 7.5'/%3E%3C/svg%3E") center/11px no-repeat; }
+  .b .buy { margin-top: 16px; }
+  .b .fine, .b .links { color: #9E9496; }
 
-  .plans { margin-top: 18px; display: grid; gap: 12px; }
-  .plan { position: relative; display: flex; align-items: center; gap: 14px; padding: 13px 16px; border-radius: 22px; background: var(--pw-surface); border: 2px solid var(--pw-line); cursor: pointer; transition: border-color .25s, box-shadow .25s, transform .25s; }
-  .plan:active { transform: scale(.985); }
-  .plan.on { border-color: var(--pw-rose); box-shadow: 0 12px 30px var(--pw-glow); }
-  .radio { flex: none; width: 24px; height: 24px; border-radius: 50%; border: 2px solid var(--pw-ink-3); display: grid; place-items: center; transition: .25s; }
-  .plan.on .radio { border-color: var(--pw-rose); background: var(--pw-rose); }
-  .radio svg { width: 13px; height: 13px; opacity: 0; transform: scale(.4); transition: .25s; }
-  .plan.on .radio svg { opacity: 1; transform: scale(1); }
-  .plan .name { font-size: 16px; font-weight: 600; }
-  .plan .meta { font-size: 12.5px; color: var(--pw-ink-2); margin-top: 2px; }
-  .plan .price { margin-left: auto; text-align: right; }
-  .plan .price b { display: block; font-size: 17px; font-weight: 600; }
-  .plan .price span { font-size: 12px; color: var(--pw-ink-2); }
-  .tag { position: absolute; top: -11px; right: 18px; font-size: 10.5px; font-weight: 600; letter-spacing: .08em; padding: 4px 10px; border-radius: 999px; color: #fff; background: linear-gradient(90deg, #FF7E98, var(--pw-rose-2)); box-shadow: 0 6px 14px var(--pw-glow); }
-  .tag.soft { background: var(--pw-rose-soft); color: var(--pw-rose); box-shadow: none; }
-
-  .trial { margin-top: 18px; padding: 16px 16px 6px; border-radius: 22px; background: var(--pw-surface); border: 1px solid var(--pw-line); overflow: hidden; transition: max-height .4s ease, opacity .3s, margin .3s, padding .3s; max-height: 260px; }
-  .trial.off { max-height: 0; opacity: 0; margin-top: 0; padding-top: 0; padding-bottom: 0; border-width: 0; }
-  .trial h3 { font-size: 14px; font-weight: 600; margin-bottom: 12px; }
-  .step { display: flex; gap: 12px; position: relative; padding-bottom: 14px; }
-  .step:not(:last-child)::before { content: ""; position: absolute; left: 13px; top: 28px; bottom: 0; width: 2px; background: linear-gradient(var(--pw-rose), var(--pw-rose-soft)); }
-  .step i { flex: none; width: 28px; height: 28px; border-radius: 50%; display: grid; place-items: center; background: var(--pw-rose-soft); color: var(--pw-rose); font-style: normal; font-size: 13px; }
-  .step:first-child i { background: var(--pw-rose); color: #fff; }
-  .step b { font-size: 13.5px; font-weight: 600; display: block; }
-  .step span { font-size: 12px; color: var(--pw-ink-2); }
-
-  .free-note { margin: 16px 0 4px; padding: 12px 14px; border-radius: 16px; background: var(--pw-rose-soft); font-size: 12.5px; line-height: 1.45; color: var(--pw-ink); }
-
-  .foot { padding: 12px 22px 26px; background: linear-gradient(180deg, transparent, var(--pw-bg) 22%); }
-  .buy { width: 100%; height: 58px; border: 0; border-radius: 999px; cursor: pointer; font: 600 17px "Poppins", sans-serif; color: #fff; background: linear-gradient(90deg, #FF7E98, var(--pw-rose-2) 55%, var(--pw-rose)); background-size: 200% 100%; box-shadow: 0 14px 30px var(--pw-glow); position: relative; overflow: hidden; animation: shift 4s ease-in-out infinite; }
-  .buy::after { content: ""; position: absolute; inset: 0; background: linear-gradient(100deg, transparent 30%, rgba(255,255,255,.35) 50%, transparent 70%); transform: translateX(-100%); animation: shine 3.2s ease-in-out infinite 1s; }
-  .buy .spin { display: none; width: 22px; height: 22px; border: 3px solid rgba(255,255,255,.4); border-top-color: #fff; border-radius: 50%; margin: 0 auto; animation: rot .8s linear infinite; }
-  .buy.busy .label { display: none; } .buy.busy .spin { display: block; }
-  .fine { margin-top: 9px; text-align: center; font-size: 11.5px; color: var(--pw-ink-2); line-height: 1.4; }
-  .links { margin-top: 8px; display: flex; justify-content: center; gap: 16px; font-size: 12px; font-weight: 600; color: var(--pw-ink-2); }
-  .links a { color: inherit; text-decoration: none; cursor: pointer; }
+  /* ===== C · Free vs Premium ===== */
+  .c .head { padding: 58px 20px 0; display: flex; align-items: center; gap: 14px; }
+  .c .av { position: relative; width: 74px; height: 74px; flex: none; border-radius: 50%; background: linear-gradient(135deg, #FFC2CE, var(--pinkB)); overflow: hidden; box-shadow: 0 10px 24px var(--glow); }
+  .c .av img { position: absolute; left: 50%; top: 4px; height: 150px; transform: translateX(-50%); }
+  .c h1 { font-size: 22px; font-weight: 600; line-height: 1.15; letter-spacing: -.02em; }
+  .c .sub { font-size: 12.5px; color: var(--ink2); margin-top: 3px; }
+  .c .table { margin: 18px 20px 0; border-radius: 22px; background: var(--card); padding: 6px 14px; box-shadow: 0 10px 26px rgba(0,0,0,.05); }
+  .c .tr { display: grid; grid-template-columns: 1fr 52px 64px; align-items: center; padding: 9px 0; font-size: 13px; border-top: 1px solid var(--line); }
+  .c .tr:first-child { border-top: 0; font-size: 10.5px; font-weight: 600; letter-spacing: .1em; color: var(--ink2); padding: 8px 0 4px; }
+  .c .tr > :nth-child(n+2) { text-align: center; justify-self: center; }
+  .c .tr .pr { color: var(--rose); }
+  .c .tr .no { color: var(--ink3); font-size: 15px; }
+  .c .tr .num { font-weight: 600; font-size: 12.5px; }
+  .c .plans { margin: 16px 20px 0; display: grid; gap: 10px; }
+  .c .plan { position: relative; display: flex; align-items: center; gap: 12px; padding: 12px 14px; border-radius: 18px; background: var(--card); border: 2px solid var(--line); cursor: pointer; transition: .25s; }
+  .c .plan.on { border-color: var(--rose); box-shadow: 0 10px 24px var(--glow); }
+  .c .plan .r { width: 20px; height: 20px; border-radius: 50%; border: 2px solid var(--ink3); flex: none; transition: .25s; }
+  .c .plan.on .r { border: 6px solid var(--rose); }
+  .c .plan .n { font-size: 14.5px; font-weight: 600; }
+  .c .plan .m { font-size: 11.5px; color: var(--ink2); }
+  .c .plan .pc { margin-left: auto; text-align: right; font-weight: 600; font-size: 15px; }
+  .c .plan .pc small { display: block; font-size: 11px; font-weight: 400; color: var(--ink2); }
+  .c .plan .tg { position: absolute; top: -9px; right: 14px; font-size: 9.5px; font-weight: 600; letter-spacing: .08em; padding: 3px 8px; border-radius: 999px; color: #fff; background: linear-gradient(90deg, var(--pinkA), var(--pinkB)); }
+  .c .plan .tg.alt { background: var(--mist); color: var(--rose); }
+  .c .foot { margin-top: auto; padding: 0 20px 22px; }
 
   /* success */
-  .done { position: absolute; inset: 0; z-index: 20; display: none; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 0 30px; background: radial-gradient(circle at 50% 38%, var(--pw-rose-soft), var(--pw-bg) 70%); }
-  .done.show { display: flex; animation: fade .4s ease both; }
-  .done .ring { width: 112px; height: 112px; border-radius: 50%; display: grid; place-items: center; background: linear-gradient(135deg, #FF7E98, var(--pw-rose-2)); box-shadow: 0 20px 44px var(--pw-glow); animation: pop .7s cubic-bezier(.2,1.5,.4,1) both; }
-  .done .ring svg { width: 54px; height: 54px; }
-  .done h2 { margin-top: 26px; font-size: 26px; font-weight: 600; letter-spacing: -.02em; color: var(--pw-ink); }
-  .done h2 em { font-family: "Lora", serif; font-style: normal; color: var(--pw-rose); }
-  .done p { margin-top: 10px; font-size: 14px; color: var(--pw-ink-2); line-height: 1.5; }
-  .done .cta { margin-top: 30px; justify-content: center; }
-  .confetti { position: absolute; width: 8px; height: 12px; border-radius: 2px; top: -20px; animation: fall linear forwards; }
+  .done { position: absolute; inset: 0; z-index: 30; display: none; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 0 28px; background: radial-gradient(circle at 50% 40%, var(--mist), var(--bg) 70%); color: var(--ink); }
+  .done.show { display: flex; animation: fade .35s ease both; }
+  .done .ok { width: 96px; height: 96px; border-radius: 50%; display: grid; place-items: center; background: linear-gradient(135deg, var(--pinkA), var(--pinkB)); box-shadow: 0 18px 40px var(--glow); animation: pop .7s cubic-bezier(.2,1.5,.4,1) both; }
+  .done .ok svg { width: 46px; height: 46px; }
+  .done h3 { margin-top: 22px; font-size: 23px; font-weight: 600; }
+  .done p { margin-top: 8px; font-size: 13.5px; color: var(--ink2); line-height: 1.5; }
+  .done .buy { margin-top: 26px; }
+  .confetti { position: absolute; top: -16px; width: 7px; height: 11px; border-radius: 2px; animation: fall linear forwards; }
 
-  /* ---------- profile preview ---------- */
-  .pf { position: absolute; inset: 0; padding: 60px 18px 0; color: var(--pw-ink); }
-  .pf h3 { text-align: center; font-size: 20px; font-weight: 600; }
-  .acct { margin-top: 18px; padding: 18px; border-radius: 24px; background: var(--pw-surface); box-shadow: 0 10px 30px rgba(0,0,0,.05); display: flex; gap: 14px; align-items: center; }
-  .avatar { width: 56px; height: 56px; border-radius: 50%; display: grid; place-items: center; font-weight: 600; font-size: 22px; color: #fff; background: linear-gradient(135deg, #FF9AAE, var(--pw-rose)); }
-  .acct .nm { font-size: 18px; font-weight: 600; }
-  .status-pill { display: inline-flex; align-items: center; gap: 6px; margin-top: 6px; padding: 4px 10px 4px 8px; border-radius: 999px; font-size: 12px; font-weight: 600; transition: .3s; }
-  .status-pill .dot { width: 8px; height: 8px; border-radius: 50%; background: currentColor; }
-  .st-free { background: var(--pw-line); color: var(--pw-ink-2); }
-  .st-trial { background: #FFF1D6; color: #B7791F; }
-  .st-monthly, .st-yearly { background: var(--pw-rose-soft); color: var(--pw-rose); }
-  .acct .mail { font-size: 12.5px; color: var(--pw-ink-2); margin-top: 2px; }
-  .sub-card { margin-top: 14px; padding: 18px; border-radius: 24px; color: #fff; background: linear-gradient(135deg, #FF8FA5, var(--pw-rose-2) 60%, var(--pw-rose)); box-shadow: 0 16px 34px var(--pw-glow); position: relative; overflow: hidden; }
-  .sub-card.free { background: var(--pw-surface); color: var(--pw-ink); box-shadow: 0 10px 30px rgba(0,0,0,.05); }
-  .sub-card small { font-size: 11px; letter-spacing: .14em; font-weight: 600; opacity: .85; }
-  .sub-card b { display: block; font-size: 20px; font-weight: 600; margin-top: 6px; }
-  .sub-card p { font-size: 13px; opacity: .9; margin-top: 4px; }
-  .sub-card .btn { margin-top: 14px; display: inline-block; padding: 9px 16px; border-radius: 999px; font-size: 13px; font-weight: 600; background: rgba(255,255,255,.22); }
-  .sub-card.free .btn { background: var(--pw-rose); color: #fff; }
-  .bar { margin-top: 12px; height: 6px; border-radius: 6px; background: rgba(255,255,255,.3); overflow: hidden; }
-  .bar i { display: block; height: 100%; width: 28%; background: #fff; border-radius: 6px; }
-  .rows { margin-top: 14px; border-radius: 24px; background: var(--pw-surface); overflow: hidden; }
-  .row { display: flex; justify-content: space-between; padding: 15px 18px; font-size: 14px; border-top: 1px solid var(--pw-line); }
-  .row:first-child { border-top: 0; }
-  .row span { color: var(--pw-ink-2); }
-  .seg { display: flex; gap: 6px; flex-wrap: wrap; justify-content: center; }
-  .seg button { font: 600 12.5px "Poppins", sans-serif; border: 0; border-radius: 999px; padding: 8px 14px; background: #fff; color: #191719; cursor: pointer; box-shadow: 0 2px 10px rgba(0,0,0,.06); }
-  .seg button.on { background: var(--pw-rose); color: #fff; }
-
-  @keyframes rise { from { transform: translate(-50%, 30px); opacity: 0 } }
-  @keyframes pop { from { transform: scale(.6); opacity: 0 } }
-  @keyframes fade { from { opacity: 0; transform: translateY(8px) } to { opacity: 1; transform: none } }
+  @keyframes rise { from { transform: translate(-50%, 26px); opacity: 0 } }
+  @keyframes spin { to { transform: rotate(360deg) } }
   @keyframes shine { 0%, 60% { transform: translateX(-100%) } 100% { transform: translateX(100%) } }
-  @keyframes shift { 50% { background-position: 100% 0 } }
   @keyframes rot { to { transform: rotate(360deg) } }
-  @keyframes fall { to { transform: translateY(900px) rotate(540deg); opacity: .2 } }
+  @keyframes pop { from { transform: scale(.5); opacity: 0 } }
+  @keyframes fade { from { opacity: 0 } }
+  @keyframes fall { to { transform: translateY(820px) rotate(540deg); opacity: .3 } }
 </style>
 </head>
 <body>
   <div class="topbar">
     <a href="index.html">← All mockups</a>
-    <h1>Paywall · Free = 1 plan</h1>
+    <h1>Paywall · 3 compact directions</h1>
     <div class="controls">
-      <button id="reset" class="primary">Replay</button>
       <button id="theme">Dark</button>
     </div>
   </div>
-  <p class="note">Free keeps <b>one plan</b>. Premium unlocks every plan and all Discover exercises. <b>Monthly $9.99</b> with a <b>7-day free trial</b>, or <b>Yearly $49.99</b>. Pick a plan and tap the button: the profile on the right updates.</p>
+  <p class="note">Each one fits on one screen, no scrolling. Free = <b>1 plan</b>. <b>Monthly $9.99</b> with a <b>7-day free trial</b>, or <b>Yearly $49.99</b>. Tap the plans and the button to try them.</p>
+
+  <svg width="0" height="0" style="position:absolute"><defs>
+    <symbol id="ck" viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5" fill="none" stroke="#fff" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    <symbol id="xx" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"/></symbol>
+  </defs></svg>
 
   <div class="stage">
+    <!-- A -->
     <div class="col">
-      <h2>PAYWALL</h2>
+      <h2>A · PILL TOGGLE</h2>
       <div class="phone">
         <div class="status"><span>9:41</span><span>●●● 100%</span></div>
-        <div class="pw" id="pw">
-          <div class="pw-scroll">
-            <div class="hero">
-              <span class="badge-pro">PREMIUM</span>
-              <button class="close" aria-label="Close"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
-              <img src="https://calisthetics.b-cdn.net/onboarding/your-plan/after.f968642f.webp" alt="Athlete after training">
-              <div class="chip c1"><i>★</i>14 plans</div>
-              <div class="chip c2"><i>▶</i>115 exercises</div>
-              <div class="chip c3"><i>↗</i>Skill ladders</div>
+        <div class="scr a" data-pw>
+          <button class="x" aria-label="Close"><svg><use href="#xx"/></svg></button>
+          <div class="top"><div class="ring"></div><img src="https://calisthetics.b-cdn.net/onboarding/your-plan/after.2a70f9b4.webp" alt=""></div>
+          <div class="body">
+            <h1>Unlock your full <em class="s">journey</em></h1>
+            <div class="chips">
+              <span><i class="tick"><svg><use href="#ck"/></svg></i>All 14 plans</span>
+              <span><i class="tick"><svg><use href="#ck"/></svg></i>115 exercises</span>
+              <span><i class="tick"><svg><use href="#ck"/></svg></i>Video coaching</span>
             </div>
-            <div class="body">
-              <h1>Unlock your full <em>journey</em></h1>
-              <p class="sub">Your first plan is free. Go Premium to train with every plan and the whole exercise library.</p>
-              <div class="feats">
-                <div class="feat"><span class="tick"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></span><div>Every plan, as many as you want<small>Free keeps one plan</small></div></div>
-                <div class="feat"><span class="tick"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></span><div>All 115 Discover exercises<small>With video coaching for each one</small></div></div>
-                <div class="feat"><span class="tick"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></span><div>Full skill ladders<small>Push-up, pull-up, handstand and more</small></div></div>
-                <div class="feat"><span class="tick"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></span><div>Switch plans any time<small>Your progress stays with you</small></div></div>
-              </div>
-
-              <div class="plans" id="plans">
-                <div class="plan on" data-plan="monthly">
-                  <span class="tag">7 DAYS FREE</span>
-                  <span class="radio"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></span>
-                  <div><div class="name">Monthly</div><div class="meta">7-day free trial</div></div>
-                  <div class="price"><b>$9.99</b><span>per month</span></div>
-                </div>
-                <div class="plan" data-plan="yearly">
-                  <span class="tag soft">SAVE 58%</span>
-                  <span class="radio"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></span>
-                  <div><div class="name">Yearly</div><div class="meta">$4.17 / month</div></div>
-                  <div class="price"><b>$49.99</b><span>per year</span></div>
-                </div>
-              </div>
-
-              <div class="trial" id="trial">
-                <h3>How your free trial works</h3>
-                <div class="step"><i>🔓</i><div><b>Today</b><span>Everything unlocks. No charge.</span></div></div>
-                <div class="step"><i>🔔</i><div><b>Day 5</b><span>We remind you that the trial is ending.</span></div></div>
-                <div class="step"><i>★</i><div><b>Day 7</b><span>$9.99/month starts. Cancel any time before.</span></div></div>
-              </div>
-
-              <div class="free-note">Not now? You keep <b>one free plan</b>, and you can upgrade any time from your profile.</div>
+            <div class="seg" data-v="monthly">
+              <i></i>
+              <button class="on" data-plan="monthly">Monthly</button>
+              <button data-plan="yearly">Yearly<small>−58%</small></button>
+            </div>
+            <div class="price"><b data-price>$9.99</b> <span data-per>/ month</span><p data-hint>7 days free, then $9.99/month</p></div>
+            <div class="foot">
+              <button class="buy" data-buy><span data-label>Start my free trial</span></button>
+              <div class="fine" data-fine>Cancel any time. Free plan stays if you skip.</div>
+              <div class="links"><a>Not now</a><a>Restore</a><a>Terms</a></div>
             </div>
           </div>
-          <div class="foot">
-            <button class="buy" id="buy"><span class="label" id="buyLabel">Start my 7-day free trial</span><span class="spin"></span></button>
-            <div class="fine" id="fine">Free for 7 days, then $9.99/month. Cancel any time.</div>
-            <div class="links"><a id="free">Continue with Free</a><a>Restore</a><a>Terms</a><a>Privacy</a></div>
-          </div>
-          <div class="done" id="done">
-            <div class="ring"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></div>
-            <h2 id="doneTitle">Your free trial <em>has started</em></h2>
-            <p id="doneText">Every plan and all 115 exercises are unlocked. Your trial ends in 7 days.</p>
-            <button class="cta" id="doneBtn"><span>Let's train</span></button>
-          </div>
+          <div class="done" data-done></div>
         </div>
       </div>
+      <p class="d">Light and calm. Photo in a soft glow, three short wins, one toggle for Monthly or Yearly, big price.</p>
     </div>
 
+    <!-- B -->
     <div class="col">
-      <h2>PROFILE · STATUS UNDER THE NAME</h2>
+      <h2>B · NIGHT PHOTO</h2>
       <div class="phone">
-        <div class="status"><span>9:41</span><span>●●● 100%</span></div>
-        <div class="pf">
-          <h3>My Profile</h3>
-          <div class="acct">
-            <div class="avatar">H</div>
-            <div>
-              <div class="nm">Hanan</div>
-              <div class="mail">hanan@example.com</div>
-              <div class="status-pill st-free" id="pill"><span class="dot"></span><span id="pillText">Free plan</span></div>
+        <div class="status light"><span>9:41</span><span>●●● 100%</span></div>
+        <div class="scr b" data-pw>
+          <span class="badge">PREMIUM</span>
+          <button class="x" aria-label="Close"><svg><use href="#xx"/></svg></button>
+          <div class="photo"><img src="https://calisthetics.b-cdn.net/onboarding/your-plan/after.2a70f9b4.webp" alt=""></div>
+          <div class="body">
+            <h1>Train with <em class="s">every</em> plan</h1>
+            <p class="sub">All 14 plans and 115 exercises with video.</p>
+            <div class="tiles">
+              <div class="tile on" data-plan="monthly"><span class="tg">7 DAYS FREE</span><span class="r"></span><div class="n">Monthly</div><b>$9.99</b><div class="p">per month</div></div>
+              <div class="tile" data-plan="yearly"><span class="tg alt">SAVE 58%</span><span class="r"></span><div class="n">Yearly</div><b>$49.99</b><div class="p">$4.17 / month</div></div>
             </div>
+            <button class="buy" data-buy><span data-label>Start my free trial</span></button>
+            <div class="fine" data-fine>7 days free, then $9.99/month. Cancel any time.</div>
+            <div class="links"><a>Not now</a><a>Restore</a><a>Terms</a></div>
           </div>
-          <div class="sub-card free" id="card">
-            <small id="cardKicker">YOUR PLAN</small>
-            <b id="cardTitle">Free</b>
-            <p id="cardText">1 plan included. Upgrade to unlock every plan and all exercises.</p>
-            <div class="bar" id="cardBar" hidden><i></i></div>
-            <span class="btn" id="cardBtn">Upgrade</span>
-          </div>
-          <div class="rows">
-            <div class="row">Reminders <span>8:00 AM</span></div>
-            <div class="row">Appearance <span>Auto</span></div>
-            <div class="row">Restore purchases <span>›</span></div>
-            <div class="row">Sign out <span>hanan@example.com</span></div>
-          </div>
+          <div class="done" data-done></div>
         </div>
       </div>
-      <div class="seg" id="seg">
-        <button data-s="free" class="on">Free</button>
-        <button data-s="trial">Free trial</button>
-        <button data-s="monthly">Monthly</button>
-        <button data-s="yearly">Yearly</button>
+      <p class="d">Bold and premium. Full photo on dark, two glass tiles side by side, everything in the lower half.</p>
+    </div>
+
+    <!-- C -->
+    <div class="col">
+      <h2>C · FREE VS PREMIUM</h2>
+      <div class="phone">
+        <div class="status"><span>9:41</span><span>●●● 100%</span></div>
+        <div class="scr c" data-pw>
+          <button class="x" aria-label="Close"><svg><use href="#xx"/></svg></button>
+          <div class="head">
+            <div class="av"><img src="https://calisthetics.b-cdn.net/onboarding/your-plan/after.2a70f9b4.webp" alt=""></div>
+            <div><h1>Go <em class="s">Premium</em></h1><div class="sub">Your first plan is always free.</div></div>
+          </div>
+          <div class="table">
+            <div class="tr"><span></span><span>FREE</span><span class="pr">PREMIUM</span></div>
+            <div class="tr"><span>Plans</span><span class="num">1</span><span class="num pr">All 14</span></div>
+            <div class="tr"><span>Discover exercises</span><span class="no">—</span><span class="tick"><svg><use href="#ck"/></svg></span></div>
+            <div class="tr"><span>Video coaching</span><span class="no">—</span><span class="tick"><svg><use href="#ck"/></svg></span></div>
+            <div class="tr"><span>Skill ladders</span><span class="no">—</span><span class="tick"><svg><use href="#ck"/></svg></span></div>
+          </div>
+          <div class="plans">
+            <div class="plan on" data-plan="monthly"><span class="tg">7 DAYS FREE</span><span class="r"></span><div><div class="n">Monthly</div><div class="m">Free for 7 days</div></div><div class="pc">$9.99<small>/ month</small></div></div>
+            <div class="plan" data-plan="yearly"><span class="tg alt">SAVE 58%</span><span class="r"></span><div><div class="n">Yearly</div><div class="m">$4.17 / month</div></div><div class="pc">$49.99<small>/ year</small></div></div>
+          </div>
+          <div class="foot">
+            <button class="buy" data-buy><span data-label>Start my free trial</span></button>
+            <div class="fine" data-fine>7 days free, then $9.99/month. Cancel any time.</div>
+            <div class="links"><a>Not now</a><a>Restore</a><a>Terms</a></div>
+          </div>
+          <div class="done" data-done></div>
+        </div>
       </div>
+      <p class="d">Clear and honest. A small Free vs Premium table shows exactly what paying adds, then two short plan rows.</p>
     </div>
   </div>
 
 <script>
 (function () {
-  const plans = document.querySelectorAll('.plan');
-  const trial = document.getElementById('trial');
-  const label = document.getElementById('buyLabel');
-  const fine = document.getElementById('fine');
-  const buy = document.getElementById('buy');
-  const done = document.getElementById('done');
-  let choice = 'monthly';
-
-  function select(p) {
-    choice = p;
-    plans.forEach(el => el.classList.toggle('on', el.dataset.plan === p));
-    trial.classList.toggle('off', p !== 'monthly');
-    if (p === 'monthly') {
-      label.textContent = 'Start my 7-day free trial';
-      fine.textContent = 'Free for 7 days, then $9.99/month. Cancel any time.';
-    } else {
-      label.textContent = 'Continue · $49.99/year';
-      fine.textContent = 'Billed $49.99 once a year. Cancel any time.';
-    }
-  }
-  plans.forEach(el => el.addEventListener('click', () => select(el.dataset.plan)));
-
-  const STATES = {
-    free:    { pill: 'Free plan', cls: 'st-free', card: 'free', kicker: 'YOUR PLAN', title: 'Free', text: '1 plan included. Upgrade to unlock every plan and all exercises.', btn: 'Upgrade', bar: false },
-    trial:   { pill: 'Free trial · 7 days left', cls: 'st-trial', card: '', kicker: 'PREMIUM · FREE TRIAL', title: '7 days left', text: 'Then $9.99/month. Cancel any time in your store account.', btn: 'Manage', bar: true },
-    monthly: { pill: 'Premium · Monthly', cls: 'st-monthly', card: '', kicker: 'PREMIUM', title: 'Monthly · Active', text: '$9.99/month. Renews on Nov 18.', btn: 'Manage', bar: false },
-    yearly:  { pill: 'Premium · Yearly', cls: 'st-yearly', card: '', kicker: 'PREMIUM', title: 'Yearly · Active', text: '$49.99/year. Renews on Oct 18, 2027.', btn: 'Manage', bar: false },
+  const COPY = {
+    monthly: { label: 'Start my free trial', fine: '7 days free, then $9.99/month. Cancel any time.', price: '$9.99', per: '/ month', hint: '7 days free, then $9.99/month' },
+    yearly:  { label: 'Continue · $49.99/year', fine: 'Billed $49.99 once a year. Cancel any time.', price: '$49.99', per: '/ year', hint: 'Only $4.17 a month' },
   };
-  function setStatus(s) {
-    const d = STATES[s];
-    const pill = document.getElementById('pill');
-    pill.className = 'status-pill ' + d.cls;
-    document.getElementById('pillText').textContent = d.pill;
-    const card = document.getElementById('card');
-    card.className = 'sub-card ' + d.card;
-    document.getElementById('cardKicker').textContent = d.kicker;
-    document.getElementById('cardTitle').textContent = d.title;
-    document.getElementById('cardText').textContent = d.text;
-    document.getElementById('cardBtn').textContent = d.btn;
-    document.getElementById('cardBar').hidden = !d.bar;
-    document.querySelectorAll('#seg button').forEach(b => b.classList.toggle('on', b.dataset.s === s));
-  }
-  document.querySelectorAll('#seg button').forEach(b => b.addEventListener('click', () => setStatus(b.dataset.s)));
-
-  function confetti() {
-    const colors = ['#FF7E98', '#EF5B82', '#F7E1E4', '#FFD27A', '#D85F70'];
-    for (let i = 0; i < 40; i++) {
-      const c = document.createElement('span');
-      c.className = 'confetti';
-      c.style.left = Math.random() * 100 + '%';
-      c.style.background = colors[i % colors.length];
-      c.style.animationDuration = 1.6 + Math.random() * 1.4 + 's';
-      c.style.animationDelay = Math.random() * .4 + 's';
-      done.appendChild(c);
-      setTimeout(() => c.remove(), 3500);
+  document.querySelectorAll('[data-pw]').forEach(pw => {
+    let plan = 'monthly';
+    const seg = pw.querySelector('.seg');
+    function set(p) {
+      plan = p;
+      pw.querySelectorAll('[data-plan]').forEach(el => el.classList.toggle('on', el.dataset.plan === p));
+      if (seg) seg.dataset.v = p;
+      const c = COPY[p];
+      pw.querySelector('[data-label]').textContent = c.label;
+      const f = pw.querySelector('[data-fine]'); if (f && !seg) f.textContent = c.fine;
+      const pr = pw.querySelector('[data-price]'); if (pr) { pr.textContent = c.price; pw.querySelector('[data-per]').textContent = c.per; pw.querySelector('[data-hint]').textContent = c.hint; }
     }
-  }
-
-  buy.addEventListener('click', () => {
-    buy.classList.add('busy');
-    setTimeout(() => {
-      buy.classList.remove('busy');
-      const t = choice === 'monthly';
-      document.getElementById('doneTitle').innerHTML = t ? 'Your free trial <em>has started</em>' : 'Welcome to <em>Premium</em>';
-      document.getElementById('doneText').textContent = t
-        ? 'Every plan and all 115 exercises are unlocked. Your trial ends in 7 days.'
-        : 'Every plan and all 115 exercises are unlocked for the whole year.';
-      done.classList.add('show');
-      confetti();
-      setStatus(t ? 'trial' : 'yearly');
-    }, 1100);
+    pw.querySelectorAll('[data-plan]').forEach(el => el.addEventListener('click', () => set(el.dataset.plan)));
+    const buy = pw.querySelector('[data-buy]');
+    const done = pw.querySelector('[data-done]');
+    buy.addEventListener('click', () => {
+      buy.classList.add('busy');
+      setTimeout(() => {
+        buy.classList.remove('busy');
+        const t = plan === 'monthly';
+        done.innerHTML = `<div class="ok"><svg><use href="#ck"/></svg></div>
+          <h3>${t ? 'Your free trial <em class="s">has started</em>' : 'Welcome to <em class="s">Premium</em>'}</h3>
+          <p>${t ? 'Every plan and all 115 exercises are unlocked. Your trial ends in 7 days.' : 'Every plan and all 115 exercises are unlocked for the year.'}</p>
+          <button class="buy"><span>Let's train</span></button>`;
+        done.classList.add('show');
+        const colors = ['#FF7E98', '#EF5B82', '#F7E1E4', '#FFD27A', '#D85F70'];
+        for (let i = 0; i < 34; i++) {
+          const c = document.createElement('span');
+          c.className = 'confetti';
+          c.style.left = Math.random() * 100 + '%';
+          c.style.background = colors[i % colors.length];
+          c.style.animationDuration = 1.5 + Math.random() * 1.3 + 's';
+          c.style.animationDelay = Math.random() * .35 + 's';
+          done.appendChild(c);
+        }
+        done.querySelector('.buy').addEventListener('click', () => { done.classList.remove('show'); set('monthly'); });
+      }, 1000);
+    });
   });
-  document.getElementById('doneBtn').addEventListener('click', () => done.classList.remove('show'));
-  document.getElementById('free').addEventListener('click', () => setStatus('free'));
-  document.getElementById('reset').addEventListener('click', () => { done.classList.remove('show'); select('monthly'); setStatus('free'); document.querySelector('.pw-scroll').scrollTop = 0; });
-
   const root = document.documentElement;
   document.getElementById('theme').addEventListener('click', e => {
     const dark = root.dataset.theme !== 'dark';
