@@ -177,6 +177,8 @@ class _CalendarSectionState extends State<CalendarSection> {
                     onDay: widget.onDay,
                   ),
                 ),
+                const SizedBox(height: 8),
+                const _Legend(),
                 const SizedBox(height: 14),
                 Semantics(
                   button: true,
@@ -355,6 +357,50 @@ class _MonthGrid extends StatelessWidget {
                 ),
             ],
           ),
+      ],
+    );
+  }
+}
+
+/// What the marks mean: a dot is a training day of the plan still to come,
+/// a grey square a day with logged activity, the dark square today.
+class _Legend extends StatelessWidget {
+  const _Legend();
+
+  @override
+  Widget build(BuildContext context) {
+    final c = context.appColors;
+    Widget item(Widget mark, String label) => Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        mark,
+        const SizedBox(width: 6),
+        Text(label, style: AppTypography.body(c.textSecondary, fontSize: 12)),
+      ],
+    );
+    Widget square(Color color) => Container(
+      width: 12,
+      height: 12,
+      decoration: BoxDecoration(
+        color: color,
+        borderRadius: BorderRadius.circular(3.5),
+      ),
+    );
+    return Wrap(
+      alignment: WrapAlignment.center,
+      spacing: 16,
+      runSpacing: 6,
+      children: [
+        item(
+          Container(
+            width: 6,
+            height: 6,
+            decoration: BoxDecoration(color: c.accent, shape: BoxShape.circle),
+          ),
+          'Planned workout',
+        ),
+        item(square(c.surfaceMuted), 'Trained'),
+        item(square(c.textPrimary), 'Today'),
       ],
     );
   }
