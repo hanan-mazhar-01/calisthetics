@@ -10,7 +10,6 @@ import '../../../calendar/presentation/screens/day_activity_screen.dart';
 import '../../../calendar/presentation/widgets/add_activity_sheet.dart';
 import '../../../calendar/presentation/widgets/calendar_section.dart';
 import '../../../achievements/presentation/widgets/achievements_row.dart';
-import '../../../plan/presentation/providers/plan_providers.dart';
 import '../../../profile/presentation/providers/profile_providers.dart';
 import '../../../user/presentation/providers/user_providers.dart';
 import '../../domain/progress_models.dart';
@@ -29,7 +28,6 @@ class ProgressScreen extends ConsumerWidget {
     final stats = ref.watch(userStatsProvider);
     final history = ref.watch(historyProvider);
     final today = ref.watch(clockProvider)();
-    final timeline = ref.watch(planTimelineProvider);
     final plank = PlankTrend.from(ref.watch(plankHistoryProvider));
     final bottom = MediaQuery.paddingOf(context).bottom + 24;
 
@@ -89,7 +87,6 @@ class ProgressScreen extends ConsumerWidget {
             (i) => CalendarSection(
               history: history,
               today: today,
-              planned: plannedDaysInMonth(timeline, today),
               onAdd: () => showAddActivity(context),
               onDay: (d) => Navigator.of(context).push(
                 MaterialPageRoute<void>(

@@ -236,4 +236,6 @@ void main() {
 }
 
 /// A yearly subscription, as the app stores it.
-const Map<String, Object> _premium = {'user_subscription': '{"plan":"yearly","inTrial":false,"trialEndsAt":null,"renewsAt":"2099-01-01T00:00:00.000","willRenew":true}'};
+const Map<String, Object> _premium = {
+  'user_subscription': '{"plan":"yearly","inTrial":false,"trialEndsAt":null,"renewsAt":"2099-01-01T00:00:00.000","willRenew":true}',
+};

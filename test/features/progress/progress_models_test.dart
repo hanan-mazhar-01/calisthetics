@@ -1,4 +1,3 @@
-import 'package:calisthenics/features/plan/domain/plan_timeline.dart';
 import 'package:calisthenics/features/plans/data/plan_templates.dart';
 import 'package:calisthenics/features/plans/domain/plan_builder.dart';
 import 'package:calisthenics/features/plans/domain/user_profile.dart';
@@ -82,17 +81,6 @@ void main() {
     final bare = weekStrip(history: const [], today: wed, week: null);
     expect(bare[0].state, StreakDayState.other);
     expect(bare[2].state, StreakDayState.today);
-  });
-
-  test('planned days of the month are the plan\'s remaining training days', () {
-    final timeline = PlanTimeline.build(
-      template: template,
-      plan: plan,
-      history: [_s(DateTime(2026, 10, 12))],
-      today: wed,
-    );
-    expect(plannedDaysInMonth(timeline, wed), {16, 19, 21, 23, 26, 28, 30});
-    expect(plannedDaysInMonth(null, wed), isEmpty);
   });
 
   test('workouts in month counts sessions of that month only', () {

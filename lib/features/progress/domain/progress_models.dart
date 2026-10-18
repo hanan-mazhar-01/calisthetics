@@ -1,5 +1,4 @@
 import '../../exercises/domain/exercise_lookup.dart';
-import '../../plan/domain/plan_timeline.dart';
 import '../../plans/domain/plan_builder.dart';
 import '../../profile/domain/achievement_evaluator.dart';
 import '../../profile/domain/profile_stats.dart';
@@ -85,22 +84,6 @@ List<StreakDay> weekStrip({
 }
 
 // ── Calendar ────────────────────────────────────────────────────────
-
-/// Days (1-based) of [today]'s month that are still planned training days:
-/// strictly after today, from the plan's timeline.
-Set<int> plannedDaysInMonth(PlanTimeline? timeline, DateTime today) {
-  if (timeline == null) return const {};
-  final t = _date(today);
-  return {
-    for (final p in timeline.phases)
-      for (final d in p.days)
-        if (d.date.year == t.year &&
-            d.date.month == t.month &&
-            d.date.isAfter(t) &&
-            d.status != TimelineStatus.done)
-          d.date.day,
-  };
-}
 
 /// Finished workouts (not days) in [today]'s month.
 int workoutsInMonth(List<CompletedSession> history, DateTime today) => history

@@ -115,7 +115,6 @@ void main() {
           child: CalendarSection(
             history: [_s(DateTime(2026, 10, 8, 8))],
             today: _today,
-            planned: const {16},
             onAdd: () {},
             onDay: (d) => opened = d,
             onHistory: () {},
@@ -143,7 +142,6 @@ void main() {
         (ref) => CalendarSection(
           history: const [],
           today: _today,
-          planned: const {},
           onAdd: () {},
           onDay: (_) {},
           onHistory: () {},

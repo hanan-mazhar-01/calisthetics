@@ -5,14 +5,14 @@ import '../../../../core/theme/app_typography.dart';
 import '../../../user/domain/completed_session.dart';
 import '../../domain/activity_log.dart';
 
-/// "Calendar — Add Activity", a month you can page through (days she trained
-/// are shaded, today is dark), and a Workout History button.
+/// "Calendar — Add Activity", a month you can page through (days with
+/// logged activity are shaded with a dot, today is dark), and a Workout
+/// History button.
 class CalendarSection extends StatefulWidget {
   const CalendarSection({
     super.key,
     required this.history,
     required this.today,
-    required this.planned,
     required this.onAdd,
     required this.onDay,
     required this.onHistory,
@@ -20,9 +20,6 @@ class CalendarSection extends StatefulWidget {
 
   final List<CompletedSession> history;
   final DateTime today;
-
-  /// Days of the current month that are planned training days still to come.
-  final Set<int> planned;
   final VoidCallback onAdd;
   final ValueChanged<DateTime> onDay;
   final VoidCallback onHistory;
@@ -173,7 +170,6 @@ class _CalendarSectionState extends State<CalendarSection> {
                     month: _month,
                     today: widget.today,
                     history: widget.history,
-                    planned: _atCurrent ? widget.planned : const {},
                     onDay: widget.onDay,
                   ),
                 ),
@@ -254,14 +250,12 @@ class _MonthGrid extends StatelessWidget {
     required this.month,
     required this.today,
     required this.history,
-    required this.planned,
     required this.onDay,
   });
 
   final DateTime month;
   final DateTime today;
   final List<CompletedSession> history;
-  final Set<int> planned;
   final ValueChanged<DateTime> onDay;
 
   @override
@@ -335,13 +329,17 @@ class _MonthGrid extends StatelessWidget {
                                             : FontWeight.w500,
                                       ),
                                     ),
-                                    if (planned.contains(day) && !done)
+                                    // A dot under each day with logged
+                                    // activity (a workout or one added).
+                                    if (done)
                                       Container(
                                         width: 4,
                                         height: 4,
                                         margin: const EdgeInsets.only(top: 2),
                                         decoration: BoxDecoration(
-                                          color: c.accent,
+                                          color: isToday
+                                              ? c.background
+                                              : c.accent,
                                           shape: BoxShape.circle,
                                         ),
                                       ),
@@ -362,8 +360,8 @@ class _MonthGrid extends StatelessWidget {
   }
 }
 
-/// What the marks mean: a dot is a training day of the plan still to come,
-/// a grey square a day with logged activity, the dark square today.
+/// What the marks mean: a dot (on a shaded day) is logged activity, the
+/// dark square is today. Nothing is shown for days not trained yet.
 class _Legend extends StatelessWidget {
   const _Legend();
 
@@ -378,28 +376,29 @@ class _Legend extends StatelessWidget {
         Text(label, style: AppTypography.body(c.textSecondary, fontSize: 12)),
       ],
     );
-    Widget square(Color color) => Container(
-      width: 12,
-      height: 12,
+    Widget square(Color color, {Color? dot}) => Container(
+      width: 14,
+      height: 14,
+      alignment: Alignment.bottomCenter,
+      padding: const EdgeInsets.only(bottom: 2),
       decoration: BoxDecoration(
         color: color,
-        borderRadius: BorderRadius.circular(3.5),
+        borderRadius: BorderRadius.circular(4),
       ),
+      child: dot == null
+          ? null
+          : Container(
+              width: 4,
+              height: 4,
+              decoration: BoxDecoration(color: dot, shape: BoxShape.circle),
+            ),
     );
     return Wrap(
       alignment: WrapAlignment.center,
       spacing: 16,
       runSpacing: 6,
       children: [
-        item(
-          Container(
-            width: 6,
-            height: 6,
-            decoration: BoxDecoration(color: c.accent, shape: BoxShape.circle),
-          ),
-          'Planned workout',
-        ),
-        item(square(c.surfaceMuted), 'Trained'),
+        item(square(c.surfaceMuted, dot: c.accent), 'Activity logged'),
         item(square(c.textPrimary), 'Today'),
       ],
     );
