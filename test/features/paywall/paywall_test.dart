@@ -103,16 +103,21 @@ void main() {
     );
   });
 
-  testWidgets('shows both plans with prices and the trial', (tester) async {
+  testWidgets('monthly with the trial first; yearly on the switch', (
+    tester,
+  ) async {
     await _pump(tester);
     expect(find.text('Monthly'), findsOneWidget);
     expect(find.text('Yearly'), findsOneWidget);
-    expect(find.text(r'$9.99'), findsOneWidget);
-    expect(find.text(r'$49.99'), findsOneWidget);
-    expect(find.text('Start my 7-day free trial'), findsOneWidget);
-    expect(find.text('How your free trial works'), findsOneWidget);
-    expect(find.text('Continue with Free'), findsOneWidget);
+    expect(find.textContaining(r'$9.99'), findsWidgets);
+    expect(find.text('Start my free trial'), findsOneWidget);
+    expect(find.text(r'7 days free, then $9.99/month'), findsOneWidget);
+    expect(find.text('Not now'), findsOneWidget);
     expect(find.text('Restore'), findsOneWidget);
+    await tester.tap(find.text('Yearly'));
+    await tester.pump(const Duration(milliseconds: 600));
+    expect(find.textContaining(r'$49.99'), findsWidgets);
+    expect(find.text(r'Only $4.17 a month'), findsOneWidget);
   });
 
   testWidgets('choosing yearly changes the button; buying unlocks Premium', (

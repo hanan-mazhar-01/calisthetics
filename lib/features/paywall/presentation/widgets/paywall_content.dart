@@ -8,6 +8,8 @@ import '../../../../core/theme/app_colors_extension.dart';
 import '../../../../core/theme/app_typography.dart';
 import '../../../../shared/widgets/bunny_image.dart';
 import '../../../exercises/data/exercise_catalog.dart';
+import '../../../exercises/domain/exercise_lookup.dart';
+import '../../../exercises/presentation/widgets/exercise_picture.dart';
 import '../../../plans/data/plan_templates.dart';
 import '../../data/subscription_service.dart';
 import '../../domain/paywall_offer.dart';
@@ -17,12 +19,17 @@ import '../providers/subscription_providers.dart';
 const _pinkA = Color(0xFFFF7E98);
 const _pinkB = Color(0xFFEF5B82);
 
-/// The paywall (route `/paywall` and the onboarding step): what Premium
-/// unlocks, Monthly with a 7-day free trial or Yearly, and the buy button.
+/// Exercises whose thumbnails orbit the photo: pull, push, core, legs,
+/// handstand, so the ring shows the whole library at a glance.
+const _orbitExercises = [37, 60, 66, 73, 13, 19, 21, 48];
+
+/// The paywall (route `/paywall` and the onboarding step), on one screen:
+/// the photo inside a turning ring of exercise thumbnails, three wins, a
+/// Monthly | Yearly switch, the price and the buy button.
 ///
-/// [onClose] is the X and "Continue with Free": the user keeps the free
-/// tier (one plan). After a purchase a short "welcome" screen shows, then
-/// [onClose] runs too.
+/// [onClose] is the X and "Not now": the user keeps the free tier (one
+/// plan). After a purchase a short "welcome" screen shows, then [onClose]
+/// runs too.
 class PaywallContent extends ConsumerStatefulWidget {
   const PaywallContent({super.key, required this.onClose});
 
@@ -84,200 +91,148 @@ class _PaywallContentState extends ConsumerState<PaywallContent> {
     final offers =
         ref.watch(paywallOffersProvider).asData?.value ?? defaultPaywallOffers;
     final current = ref.watch(subscriptionProvider);
-    final chosen =
-        offers.where((o) => o.plan == _choice).firstOrNull ?? offers.first;
-    final trial = chosen.trialDays;
-    // Someone already on Premium does not get a second trial.
-    final showTrial = trial != null && !current.isPremium;
+    PaywallOffer offerFor(PremiumPlan p) =>
+        offers.where((o) => o.plan == p).firstOrNull ??
+        defaultPaywallOffers.firstWhere((o) => o.plan == p);
+    final chosen = offerFor(_choice);
+    final trial = current.isPremium ? null : chosen.trialDays;
 
     final cta = current.plan == _choice
         ? 'Your current plan'
-        : showTrial
-        ? 'Start my $trial-day free trial'
+        : trial != null
+        ? 'Start my free trial'
         : 'Continue · ${chosen.price}/${chosen.period}';
-    final fine = showTrial
-        ? 'Free for $trial days, then ${chosen.price}/${chosen.period}. '
-              'Cancel any time.'
-        : 'Billed ${chosen.price} every ${chosen.period}. Cancel any time.';
+    final hint = trial != null
+        ? '$trial days free, then ${chosen.price}/${chosen.period}'
+        : chosen.perMonth != null
+        ? 'Only ${chosen.perMonth} a month'
+        : 'Billed every ${chosen.period}';
 
     return Stack(
       children: [
-        Column(
-          children: [
-            Expanded(
-              child: SingleChildScrollView(
-                padding: const EdgeInsets.only(bottom: 12),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    _Hero(onClose: widget.onClose),
-                    Padding(
-                      padding: const EdgeInsets.fromLTRB(22, 4, 22, 0),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text.rich(
-                            TextSpan(
-                              style: AppTypography.title(
-                                26,
-                                c.textPrimary,
-                                weight: FontWeight.w600,
-                                height: 1.15,
-                              ),
-                              children: [
-                                const TextSpan(text: 'Unlock your full '),
-                                TextSpan(
-                                  text: 'journey',
-                                  style: AppTypography.accentSerif(
-                                    c.accentText,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                          const SizedBox(height: 8),
-                          Text(
-                            'Your first plan is free. Go Premium to train '
-                            'with every plan and the whole exercise library.',
-                            style: AppTypography.body(
-                              c.textSecondary,
-                              fontSize: 14,
-                              height: 1.45,
-                            ),
-                          ),
-                          const SizedBox(height: 14),
-                          _Feature(
-                            index: 0,
-                            title: 'Every plan, as many as you want',
-                            note: 'Free keeps one plan',
-                          ),
-                          _Feature(
-                            index: 1,
-                            title:
-                                'All ${exerciseCatalog.length} Discover exercises',
-                            note: 'With video coaching for each one',
-                          ),
-                          const _Feature(
-                            index: 2,
-                            title: 'Full skill ladders',
-                            note: 'Push-up, pull-up, handstand and more',
-                          ),
-                          const _Feature(
-                            index: 3,
-                            title: 'Switch plans any time',
-                            note: 'Your progress stays with you',
-                          ),
-                          const SizedBox(height: 18),
-                          for (final o in offers)
-                            _OfferCard(
-                              offer: o,
-                              selected: o.plan == _choice,
-                              current: current.plan == o.plan,
-                              showTrial: !current.isPremium,
-                              onTap: () {
-                                HapticFeedback.selectionClick();
-                                setState(() => _choice = o.plan);
-                              },
-                            ),
-                          AnimatedSize(
-                            duration: const Duration(milliseconds: 380),
-                            curve: Curves.easeOutCubic,
-                            alignment: Alignment.topCenter,
-                            child: showTrial
-                                ? _TrialTimeline(
-                                    days: trial,
-                                    price: '${chosen.price}/${chosen.period}',
-                                  )
-                                : const SizedBox(width: double.infinity),
-                          ),
-                          const SizedBox(height: 14),
-                          Container(
-                            width: double.infinity,
-                            padding: const EdgeInsets.all(14),
-                            decoration: BoxDecoration(
-                              color: c.softRose.withValues(alpha: 0.6),
-                              borderRadius: BorderRadius.circular(16),
-                            ),
-                            child: Text.rich(
+        LayoutBuilder(
+          builder: (context, box) {
+            final heroH = (box.maxHeight * 0.47).clamp(240.0, 400.0);
+            return SingleChildScrollView(
+              child: ConstrainedBox(
+                constraints: BoxConstraints(minHeight: box.maxHeight),
+                child: IntrinsicHeight(
+                  child: Column(
+                    children: [
+                      _OrbitHero(height: heroH, onClose: widget.onClose),
+                      const SizedBox(height: 10),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 22),
+                        child: Column(
+                          children: [
+                            Text.rich(
+                              textAlign: TextAlign.center,
                               TextSpan(
-                                style: AppTypography.body(
+                                style: AppTypography.title(
+                                  25,
                                   c.textPrimary,
-                                  fontSize: 13,
-                                  height: 1.45,
+                                  weight: FontWeight.w600,
+                                  height: 1.15,
                                 ),
-                                children: const [
-                                  TextSpan(text: 'Not now? You keep '),
+                                children: [
+                                  const TextSpan(text: 'Unlock your full '),
                                   TextSpan(
-                                    text: 'one free plan',
-                                    style: TextStyle(
-                                      fontWeight: FontWeight.w600,
+                                    text: 'journey',
+                                    style: AppTypography.accentSerif(
+                                      c.accentText,
                                     ),
-                                  ),
-                                  TextSpan(
-                                    text:
-                                        ', and you can upgrade any time from '
-                                        'your profile.',
                                   ),
                                 ],
                               ),
                             ),
-                          ),
-                        ],
+                            const SizedBox(height: 12),
+                            Wrap(
+                              alignment: WrapAlignment.center,
+                              spacing: 6,
+                              runSpacing: 6,
+                              children: [
+                                for (final (i, label) in [
+                                  'All ${planTemplates.length} plans',
+                                  '${exerciseCatalog.length} exercises',
+                                  'Video coaching',
+                                ].indexed)
+                                  _Pop(
+                                    delay: Duration(
+                                      milliseconds: 300 + 120 * i,
+                                    ),
+                                    child: _Chip(label: label),
+                                  ),
+                              ],
+                            ),
+                            const SizedBox(height: 18),
+                            _PlanToggle(
+                              value: _choice,
+                              yearlyTag: 'Save 58%',
+                              onChanged: (p) {
+                                HapticFeedback.selectionClick();
+                                setState(() => _choice = p);
+                              },
+                            ),
+                            const SizedBox(height: 14),
+                            _Price(
+                              price: chosen.price,
+                              period: chosen.period,
+                              hint: hint,
+                            ),
+                          ],
+                        ),
                       ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.fromLTRB(22, 8, 22, 14),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  _BuyButton(
-                    label: cta,
-                    busy: _busy,
-                    onTap: current.plan == _choice ? null : _buy,
-                  ),
-                  const SizedBox(height: 8),
-                  Text(
-                    fine,
-                    textAlign: TextAlign.center,
-                    style: AppTypography.body(c.textSecondary, fontSize: 12),
-                  ),
-                  if (!ref.read(subscriptionServiceProvider).isLive)
-                    Padding(
-                      padding: const EdgeInsets.only(top: 2),
-                      child: Text(
-                        'Test mode: no payment is taken.',
-                        textAlign: TextAlign.center,
-                        style: AppTypography.body(c.textMuted, fontSize: 11),
-                      ),
-                    ),
-                  const SizedBox(height: 4),
-                  Wrap(
-                    alignment: WrapAlignment.center,
-                    children: [
-                      _LinkButton(
-                        label: 'Continue with Free',
-                        onTap: widget.onClose,
-                      ),
-                      _LinkButton(label: 'Restore', onTap: _restore),
-                      _LinkButton(
-                        label: 'Terms',
-                        onTap: () => _say('The Terms link is coming soon.'),
-                      ),
-                      _LinkButton(
-                        label: 'Privacy',
-                        onTap: () =>
-                            _say('The Privacy Policy link is coming soon.'),
+                      const Spacer(),
+                      Padding(
+                        padding: const EdgeInsets.fromLTRB(22, 14, 22, 12),
+                        child: Column(
+                          children: [
+                            _BuyButton(
+                              label: cta,
+                              busy: _busy,
+                              onTap: current.plan == _choice ? null : _buy,
+                            ),
+                            const SizedBox(height: 7),
+                            Text(
+                              ref.read(subscriptionServiceProvider).isLive
+                                  ? 'Cancel any time. Your free plan stays if you skip.'
+                                  : 'Test mode: no payment is taken.',
+                              textAlign: TextAlign.center,
+                              style: AppTypography.body(
+                                c.textSecondary,
+                                fontSize: 11.5,
+                              ),
+                            ),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                _LinkButton(
+                                  label: 'Not now',
+                                  onTap: widget.onClose,
+                                ),
+                                _LinkButton(label: 'Restore', onTap: _restore),
+                                _LinkButton(
+                                  label: 'Terms',
+                                  onTap: () =>
+                                      _say('The Terms link is coming soon.'),
+                                ),
+                                _LinkButton(
+                                  label: 'Privacy',
+                                  onTap: () => _say(
+                                    'The Privacy Policy link is coming soon.',
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
                       ),
                     ],
                   ),
-                ],
+                ),
               ),
-            ),
-          ],
+            );
+          },
         ),
         if (_bought != null)
           Positioned.fill(
@@ -288,204 +243,270 @@ class _PaywallContentState extends ConsumerState<PaywallContent> {
   }
 }
 
-/// Photo on a rose wash, the PREMIUM badge, the X and three floating chips.
-class _Hero extends StatelessWidget {
-  const _Hero({required this.onClose});
+/// The photo on a rose glow, inside a slowly turning dashed ring that
+/// carries exercise thumbnails; each thumbnail gently zooms in and out.
+class _OrbitHero extends StatefulWidget {
+  const _OrbitHero({required this.height, required this.onClose});
 
+  final double height;
   final VoidCallback onClose;
+
+  @override
+  State<_OrbitHero> createState() => _OrbitHeroState();
+}
+
+class _OrbitHeroState extends State<_OrbitHero> with TickerProviderStateMixin {
+  late final AnimationController _turn = AnimationController(
+    vsync: this,
+    duration: const Duration(seconds: 40),
+  );
+  late final AnimationController _pulse = AnimationController(
+    vsync: this,
+    duration: const Duration(milliseconds: 2800),
+  );
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (MediaQuery.disableAnimationsOf(context)) {
+      _turn.stop();
+      _pulse.stop();
+    } else if (!_turn.isAnimating) {
+      _turn.repeat();
+      _pulse.repeat();
+    }
+  }
+
+  @override
+  void dispose() {
+    _turn.dispose();
+    _pulse.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
     final c = context.appColors;
-    final chip = [
-      (Icons.star_rounded, '${planTemplates.length} plans'),
-      (Icons.play_arrow_rounded, '${exerciseCatalog.length} exercises'),
-      (Icons.trending_up_rounded, 'Skill ladders'),
-    ];
+    final h = widget.height;
     return SizedBox(
-      height: 236,
-      child: Stack(
-        clipBehavior: Clip.hardEdge,
-        children: [
-          Positioned.fill(
-            child: DecoratedBox(
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  begin: Alignment.topCenter,
-                  end: Alignment.bottomCenter,
-                  colors: [c.softRose, c.background],
-                ),
-              ),
-            ),
-          ),
-          const Positioned(
-            left: 0,
-            right: 0,
-            bottom: -4,
-            height: 222,
-            child: _Rise(
-              child: BunnyImage(
-                'onboarding/your-plan/after',
-                fit: BoxFit.contain,
-                alignment: Alignment.bottomCenter,
-              ),
-            ),
-          ),
-          Positioned(
-            top: 10,
-            left: 20,
-            child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-              decoration: BoxDecoration(
-                color: c.surface,
-                borderRadius: BorderRadius.circular(99),
-              ),
-              child: Text(
-                'PREMIUM',
-                style: AppTypography.kicker(
-                  c.accentText,
-                  letterSpacingEm: 0.14,
-                ),
-              ),
-            ),
-          ),
-          Positioned(
-            top: 4,
-            right: 14,
-            child: Semantics(
-              button: true,
-              label: 'Close',
-              child: GestureDetector(
-                onTap: onClose,
-                child: Container(
-                  width: 38,
-                  height: 38,
+      height: h,
+      child: LayoutBuilder(
+        builder: (context, box) {
+          final w = box.maxWidth;
+          const thumb = 46.0;
+          // An oval around her, wide enough that the thumbnails on its
+          // sides clear her arms, and short enough to stay above the title.
+          final radius = Size(w / 2 - thumb / 2 - 12, h / 2 - thumb / 2 - 8);
+          final center = Offset(w / 2, h / 2 + 6);
+          return Stack(
+            clipBehavior: Clip.none,
+            children: [
+              Positioned.fill(
+                child: DecoratedBox(
                   decoration: BoxDecoration(
-                    color: c.surface.withValues(alpha: 0.8),
-                    shape: BoxShape.circle,
-                  ),
-                  child: Icon(
-                    Icons.close_rounded,
-                    size: 20,
-                    color: c.textPrimary,
+                    gradient: RadialGradient(
+                      center: Alignment.topCenter,
+                      radius: 1.1,
+                      colors: [c.softRose, c.background],
+                      stops: const [0, 0.75],
+                    ),
                   ),
                 ),
               ),
+              Positioned.fill(
+                child: AnimatedBuilder(
+                  animation: _turn,
+                  builder: (context, _) => CustomPaint(
+                    painter: _DashedRing(
+                      center: center,
+                      radius: radius,
+                      turn: _turn.value,
+                      color: c.accent.withValues(alpha: 0.35),
+                    ),
+                  ),
+                ),
+              ),
+              // Thumbnails ride the ring (behind the photo).
+              AnimatedBuilder(
+                animation: Listenable.merge([_turn, _pulse]),
+                builder: (context, _) => Stack(
+                  clipBehavior: Clip.none,
+                  children: [
+                    for (var i = 0; i < _orbitExercises.length; i++)
+                      _orbitThumb(i, center, radius, thumb),
+                  ],
+                ),
+              ),
+              Positioned(
+                left: 0,
+                right: 0,
+                bottom: 0,
+                height: h * 0.9,
+                child: _Rise(
+                  child: ShaderMask(
+                    blendMode: BlendMode.dstIn,
+                    shaderCallback: (r) => const LinearGradient(
+                      begin: Alignment.topCenter,
+                      end: Alignment.bottomCenter,
+                      colors: [Colors.black, Colors.black, Colors.transparent],
+                      stops: [0, 0.8, 1],
+                    ).createShader(r),
+                    child: const BunnyImage(
+                      'onboarding/your-plan/after',
+                      fit: BoxFit.contain,
+                      alignment: Alignment.bottomCenter,
+                    ),
+                  ),
+                ),
+              ),
+              Positioned(
+                top: 6,
+                right: 14,
+                child: Semantics(
+                  button: true,
+                  label: 'Close',
+                  child: GestureDetector(
+                    onTap: widget.onClose,
+                    child: Container(
+                      width: 36,
+                      height: 36,
+                      decoration: BoxDecoration(
+                        color: c.surface.withValues(alpha: 0.85),
+                        shape: BoxShape.circle,
+                      ),
+                      child: Icon(
+                        Icons.close_rounded,
+                        size: 19,
+                        color: c.textPrimary,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          );
+        },
+      ),
+    );
+  }
+
+  Widget _orbitThumb(int i, Offset center, Size radius, double size) {
+    final n = _orbitExercises.length;
+    final a = 2 * math.pi * (i / n + _turn.value) - math.pi / 2;
+    // Each one breathes on its own beat, so they twinkle around the ring.
+    final beat = math.sin(2 * math.pi * (_pulse.value + i / n));
+    final scale = 0.9 + 0.12 * beat;
+    final glow = 0.5 + 0.5 * beat;
+    final c = context.appColors;
+    return Positioned(
+      left: center.dx + radius.width * math.cos(a) - size / 2,
+      top: center.dy + radius.height * math.sin(a) - size / 2,
+      child: Transform.scale(
+        scale: scale,
+        child: Container(
+          width: size,
+          height: size,
+          decoration: BoxDecoration(
+            shape: BoxShape.circle,
+            color: c.surface,
+            border: Border.all(color: c.surface, width: 2.5),
+            boxShadow: [
+              BoxShadow(
+                color: _pinkB.withValues(alpha: 0.12 + 0.22 * glow),
+                blurRadius: 8 + 10 * glow,
+                offset: const Offset(0, 4),
+              ),
+            ],
+          ),
+          child: ClipOval(
+            child: ExercisePicture(
+              exercise: exerciseByNumber(_orbitExercises[i]),
+              compact: true,
             ),
           ),
-          for (final (i, pos) in const [
-            (0, Offset(14, 92)),
-            (1, Offset(-12, 128)),
-            (2, Offset(20, 170)),
-          ].indexed)
-            Positioned(
-              top: pos.$2.dy,
-              left: pos.$2.dx >= 0 ? pos.$2.dx : null,
-              right: pos.$2.dx < 0 ? -pos.$2.dx : null,
-              child: _Pop(
-                delay: Duration(milliseconds: 350 + 150 * i),
-                child: _Chip(icon: chip[pos.$1].$1, label: chip[pos.$1].$2),
-              ),
-            ),
-        ],
+        ),
       ),
     );
   }
 }
 
+class _DashedRing extends CustomPainter {
+  _DashedRing({
+    required this.center,
+    required this.radius,
+    required this.turn,
+    required this.color,
+  });
+
+  final Offset center;
+  final Size radius;
+  final double turn;
+  final Color color;
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()
+      ..color = color
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 1.5
+      ..strokeCap = StrokeCap.round;
+    const dashes = 64;
+    const sweep = 2 * math.pi / dashes;
+    final rect = Rect.fromCenter(
+      center: center,
+      width: radius.width * 2,
+      height: radius.height * 2,
+    );
+    for (var i = 0; i < dashes; i++) {
+      canvas.drawArc(
+        rect,
+        2 * math.pi * turn + i * sweep,
+        sweep * 0.55,
+        false,
+        paint,
+      );
+    }
+  }
+
+  @override
+  bool shouldRepaint(_DashedRing old) =>
+      old.turn != turn || old.radius != radius || old.color != color;
+}
+
 class _Chip extends StatelessWidget {
-  const _Chip({required this.icon, required this.label});
-  final IconData icon;
+  const _Chip({required this.label});
   final String label;
 
   @override
   Widget build(BuildContext context) {
     final c = context.appColors;
     return Container(
-      padding: const EdgeInsets.fromLTRB(6, 6, 12, 6),
+      padding: const EdgeInsets.fromLTRB(6, 5, 11, 5),
       decoration: BoxDecoration(
         color: c.surface,
         borderRadius: BorderRadius.circular(99),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.10),
-            blurRadius: 18,
-            offset: const Offset(0, 8),
+            color: Colors.black.withValues(alpha: 0.05),
+            blurRadius: 12,
+            offset: const Offset(0, 4),
           ),
         ],
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Container(
-            width: 26,
-            height: 26,
-            decoration: BoxDecoration(
-              color: c.softRose,
-              shape: BoxShape.circle,
-            ),
-            child: Icon(icon, size: 16, color: c.accentText),
-          ),
-          const SizedBox(width: 8),
+          const _Tick(size: 17),
+          const SizedBox(width: 6),
           Text(
             label,
             style: AppTypography.title(
-              12.5,
+              12,
               c.textPrimary,
-              weight: FontWeight.w600,
+              weight: FontWeight.w500,
             ),
           ),
         ],
-      ),
-    );
-  }
-}
-
-/// A gradient tick and a feature with its note, fading in one by one.
-class _Feature extends StatelessWidget {
-  const _Feature({
-    required this.index,
-    required this.title,
-    required this.note,
-  });
-
-  final int index;
-  final String title;
-  final String note;
-
-  @override
-  Widget build(BuildContext context) {
-    final c = context.appColors;
-    return _Pop(
-      delay: Duration(milliseconds: 450 + 100 * index),
-      scale: false,
-      child: Padding(
-        padding: const EdgeInsets.only(bottom: 9),
-        child: Row(
-          children: [
-            const _Tick(size: 24),
-            const SizedBox(width: 12),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    title,
-                    style: AppTypography.title(
-                      14.5,
-                      c.textPrimary,
-                      weight: FontWeight.w500,
-                    ),
-                  ),
-                  Text(
-                    note,
-                    style: AppTypography.body(c.textSecondary, fontSize: 12),
-                  ),
-                ],
-              ),
-            ),
-          ],
-        ),
       ),
     );
   }
@@ -513,286 +534,176 @@ class _Tick extends StatelessWidget {
   }
 }
 
-class _OfferCard extends StatelessWidget {
-  const _OfferCard({
-    required this.offer,
-    required this.selected,
-    required this.current,
-    required this.showTrial,
-    required this.onTap,
+/// Monthly | Yearly, with a gradient thumb that slides to the choice.
+class _PlanToggle extends StatelessWidget {
+  const _PlanToggle({
+    required this.value,
+    required this.onChanged,
+    required this.yearlyTag,
   });
 
-  final PaywallOffer offer;
-  final bool selected;
-  final bool current;
-  final bool showTrial;
-  final VoidCallback onTap;
+  final PremiumPlan value;
+  final ValueChanged<PremiumPlan> onChanged;
+  final String yearlyTag;
 
   @override
   Widget build(BuildContext context) {
     final c = context.appColors;
-    final yearly = offer.plan == PremiumPlan.yearly;
-    final tag = current
-        ? 'CURRENT'
-        : yearly
-        ? 'SAVE 58%'
-        : (offer.trialDays != null && showTrial)
-        ? '${offer.trialDays} DAYS FREE'
-        : null;
-    final meta = yearly
-        ? (offer.perMonth != null ? '${offer.perMonth} / month' : 'Best value')
-        : (offer.trialDays != null && showTrial)
-        ? '${offer.trialDays}-day free trial'
-        : 'Billed monthly';
-    return Semantics(
-      button: true,
-      selected: selected,
-      label: '${offer.title}, ${offer.price} per ${offer.period}. $meta',
-      excludeSemantics: true,
-      child: GestureDetector(
-        onTap: onTap,
-        child: Padding(
-          padding: const EdgeInsets.only(top: 10, bottom: 4),
-          child: Stack(
-            clipBehavior: Clip.none,
-            children: [
-              AnimatedContainer(
-                duration: const Duration(milliseconds: 250),
-                curve: Curves.easeOutCubic,
-                padding: const EdgeInsets.fromLTRB(16, 14, 16, 14),
-                decoration: BoxDecoration(
-                  color: c.surface,
-                  borderRadius: BorderRadius.circular(22),
-                  border: Border.all(
-                    color: selected ? c.accent : c.divider,
-                    width: 2,
+    final yearly = value == PremiumPlan.yearly;
+    Widget option(PremiumPlan p, String label, String? tag) {
+      final on = value == p;
+      return Expanded(
+        child: Semantics(
+          button: true,
+          selected: on,
+          label: tag == null ? label : '$label, $tag',
+          excludeSemantics: true,
+          child: GestureDetector(
+            behavior: HitTestBehavior.opaque,
+            onTap: () => onChanged(p),
+            child: SizedBox(
+              height: 42,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  AnimatedDefaultTextStyle(
+                    duration: const Duration(milliseconds: 250),
+                    style: AppTypography.title(
+                      14.5,
+                      on ? Colors.white : c.textSecondary,
+                      weight: FontWeight.w600,
+                    ),
+                    child: Text(label),
                   ),
-                  boxShadow: [
-                    if (selected)
-                      BoxShadow(
-                        color: c.accent.withValues(alpha: 0.25),
-                        blurRadius: 24,
-                        offset: const Offset(0, 10),
-                      ),
-                  ],
-                ),
-                child: Row(
-                  children: [
+                  if (tag != null) ...[
+                    const SizedBox(width: 5),
                     AnimatedContainer(
                       duration: const Duration(milliseconds: 250),
-                      width: 24,
-                      height: 24,
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 6,
+                        vertical: 2,
+                      ),
                       decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        color: selected ? c.accent : Colors.transparent,
-                        border: Border.all(
-                          color: selected ? c.accent : c.textMuted,
-                          width: 2,
+                        color: on
+                            ? Colors.white.withValues(alpha: 0.25)
+                            : c.softRose,
+                        borderRadius: BorderRadius.circular(99),
+                      ),
+                      child: Text(
+                        tag,
+                        style: AppTypography.title(
+                          9.5,
+                          on ? Colors.white : c.accentText,
+                          weight: FontWeight.w600,
                         ),
                       ),
-                      child: AnimatedScale(
-                        scale: selected ? 1 : 0.3,
-                        duration: const Duration(milliseconds: 250),
-                        child: AnimatedOpacity(
-                          opacity: selected ? 1 : 0,
-                          duration: const Duration(milliseconds: 200),
-                          child: const Icon(
-                            Icons.check_rounded,
-                            size: 15,
-                            color: Colors.white,
-                          ),
-                        ),
-                      ),
-                    ),
-                    const SizedBox(width: 14),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            offer.title,
-                            style: AppTypography.title(
-                              16,
-                              c.textPrimary,
-                              weight: FontWeight.w600,
-                            ),
-                          ),
-                          Text(
-                            meta,
-                            style: AppTypography.body(
-                              c.textSecondary,
-                              fontSize: 12.5,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.end,
-                      children: [
-                        Text(
-                          offer.price,
-                          style: AppTypography.title(
-                            17,
-                            c.textPrimary,
-                            weight: FontWeight.w600,
-                          ),
-                        ),
-                        Text(
-                          'per ${offer.period}',
-                          style: AppTypography.body(
-                            c.textSecondary,
-                            fontSize: 12,
-                          ),
-                        ),
-                      ],
                     ),
                   ],
-                ),
+                ],
               ),
-              if (tag != null)
-                Positioned(
-                  top: -10,
-                  right: 18,
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 10,
-                      vertical: 4,
-                    ),
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(99),
-                      color: yearly && !current ? c.softRose : null,
-                      gradient: yearly && !current
-                          ? null
-                          : const LinearGradient(colors: [_pinkA, _pinkB]),
-                    ),
-                    child: Text(
-                      tag,
-                      style: AppTypography.title(
-                        10.5,
-                        yearly && !current ? c.accentText : Colors.white,
-                        weight: FontWeight.w600,
-                      ).copyWith(letterSpacing: 0.8),
-                    ),
-                  ),
-                ),
-            ],
+            ),
           ),
         ),
+      );
+    }
+
+    return Container(
+      padding: const EdgeInsets.all(4),
+      decoration: BoxDecoration(
+        color: c.surface,
+        borderRadius: BorderRadius.circular(99),
+        border: Border.all(color: c.divider, width: 1.5),
+      ),
+      child: Stack(
+        children: [
+          Positioned.fill(
+            child: AnimatedAlign(
+              duration: const Duration(milliseconds: 380),
+              curve: Curves.easeOutBack,
+              alignment: yearly ? Alignment.centerRight : Alignment.centerLeft,
+              child: FractionallySizedBox(
+                widthFactor: 0.5,
+                child: Container(
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(99),
+                    gradient: const LinearGradient(colors: [_pinkA, _pinkB]),
+                    boxShadow: [
+                      BoxShadow(
+                        color: _pinkB.withValues(alpha: 0.3),
+                        blurRadius: 14,
+                        offset: const Offset(0, 6),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ),
+          Row(
+            children: [
+              option(PremiumPlan.monthly, 'Monthly', null),
+              option(PremiumPlan.yearly, 'Yearly', yearlyTag),
+            ],
+          ),
+        ],
       ),
     );
   }
 }
 
-/// "How your free trial works": today, the reminder, the first charge.
-class _TrialTimeline extends StatelessWidget {
-  const _TrialTimeline({required this.days, required this.price});
+/// The big price with its period and a short line under it.
+class _Price extends StatelessWidget {
+  const _Price({required this.price, required this.period, required this.hint});
 
-  final int days;
   final String price;
+  final String period;
+  final String hint;
 
   @override
   Widget build(BuildContext context) {
     final c = context.appColors;
-    final steps = [
-      (Icons.lock_open_rounded, 'Today', 'Everything unlocks. No charge.'),
-      (
-        Icons.notifications_none_rounded,
-        'Day ${math.max(1, days - 2)}',
-        'We remind you that the trial is ending.',
-      ),
-      (
-        Icons.star_rounded,
-        'Day $days',
-        '$price starts. Cancel any time before.',
-      ),
-    ];
-    return Container(
-      width: double.infinity,
-      margin: const EdgeInsets.only(top: 14),
-      padding: const EdgeInsets.fromLTRB(16, 16, 16, 4),
-      decoration: BoxDecoration(
-        color: c.surface,
-        borderRadius: BorderRadius.circular(22),
-        border: Border.all(color: c.divider),
+    return AnimatedSwitcher(
+      duration: const Duration(milliseconds: 280),
+      transitionBuilder: (child, a) => FadeTransition(
+        opacity: a,
+        child: SlideTransition(
+          position: Tween(
+            begin: const Offset(0, 0.15),
+            end: Offset.zero,
+          ).animate(a),
+          child: child,
+        ),
       ),
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+        key: ValueKey(price),
         children: [
-          Text(
-            'How your free trial works',
-            style: AppTypography.title(
-              14,
-              c.textPrimary,
-              weight: FontWeight.w600,
+          Text.rich(
+            TextSpan(
+              children: [
+                TextSpan(
+                  text: price,
+                  style: AppTypography.title(
+                    34,
+                    c.textPrimary,
+                    weight: FontWeight.w600,
+                  ),
+                ),
+                TextSpan(
+                  text: '  / $period',
+                  style: AppTypography.body(c.textSecondary, fontSize: 14),
+                ),
+              ],
             ),
           ),
-          const SizedBox(height: 12),
-          for (final (i, s) in steps.indexed)
-            IntrinsicHeight(
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Column(
-                    children: [
-                      Container(
-                        width: 28,
-                        height: 28,
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          color: i == 0 ? c.accent : c.softRose,
-                        ),
-                        child: Icon(
-                          s.$1,
-                          size: 15,
-                          color: i == 0 ? c.onAccent : c.accentText,
-                        ),
-                      ),
-                      if (i < steps.length - 1)
-                        Expanded(
-                          child: Container(
-                            width: 2,
-                            margin: const EdgeInsets.symmetric(vertical: 2),
-                            decoration: BoxDecoration(
-                              gradient: LinearGradient(
-                                begin: Alignment.topCenter,
-                                end: Alignment.bottomCenter,
-                                colors: [c.accent, c.softRose],
-                              ),
-                            ),
-                          ),
-                        ),
-                    ],
-                  ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: Padding(
-                      padding: const EdgeInsets.only(bottom: 14, top: 2),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            s.$2,
-                            style: AppTypography.title(
-                              13.5,
-                              c.textPrimary,
-                              weight: FontWeight.w600,
-                            ),
-                          ),
-                          Text(
-                            s.$3,
-                            style: AppTypography.body(
-                              c.textSecondary,
-                              fontSize: 12,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                ],
-              ),
+          const SizedBox(height: 2),
+          Text(
+            hint,
+            style: AppTypography.title(
+              12.5,
+              c.accentText,
+              weight: FontWeight.w500,
             ),
+          ),
         ],
       ),
     );
@@ -850,6 +761,7 @@ class _BuyButtonState extends State<_BuyButton>
           opacity: widget.onTap == null ? 0.55 : 1,
           child: Container(
             height: 58,
+            width: double.infinity,
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(99),
               gradient: LinearGradient(colors: [_pinkA, _pinkB, c.accent]),
@@ -1148,12 +1060,11 @@ class _Rise extends StatelessWidget {
   }
 }
 
-/// Fades (and pops, when [scale]) in after [delay].
+/// Fades and pops in after [delay].
 class _Pop extends StatelessWidget {
-  const _Pop({required this.child, required this.delay, this.scale = true});
+  const _Pop({required this.child, required this.delay});
   final Widget child;
   final Duration delay;
-  final bool scale;
 
   @override
   Widget build(BuildContext context) {
@@ -1166,17 +1077,10 @@ class _Pop extends StatelessWidget {
       child: child,
       builder: (context, v, child) {
         final t = ((v - start) / (1 - start)).clamp(0.0, 1.0);
-        final curved = (scale ? Curves.easeOutBack : Curves.easeOut).transform(
-          t,
-        );
+        final curved = Curves.easeOutBack.transform(t);
         return Opacity(
           opacity: t,
-          child: scale
-              ? Transform.scale(scale: 0.6 + 0.4 * curved, child: child)
-              : Transform.translate(
-                  offset: Offset(0, 8 * (1 - curved)),
-                  child: child,
-                ),
+          child: Transform.scale(scale: 0.6 + 0.4 * curved, child: child),
         );
       },
     );
