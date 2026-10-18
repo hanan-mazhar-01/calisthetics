@@ -34,10 +34,13 @@ class WorkoutState {
     List<WorkoutStep> steps, {
     int restSeconds = workoutRestSeconds,
     bool demo = false,
+    int startIndex = 0,
   }) => WorkoutState(
     steps: steps,
     restSeconds: restSeconds,
     demo: demo,
+    // A workout picked up again opens on the exercise it was left on.
+    index: steps.isEmpty ? 0 : startIndex.clamp(0, steps.length - 1),
     phase: steps.isEmpty
         ? WorkoutPhase.done
         : demo

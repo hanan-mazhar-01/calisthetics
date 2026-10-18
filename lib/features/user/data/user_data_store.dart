@@ -6,6 +6,7 @@ import '../domain/active_plan.dart';
 import '../domain/completed_session.dart';
 import '../domain/partial_effort.dart';
 import '../domain/plank_attempt.dart';
+import '../domain/resume_point.dart';
 
 /// Local persistence for everything the user does after onboarding. Works
 /// fully offline; a later sync layer mirrors it to the cloud.
@@ -24,6 +25,7 @@ class UserDataStore {
   static const _plankKey = 'user_plank_history';
   static const _partialKey = 'user_partial_progress';
   static const _partialLogKey = 'user_partial_log';
+  static const _resumeKey = 'user_partial_resume';
 
   /// Every plan the user has added. Older installs stored a single plan under
   /// a different key; it is picked up here as the first (and only) plan.
@@ -111,6 +113,28 @@ class UserDataStore {
 
   Future<void> writePartialProgress(Map<String, int> progress) =>
       _prefs.setString(_partialKey, jsonEncode(progress));
+
+  /// Where each half-done day is picked up again, by day key.
+  Map<String, ResumePoint> readResumePoints() {
+    final raw = _prefs.getString(_resumeKey);
+    if (raw == null) return {};
+    try {
+      return {
+        for (final e in (jsonDecode(raw) as Map<String, dynamic>).entries)
+          e.key: ResumePoint.fromJson(e.value as Map<String, dynamic>),
+      };
+    } catch (_) {
+      return {};
+    }
+  }
+
+  Future<void> writeResumePoints(Map<String, ResumePoint> points) =>
+      points.isEmpty
+      ? _prefs.remove(_resumeKey)
+      : _prefs.setString(
+          _resumeKey,
+          jsonEncode({for (final e in points.entries) e.key: e.value.toJson()}),
+        );
 
   List<PartialEffort> readPartialLog() {
     final raw = _prefs.getString(_partialLogKey);

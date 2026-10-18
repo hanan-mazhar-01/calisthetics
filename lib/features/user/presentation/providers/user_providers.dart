@@ -14,6 +14,7 @@ import '../../domain/active_plan.dart';
 import '../../domain/completed_session.dart';
 import '../../domain/partial_effort.dart';
 import '../../domain/plank_attempt.dart';
+import '../../domain/resume_point.dart';
 import '../../domain/user_stats.dart';
 
 final userDataStoreProvider = Provider<UserDataStore>(
@@ -352,12 +353,33 @@ class PartialProgressNotifier extends Notifier<Map<String, int>> {
   Map<String, int> build() =>
       ref.read(userDataStoreProvider).readPartialProgress();
 
-  Future<void> set(String key, int percent) async {
+  /// Where the half-done day [key] is picked up again, or null.
+  ResumePoint? resumePoint(String key) =>
+      ref.read(userDataStoreProvider).readResumePoints()[key];
+
+  /// Remembers how far day [key] got. With [resume], the workout starts from
+  /// that exercise the next time instead of from the top.
+  Future<void> set(String key, int percent, {ResumePoint? resume}) async {
     state = {...state, key: percent.clamp(0, 99)};
-    await ref.read(userDataStoreProvider).writePartialProgress(state);
+    final store = ref.read(userDataStoreProvider);
+    await store.writePartialProgress(state);
+    if (resume != null) {
+      await store.writeResumePoints({...store.readResumePoints(), key: resume});
+    }
+  }
+
+  Future<void> _dropResume(bool Function(String key) test) async {
+    final store = ref.read(userDataStoreProvider);
+    final points = store.readResumePoints();
+    final next = {
+      for (final e in points.entries)
+        if (!test(e.key)) e.key: e.value,
+    };
+    if (next.length != points.length) await store.writeResumePoints(next);
   }
 
   Future<void> clearWhere(bool Function(String key) test) async {
+    await _dropResume(test);
     final next = {
       for (final e in state.entries)
         if (!test(e.key)) e.key: e.value,
@@ -368,6 +390,7 @@ class PartialProgressNotifier extends Notifier<Map<String, int>> {
   }
 
   Future<void> clear(String key) async {
+    await _dropResume((k) => k == key);
     if (!state.containsKey(key)) return;
     state = {...state}..remove(key);
     await ref.read(userDataStoreProvider).writePartialProgress(state);
@@ -387,6 +410,20 @@ class PartialLogNotifier extends Notifier<List<PartialEffort>> {
 
   Future<void> add(PartialEffort effort) async {
     state = [...state, effort];
+    await ref.read(userDataStoreProvider).writePartialLog(state);
+  }
+
+  /// Takes out the entries made at [times] (ISO strings): the day they were
+  /// logged for has now been finished, and its session holds that work.
+  Future<void> removeAt(List<String> times) async {
+    if (times.isEmpty) return;
+    final gone = {for (final t in times) DateTime.tryParse(t)}..remove(null);
+    final next = [
+      for (final e in state)
+        if (!gone.any((g) => g!.isAtSameMomentAs(e.at))) e,
+    ];
+    if (next.length == state.length) return;
+    state = next;
     await ref.read(userDataStoreProvider).writePartialLog(state);
   }
 }

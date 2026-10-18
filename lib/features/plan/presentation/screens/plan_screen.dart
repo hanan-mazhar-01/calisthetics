@@ -806,7 +806,7 @@ class _HeroDay extends ConsumerWidget {
           ),
           const SizedBox(height: AppSpacing.md),
           _PrimaryPill(
-            label: 'Start Training',
+            label: percent != null ? 'Resume Training' : 'Start Training',
             onTap: () => context.push(
               '/workout',
               extra: WorkoutRequest(

@@ -215,6 +215,7 @@ class _Body extends ConsumerWidget {
             right: 0,
             bottom: 0,
             child: DayStartBar(
+              resume: percent != null,
               onStart: () => context.push(
                 '/workout',
                 extra: WorkoutRequest(

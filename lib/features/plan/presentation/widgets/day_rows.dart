@@ -114,8 +114,11 @@ class DayExerciseRow extends StatelessWidget {
 
 /// Full-width START pill with a press-scale.
 class DayStartBar extends StatefulWidget {
-  const DayStartBar({super.key, required this.onStart});
+  const DayStartBar({super.key, required this.onStart, this.resume = false});
   final VoidCallback onStart;
+
+  /// The day was left half-done: the button says RESUME.
+  final bool resume;
 
   @override
   State<DayStartBar> createState() => _DayStartBarState();
@@ -147,7 +150,7 @@ class _DayStartBarState extends State<DayStartBar> {
         ),
         child: Semantics(
           button: true,
-          label: 'Start workout',
+          label: widget.resume ? 'Resume workout' : 'Start workout',
           excludeSemantics: true,
           child: GestureDetector(
             key: const ValueKey('day-start'),
@@ -169,7 +172,7 @@ class _DayStartBarState extends State<DayStartBar> {
                   borderRadius: BorderRadius.circular(AppRadius.pill),
                 ),
                 child: Text(
-                  'START',
+                  widget.resume ? 'RESUME' : 'START',
                   style: AppTypography.title(16, c.onAccent),
                 ),
               ),

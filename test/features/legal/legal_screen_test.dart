@@ -13,7 +13,10 @@ void main() {
       tester.view.devicePixelRatio = 2;
       addTearDown(tester.view.reset);
       await tester.pumpWidget(
-        MaterialApp(theme: AppTheme.light, home: LegalScreen(kind: kind)),
+        MaterialApp(
+          theme: AppTheme.light,
+          home: LegalScreen(kind: kind),
+        ),
       );
       expect(find.text(title), findsOneWidget);
       expect(find.text(section), findsOneWidget);
