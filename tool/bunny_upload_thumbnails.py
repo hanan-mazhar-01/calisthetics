@@ -102,7 +102,7 @@ def main():
     versions, total = {}, 0
     previous = {}
     if up.OUT_DART.exists():
-        previous = {m.group(1): m.group(2) for m in re.finditer(r"'([^']+)': '([0-9a-f]+)'", up.OUT_DART.read_text())}
+        previous = {m.group(1): m.group(2) for m in re.finditer(r"'([^']+)':\s*'([0-9a-f]+)'", up.OUT_DART.read_text())}
     for video, path in sorted(chosen.items()):
         key = "thumbnails/" + cat[video]["file"].removesuffix(".mp4")
         im = Image.open(path).convert("RGB")

@@ -100,7 +100,7 @@ def main():
     versions, total_in, total_out = {}, 0, 0
     previous = {}
     if OUT_DART.exists():
-        previous = {m.group(1): m.group(2) for m in re.finditer(r"'([^']+)': '([0-9a-f]+)'", OUT_DART.read_text())}
+        previous = {m.group(1): m.group(2) for m in re.finditer(r"'([^']+)':\s*'([0-9a-f]+)'", OUT_DART.read_text())}
     for p in sorted(src.rglob("*")):
         if p.suffix.lower() not in (".png", ".jpg", ".jpeg", ".webp"):
             continue
@@ -126,7 +126,7 @@ def main():
     if not a.dry_run:
         existing = {}
         if OUT_DART.exists():
-            existing = {m.group(1): m.group(2) for m in re.finditer(r"'([^']+)': '([0-9a-f]+)'", OUT_DART.read_text())}
+            existing = {m.group(1): m.group(2) for m in re.finditer(r"'([^']+)':\s*'([0-9a-f]+)'", OUT_DART.read_text())}
         existing.update(versions)
         body = "".join(f"  '{k}': '{v}',\n" for k, v in sorted(existing.items()))
         OUT_DART.write_text(
