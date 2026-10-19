@@ -267,6 +267,7 @@ final List<OnboardingStep> onboardingChapter4Steps = [
       ),
       ChoiceOption(
         id: 'first-pull-up',
+        imageKey: 'onboarding/your-plan/3',
         label: 'I want to do my first pull-up',
         glyph: '3',
       ),
