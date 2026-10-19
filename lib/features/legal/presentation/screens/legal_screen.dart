@@ -11,6 +11,9 @@ enum LegalKind { privacy, terms, support }
 
 const _supportEmail = 'support@veradostudio.com';
 
+/// A paragraph that starts with this is a sub-heading (a question).
+const _subheading = '## ';
+
 /// The Privacy Policy, the Terms of Use or Help & Support, readable offline,
 /// from the profile, the settings and the paywall. Help & Support also has a
 /// button that starts an email to us.
@@ -83,14 +86,31 @@ class LegalScreen extends StatelessWidget {
                       ),
                     ),
                     const SizedBox(height: 6),
-                    Text(
-                      s.body,
-                      style: AppTypography.body(
-                        c.textSecondary,
-                        fontSize: 14.5,
-                        height: 1.5,
-                      ),
-                    ),
+                    for (final part in s.body.split('\n\n'))
+                      if (part.startsWith(_subheading))
+                        Padding(
+                          padding: const EdgeInsets.only(top: 12, bottom: 2),
+                          child: Text(
+                            part.substring(_subheading.length),
+                            style: AppTypography.title(
+                              15,
+                              c.textPrimary,
+                              weight: FontWeight.w600,
+                            ),
+                          ),
+                        )
+                      else
+                        Padding(
+                          padding: const EdgeInsets.only(top: 8),
+                          child: Text(
+                            part,
+                            style: AppTypography.body(
+                              c.textSecondary,
+                              fontSize: 14.5,
+                              height: 1.5,
+                            ),
+                          ),
+                        ),
                   ],
                 ],
               ),

@@ -203,7 +203,7 @@ def flatten(blocks):
         if kind == "p":
             out.append(plain(b[1]))
         elif kind == "h3":
-            out.append(plain(b[1]))
+            out.append("## " + plain(b[1]))   # the app shows it as a sub-heading
         elif kind == "ul":
             out.append("\n".join("• " + plain(i) for i in b[1]))
         elif kind == "code":

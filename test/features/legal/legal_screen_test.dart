@@ -54,7 +54,10 @@ void main() {
     );
     expect(find.bySemanticsLabel('Email support@veradostudio.com'), findsOne);
     expect(find.text('1. Getting Started'), findsOneWidget);
-    expect(find.textContaining('Why is a day locked?'), findsOneWidget);
+    // A question is a bold sub-heading of its own, not part of the answer.
+    final question = tester.widget<Text>(find.text('Why is a day locked?'));
+    expect(question.style?.fontWeight, FontWeight.w600);
+    expect(find.textContaining('## '), findsNothing);
     // The other two documents do not carry the button.
     await tester.pumpWidget(
       MaterialApp(
