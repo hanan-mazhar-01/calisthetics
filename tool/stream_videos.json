@@ -925,86 +925,86 @@
  },
  "calesthetics_084_hanging_knee_raise_beginner_v1": {
   "clip": {
-   "guid": "16477d68-4f32-4b2b-893a-88da5cf61b89",
-   "sha": "3b32153178bc",
-   "source": "Skill \u2014 Toes-to-Bar/skill_toes_to_bar/Hanging_Knee_Raise clip 1.mp4"
+   "guid": "789e5394-2052-4f81-9755-91e71e39a203",
+   "sha": "e8b2a6bc77f5",
+   "source": "Hanging_Knee_Raise__ clip 1.mp4"
   },
   "main": {
-   "guid": "69155da3-efe9-4638-9bb8-54d4c8f16e67",
-   "sha": "f715bc75eb7e",
-   "source": "Skill \u2014 Toes-to-Bar/skill_toes_to_bar/Hanging Knee Raise.mp4"
+   "guid": "ed41879d-cc9c-4028-8383-043c5fde01b0",
+   "sha": "8d798876afa9",
+   "source": "Hanging Knee Raise.mp4"
   }
  },
  "calesthetics_085_bent_knee_leg_raise_beginner_v1": {
   "clip": {
-   "guid": "cb5febf0-340f-40a5-972d-f6de5800b0b1",
-   "sha": "f4cef510625b",
-   "source": "Skill \u2014 Toes-to-Bar/skill_toes_to_bar/Bent-Knee_Leg_Rise clip 1.mp4"
+   "guid": "cd4560c9-a6ef-42ba-afff-4fd74f405ae5",
+   "sha": "84af1b9e6734",
+   "source": "Bent-Knee_Leg_Raise_ clip 1.mp4"
   },
   "main": {
-   "guid": "a6af145b-e4fa-463c-8343-bd12c11e82b5",
-   "sha": "279fd6ce05ab",
-   "source": "Skill \u2014 Toes-to-Bar/skill_toes_to_bar/Bent-Knee Leg Raise.mp4"
+   "guid": "3494949d-ea3d-4d9b-b2e1-6f7f0355739c",
+   "sha": "63fd058c7043",
+   "source": "Bent Knee Raise .mp4"
   }
  },
  "calesthetics_086_straight_leg_raise_intermediate_v1": {
   "clip": {
-   "guid": "49b3f42e-4962-43b5-ad84-c843eefd3ef5",
-   "sha": "870a80199d48",
-   "source": "Skill \u2014 Toes-to-Bar/skill_toes_to_bar/Straight-Leg_Raise clip 1.mp4"
+   "guid": "3a7d511e-34c6-4597-a252-755f7122b202",
+   "sha": "0ec376393c7a",
+   "source": "Straight-Leg_Raise_ clip 1.mp4"
   },
   "main": {
-   "guid": "6733355e-c69b-42b5-b4ac-3b0cb67e8b3b",
-   "sha": "ad3fa5fe5a99",
-   "source": "Skill \u2014 Toes-to-Bar/skill_toes_to_bar/Straight-Leg Raise.mp4"
+   "guid": "2dfc2c8d-8f3b-47ef-948d-9e4abfadf5a0",
+   "sha": "6e8126483036",
+   "source": "Straight-Leg Raise.mp4"
   }
  },
  "calesthetics_087_controlled_hanging_leg_raise_intermediate_v1": {
   "clip": {
-   "guid": "eb6025da-8880-46a0-b007-0c8ea3ba4b92",
-   "sha": "4a6ced2340a8",
-   "source": "Skill \u2014 Toes-to-Bar/skill_toes_to_bar/Controlled_Hanging_Leg_Raise clip 1.mp4"
+   "guid": "dd079e7b-6c80-42ad-8973-c29a4cf092b9",
+   "sha": "cff221257cfc",
+   "source": "Controlled_Hanging_Leg clip 1.mp4"
   },
   "main": {
-   "guid": "75b18640-e220-467e-840f-db512c2d6856",
-   "sha": "88f1e036dd2f",
-   "source": "Skill \u2014 Toes-to-Bar/skill_toes_to_bar/Controlled Hanging Leg Raise.mp4"
+   "guid": "9da1fbee-c869-4a6a-9f39-67c660c5f66c",
+   "sha": "f0f74d1c7981",
+   "source": "Controlled Raise.mp4"
   }
  },
  "calesthetics_088_knee_raise_to_chest_intermediate_v1": {
   "clip": {
-   "guid": "e2fb3db1-c0a5-489a-8dff-5813cccc0673",
-   "sha": "8cd3fd4daab0",
-   "source": "Skill \u2014 Toes-to-Bar/skill_toes_to_bar/Knee_Raise_to_Chest clip 1.mp4"
+   "guid": "0081ab40-40fc-4d2f-b044-54d61fa5603c",
+   "sha": "f4789de16993",
+   "source": "Knee_Raise_to_Chest_ Clip 1.mp4"
   },
   "main": {
-   "guid": "31a7c5b5-00e5-499b-b590-d027e7bc154f",
-   "sha": "78556243f18c",
-   "source": "Skill \u2014 Toes-to-Bar/skill_toes_to_bar/Knee Raise to Chest.mp4"
+   "guid": "8b1b1639-23fe-4e70-ae8a-45f139baa42f",
+   "sha": "cb3ec80648b0",
+   "source": "Knee Raise to Chest.mp4"
   }
  },
  "calesthetics_089_toes_to_bar_negative_int-adv_v1": {
   "clip": {
-   "guid": "fbc1c680-50eb-4ad2-a63a-4ceb40b05121",
-   "sha": "143d58c214db",
-   "source": "Skill \u2014 Toes-to-Bar/skill_toes_to_bar/Toes-to-Bar_Negative clip 1.mp4"
+   "guid": "bb402b01-0d17-4167-96eb-9709a283402e",
+   "sha": "05771bd647c7",
+   "source": "Toes-to-Bar Negative clip 1.mp4"
   },
   "main": {
-   "guid": "a061ad29-10ec-445b-91ad-a12e82c40921",
-   "sha": "a6d870253219",
-   "source": "Skill \u2014 Toes-to-Bar/skill_toes_to_bar/Toes-to-Bar Negative.mp4"
+   "guid": "dbec4dd8-049e-41bb-81f4-ee7f8b1f0151",
+   "sha": "8e7c9b5887e9",
+   "source": "Toes-to-Bar Negative.mp4"
   }
  },
  "calesthetics_090_strict_toes_to_bar_advanced_v1": {
   "clip": {
-   "guid": "386efee0-af61-44bd-943a-f080eaa9e29a",
-   "sha": "96259ac02aed",
-   "source": "Skill \u2014 Toes-to-Bar/skill_toes_to_bar/Strict_Toes-to-Bar clip 1.mp4"
+   "guid": "072877e9-d7e5-46af-ab1e-0a36e1b9485a",
+   "sha": "baeec8d0bb1c",
+   "source": "Strict_Toes-to-Bar_ clip 1.mp4"
   },
   "main": {
-   "guid": "a93101e6-a12a-4733-aae5-e7280f32fa58",
-   "sha": "037cf7262151",
-   "source": "Skill \u2014 Toes-to-Bar/skill_toes_to_bar/Strict Toes-to-Bar.mp4"
+   "guid": "19d6fc3a-649b-45aa-aeb5-4d0a3a981ae2",
+   "sha": "03c44a6891ff",
+   "source": "Strict Toes-to-Bar.mp4"
   }
  },
  "calesthetics_092_arm_circles_beginner_v1": {

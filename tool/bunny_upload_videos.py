@@ -26,9 +26,14 @@ OUT_DART = ROOT / "lib/features/media/data/bunny_videos.g.dart"
 API = "https://video.bunnycdn.com/library"
 
 
-def encode(src: Path, dst: Path, sound: bool):
+def encode(src: Path, dst: Path, sound: bool, trim_bottom: int = 0):
+    # --trim-bottom N: cuts N source pixels off the bottom (where a generator
+    # watermark sits) and scales the rest back up. Keeps the top and the
+    # centre, so the framing barely changes.
+    crop = (f"crop=w='trunc((ih-{trim_bottom})*iw/ih/2)*2':h='ih-{trim_bottom}'"
+            ":x='(iw-out_w)/2':y=0," if trim_bottom else "")
     cmd = [FFMPEG, "-loglevel", "error", "-y", "-i", str(src),
-           "-vf", "scale=720:1280:force_original_aspect_ratio=decrease,pad=720:1280:(ow-iw)/2:(oh-ih)/2,fps=30",
+           "-vf", crop + "scale=720:1280:force_original_aspect_ratio=decrease,pad=720:1280:(ow-iw)/2:(oh-ih)/2,fps=30",
            "-c:v", "libx264", "-preset", "slow", "-crf", "23", "-pix_fmt", "yuv420p",
            "-movflags", "+faststart"]
     cmd += ["-c:a", "aac", "-b:a", "96k", "-ac", "2"] if sound else ["-an"]
@@ -76,6 +81,8 @@ def main():
     ap.add_argument("source")
     ap.add_argument("--only", help="comma separated catalog numbers")
     ap.add_argument("--dry-run", action="store_true")
+    ap.add_argument("--trim-bottom", type=int, default=0,
+                    help="source pixels to cut off the bottom (watermark)")
     a = ap.parse_args()
     up.load_env(required=("BUNNY_STREAM_LIBRARY", "BUNNY_STREAM_KEY"))
     for k in ("BUNNY_STREAM_LIBRARY", "BUNNY_STREAM_KEY"):
@@ -97,7 +104,7 @@ def main():
                 continue
             src = Path(src)
             out = tmp / f"{stem}_{kind}.mp4"
-            encode(src, out, sound)
+            encode(src, out, sound, a.trim_bottom)
             digest = hashlib.sha1(out.read_bytes()).hexdigest()[:12]
             total_in += src.stat().st_size; total_out += out.stat().st_size
             prev = state.get(stem, {}).get(kind)

@@ -310,32 +310,32 @@ const bunnyVideos = <String, (String?, String?)>{
     '4ec71d80-52c9-40db-8ed4-69b1a3e36118',
   ),
   'calesthetics_084_hanging_knee_raise_beginner_v1': (
-    '69155da3-efe9-4638-9bb8-54d4c8f16e67',
-    '16477d68-4f32-4b2b-893a-88da5cf61b89',
+    'ed41879d-cc9c-4028-8383-043c5fde01b0',
+    '789e5394-2052-4f81-9755-91e71e39a203',
   ),
   'calesthetics_085_bent_knee_leg_raise_beginner_v1': (
-    'a6af145b-e4fa-463c-8343-bd12c11e82b5',
-    'cb5febf0-340f-40a5-972d-f6de5800b0b1',
+    '3494949d-ea3d-4d9b-b2e1-6f7f0355739c',
+    'cd4560c9-a6ef-42ba-afff-4fd74f405ae5',
   ),
   'calesthetics_086_straight_leg_raise_intermediate_v1': (
-    '6733355e-c69b-42b5-b4ac-3b0cb67e8b3b',
-    '49b3f42e-4962-43b5-ad84-c843eefd3ef5',
+    '2dfc2c8d-8f3b-47ef-948d-9e4abfadf5a0',
+    '3a7d511e-34c6-4597-a252-755f7122b202',
   ),
   'calesthetics_087_controlled_hanging_leg_raise_intermediate_v1': (
-    '75b18640-e220-467e-840f-db512c2d6856',
-    'eb6025da-8880-46a0-b007-0c8ea3ba4b92',
+    '9da1fbee-c869-4a6a-9f39-67c660c5f66c',
+    'dd079e7b-6c80-42ad-8973-c29a4cf092b9',
   ),
   'calesthetics_088_knee_raise_to_chest_intermediate_v1': (
-    '31a7c5b5-00e5-499b-b590-d027e7bc154f',
-    'e2fb3db1-c0a5-489a-8dff-5813cccc0673',
+    '8b1b1639-23fe-4e70-ae8a-45f139baa42f',
+    '0081ab40-40fc-4d2f-b044-54d61fa5603c',
   ),
   'calesthetics_089_toes_to_bar_negative_int-adv_v1': (
-    'a061ad29-10ec-445b-91ad-a12e82c40921',
-    'fbc1c680-50eb-4ad2-a63a-4ceb40b05121',
+    'dbec4dd8-049e-41bb-81f4-ee7f8b1f0151',
+    'bb402b01-0d17-4167-96eb-9709a283402e',
   ),
   'calesthetics_090_strict_toes_to_bar_advanced_v1': (
-    'a93101e6-a12a-4733-aae5-e7280f32fa58',
-    '386efee0-af61-44bd-943a-f080eaa9e29a',
+    '19d6fc3a-649b-45aa-aeb5-4d0a3a981ae2',
+    '072877e9-d7e5-46af-ab1e-0a36e1b9485a',
   ),
   'calesthetics_092_arm_circles_beginner_v1': (
     '5c606fce-0ed8-402f-8879-93d49135b9ac',

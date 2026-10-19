@@ -27,6 +27,8 @@ ALIASES = {
     "assistedonearmpushup": "assistedonearmpushupprogression",
     "slowbreathingrelaxation": "slowbreathingrelaxation",
     "marchinplacebeginner": "marchinplace", "burpee": "burpeestepbackvariation", "pikepushup": "pikepushup",
+    "bentkneeraise": "bentkneelegraise", "controlledraise": "controlledhanginglegraise",
+    "controlledhangingleg": "controlledhanginglegraise",
 }
 
 
