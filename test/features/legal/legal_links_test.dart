@@ -24,6 +24,31 @@ void main() {
     // that the in-app fallback is still there for offline use.
     expect(privacySections, isNotEmpty);
     expect(termsSections, isNotEmpty);
+    expect(supportSections, isNotEmpty);
+  });
+
+  test('Help & Support answers the real questions, with real facts', () {
+    final support = supportSections
+        .map((s) => '${s.heading}\n${s.body}')
+        .join();
+    for (final needle in [
+      'support@veradostudio.com',
+      r'$9.99',
+      r'$49.99',
+      '7-day free trial',
+      'Restore purchases',
+      'Profile > Delete Account',
+      'Profile > Erase data on this phone',
+      'Profile > Downloaded videos > Clear',
+      'Profile > Reminders',
+      'Forgot password?',
+    ]) {
+      expect(support, contains(needle), reason: needle);
+    }
+    expect(
+      supportSections.map((s) => s.heading),
+      containsAll(['1. Getting Started', '3. Premium and Subscriptions']),
+    );
   });
 
   test('the in-app text matches the pages: same contact, prices and date', () {

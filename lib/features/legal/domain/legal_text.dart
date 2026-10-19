@@ -114,3 +114,34 @@ const termsSections = <LegalSection>[
     "Questions about these terms? Contact us:\n\nApplication: Calesthetics\nPublisher: Verado Studio\nSupport Email: support@veradostudio.com",
   ),
 ];
+
+const supportSections = <LegalSection>[
+  LegalSection(
+    "1. Getting Started",
+    "How do the plans work?\n\nYour plan is split into phases of three training days. Each day lists a warm-up, the main exercises and a cool-down. Open a day and tap START.\n\nWhy is a day locked?\n\nDays open one after another: finish a day to unlock the next. It keeps your progression steady and safe.\n\nI quit in the middle of a workout. Is it lost?\n\nNo. Quitting saves how far you got. Open that day again and tap Resume to carry on from where you stopped.\n\nCan I change my plan?\n\nYes. On the Plan tab, tap Edit to adjust your training, or open the plan menu at the top to see all plans and switch. Switching asks you to confirm first. Free includes one plan; Premium lets you add more.",
+  ),
+  LegalSection(
+    "2. Your Account and Signing In",
+    "Do I need an account?\n\nNo, you can use the app as a guest. An account (email, Google, or Apple on iPhone) saves your plan and progress so they follow you to a new phone.\n\nI have a new phone. How do I get my progress back?\n\nSign in with the same account. Your plan, history, favorites and settings come back. If you use Premium, also tap Restore purchases (see below). Guest data lives only on the old phone, so it cannot be moved.\n\nI cannot sign in.\n\n• Check your internet connection and try again.\n• With Google: make sure a Google account is added to your phone.\n• With email: tap Forgot password? on the sign-in sheet and we will email you a link to choose a new one.\n• Still stuck? Email us (see the end of this page).\n\nHow do I change my name?\n\nOpen Profile and tap the pencil at the top of your card.",
+  ),
+  LegalSection(
+    "3. Premium and Subscriptions",
+    "What does Premium include?\n\nEvery plan, and every exercise and video in Discover. Monthly is \$9.99 per month with a 7-day free trial for eligible new subscribers; Yearly is \$49.99 per year. The free trial is offered once per person.\n\nI paid, but Premium is not showing.\n\n• Open Profile, tap Manage on the Premium card, then Restore purchases. You can also tap Restore on the Premium screen.\n• Use the same Apple ID or Google account that bought it.\n• Still missing? Email us the order number from your Apple or Google receipt and we will help.\n\nHow do I cancel?\n\nCancel in the store, not in the app: Apple ID > Subscriptions on iPhone, or Google Play > Payments & subscriptions > Subscriptions on Android. Cancel at least 24 hours before it renews. Deleting the app or your Calesthetics account does not cancel it.\n\nCan I get a refund?\n\nApple and Google take the payment, so they handle refunds. On iPhone, use reportaproblem.apple.com; on Android, use your order history in Google Play. We cannot refund purchases made through them.",
+  ),
+  LegalSection(
+    "4. Workouts, Videos and Music",
+    "A video will not load.\n\nVideos stream from the internet the first time you play them, so check your connection. After the first play, a video is saved on your phone and works offline.\n\nHow do I free up space?\n\nOpen Profile > Downloaded videos > Clear. Videos download again the next time they play.\n\nHow do I change the music?\n\nTap the music button at the top right of a workout (or of a day's preview). Switch Music on or off and slide the volume. This changes only the background music, never the coach's voice in the videos.\n\nI cannot hear the coach.\n\nCheck that your phone is not on silent and that the media volume is up. The music switch does not affect the coach's voice.",
+  ),
+  LegalSection(
+    "5. Reminders",
+    "How do I turn on reminders?\n\nOpen Profile > Reminders, switch them on and pick a time. We remind you on the days your plan trains. Allow notifications when your phone asks.\n\nMy reminders do not arrive.\n\n• In your phone's settings, make sure notifications are allowed for Calesthetics.\n• On some Android phones, battery saver can delay or block reminders. Set Calesthetics to Unrestricted (or remove its battery limits).\n• Reminders are scheduled on your phone, so they work without internet.",
+  ),
+  LegalSection(
+    "6. Your Data and Privacy",
+    "How do I delete my account?\n\nSigned in: open Profile > Delete Account. We may first ask you to confirm it is you. As a guest, Profile > Erase data on this phone clears everything saved on your phone. Neither one cancels a subscription.\n\nWhat do you do with my data?\n\nWe do not sell or share it. Read the details in our Privacy Policy and our Terms of Service.",
+  ),
+  LegalSection(
+    "7. Still Need Help?",
+    "Email us and include, if you can: what happened and what you expected; your phone model and its system version; the app version (at the bottom of your Profile screen); and a screenshot. Please never send your password.\n\nApplication: Calesthetics\nPublisher: Verado Studio\nSupport Email: support@veradostudio.com",
+  ),
+];

@@ -21,7 +21,7 @@ const _onboardingPath = '/';
 const _homePath = '/home';
 
 /// Routes anyone may open, finished onboarding or not.
-const _publicPaths = {'/paywall', '/privacy', '/terms'};
+const _publicPaths = {'/paywall', '/privacy', '/terms', '/support'};
 
 /// Centralized route table. Onboarding and the workout player manage their
 /// own internal step/phase state rather than pushing a route per step.
@@ -88,6 +88,10 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: '/terms',
         builder: (context, state) => const LegalScreen(kind: LegalKind.terms),
+      ),
+      GoRoute(
+        path: '/support',
+        builder: (context, state) => const LegalScreen(kind: LegalKind.support),
       ),
       GoRoute(
         path: '/settings',

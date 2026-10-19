@@ -11,6 +11,7 @@ void main() {
       '5. User Rights, Data Control & Account Deletion',
     ),
     (LegalKind.terms, 'Terms of Use', '5. Subscriptions, Free Trial & Billing'),
+    (LegalKind.support, 'Help & Support', '3. Premium and Subscriptions'),
   ]) {
     testWidgets('$title shows its sections', (tester) async {
       tester.view.physicalSize = const Size(900, 6000);
@@ -38,4 +39,32 @@ void main() {
       expect(find.textContaining('support@veradostudio.com'), findsWidgets);
     });
   }
+
+  testWidgets('Help & Support opens with an email button and the questions', (
+    tester,
+  ) async {
+    tester.view.physicalSize = const Size(900, 3000);
+    tester.view.devicePixelRatio = 2;
+    addTearDown(tester.view.reset);
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: AppTheme.light,
+        home: const LegalScreen(kind: LegalKind.support),
+      ),
+    );
+    expect(find.bySemanticsLabel('Email support@veradostudio.com'), findsOne);
+    expect(find.text('1. Getting Started'), findsOneWidget);
+    expect(find.textContaining('Why is a day locked?'), findsOneWidget);
+    // The other two documents do not carry the button.
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: AppTheme.light,
+        home: const LegalScreen(kind: LegalKind.privacy),
+      ),
+    );
+    expect(
+      find.bySemanticsLabel('Email support@veradostudio.com'),
+      findsNothing,
+    );
+  });
 }

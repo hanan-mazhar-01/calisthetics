@@ -1,7 +1,8 @@
-"""The text of the Privacy Policy and the Terms of Service of Calesthetics.
+"""The text of the Privacy Policy, the Terms of Service and the Help & Support
+page of Calesthetics.
 
 The ONE place to edit the wording. `python3 tool/build_legal_pages.py` turns it
-into the two web pages (legal_pages/) and the in-app copy
+into the three web pages (legal_pages/) and the in-app copy
 (lib/features/legal/domain/legal_text.dart).
 
 Only things the app really does are written here (checked against the code):
@@ -12,8 +13,8 @@ microphone, location or health-data access.
 
 Blocks:  ("p", text) | ("h3", text) | ("ul", [items]) | ("code", text)
          ("warn", title, text)
-Inline:  **bold**, [[privacy]] / [[terms]] (link to the other page),
-         e-mail addresses become links.
+Inline:  **bold**, [[privacy]] / [[terms]] / [[support]] (link to the other
+         page), [[email]] becomes a mail link.
 """
 
 APP = "Calesthetics"
@@ -521,6 +522,166 @@ TERMS = {
             "title": "Contact Information",
             "blocks": [
                 ("p", "Questions about these terms? Contact us:"),
+                ("contact", [
+                    ("Application", APP),
+                    ("Publisher", PUBLISHER),
+                    ("Support Email", "[[email]]"),
+                ]),
+            ],
+        },
+    ],
+}
+
+# ---------------------------------------------------------------- support ---
+SUPPORT = {
+    "title": "Help & Support",
+    "badge": "Help Center",
+    "show_dates": False,
+    "box": (
+        "\U0001F4AC",
+        "We are here to help",
+        "Most answers are on this page, so look here first: it is the fastest "
+        "way to get unstuck. If you cannot find yours, email **[[email]]**. "
+        "We read every message and reply by email.",
+    ),
+    "sections": [
+        {
+            "title": "Getting Started",
+            "blocks": [
+                ("h3", "How do the plans work?"),
+                ("p", "Your plan is split into phases of three training days. "
+                      "Each day lists a warm-up, the main exercises and a "
+                      "cool-down. Open a day and tap **START**."),
+                ("h3", "Why is a day locked?"),
+                ("p", "Days open one after another: finish a day to unlock the "
+                      "next. It keeps your progression steady and safe."),
+                ("h3", "I quit in the middle of a workout. Is it lost?"),
+                ("p", "No. Quitting saves how far you got. Open that day again "
+                      "and tap **Resume** to carry on from where you stopped."),
+                ("h3", "Can I change my plan?"),
+                ("p", "Yes. On the Plan tab, tap **Edit** to adjust your "
+                      "training, or open the plan menu at the top to see all "
+                      "plans and switch. Switching asks you to confirm first. "
+                      "Free includes one plan; Premium lets you add more."),
+            ],
+        },
+        {
+            "title": "Your Account and Signing In",
+            "blocks": [
+                ("h3", "Do I need an account?"),
+                ("p", "No, you can use the app as a guest. An account (email, "
+                      "Google, or Apple on iPhone) saves your plan and "
+                      "progress so they follow you to a new phone."),
+                ("h3", "I have a new phone. How do I get my progress back?"),
+                ("p", "Sign in with the same account. Your plan, history, "
+                      "favorites and settings come back. If you use Premium, "
+                      "also tap **Restore purchases** (see below). Guest data "
+                      "lives only on the old phone, so it cannot be moved."),
+                ("h3", "I cannot sign in."),
+                ("ul", [
+                    "Check your internet connection and try again.",
+                    "With Google: make sure a Google account is added to your "
+                    "phone.",
+                    "With email: tap **Forgot password?** on the sign-in sheet "
+                    "and we will email you a link to choose a new one.",
+                    "Still stuck? Email us (see the end of this page).",
+                ]),
+                ("h3", "How do I change my name?"),
+                ("p", "Open **Profile** and tap the pencil at the top of your "
+                      "card."),
+            ],
+        },
+        {
+            "title": "Premium and Subscriptions",
+            "blocks": [
+                ("h3", "What does Premium include?"),
+                ("p", "Every plan, and every exercise and video in Discover. "
+                      "**Monthly** is $9.99 per month with a **7-day free "
+                      "trial** for eligible new subscribers; **Yearly** is "
+                      "$49.99 per year. The free trial is offered once per "
+                      "person."),
+                ("h3", "I paid, but Premium is not showing."),
+                ("ul", [
+                    "Open **Profile**, tap **Manage** on the Premium card, then "
+                    "**Restore purchases**. You can also tap **Restore** on the "
+                    "Premium screen.",
+                    "Use the same Apple ID or Google account that bought it.",
+                    "Still missing? Email us the order number from your Apple "
+                    "or Google receipt and we will help.",
+                ]),
+                ("h3", "How do I cancel?"),
+                ("p", "Cancel in the store, not in the app: **Apple ID > "
+                      "Subscriptions** on iPhone, or **Google Play > Payments "
+                      "& subscriptions > Subscriptions** on Android. Cancel at "
+                      "least 24 hours before it renews. Deleting the app or "
+                      "your Calesthetics account does **not** cancel it."),
+                ("h3", "Can I get a refund?"),
+                ("p", "Apple and Google take the payment, so they handle "
+                      "refunds. On iPhone, use reportaproblem.apple.com; on "
+                      "Android, use your order history in Google Play. We "
+                      "cannot refund purchases made through them."),
+            ],
+        },
+        {
+            "title": "Workouts, Videos and Music",
+            "blocks": [
+                ("h3", "A video will not load."),
+                ("p", "Videos stream from the internet the first time you "
+                      "play them, so check your connection. After the first "
+                      "play, a video is saved on your phone and works offline."),
+                ("h3", "How do I free up space?"),
+                ("p", "Open **Profile > Downloaded videos > Clear**. Videos "
+                      "download again the next time they play."),
+                ("h3", "How do I change the music?"),
+                ("p", "Tap the music button at the top right of a workout (or "
+                      "of a day's preview). Switch **Music** on or off and "
+                      "slide the volume. This changes only the background "
+                      "music, never the coach's voice in the videos."),
+                ("h3", "I cannot hear the coach."),
+                ("p", "Check that your phone is not on silent and that the "
+                      "media volume is up. The music switch does not affect "
+                      "the coach's voice."),
+            ],
+        },
+        {
+            "title": "Reminders",
+            "blocks": [
+                ("h3", "How do I turn on reminders?"),
+                ("p", "Open **Profile > Reminders**, switch them on and pick a "
+                      "time. We remind you on the days your plan trains. Allow "
+                      "notifications when your phone asks."),
+                ("h3", "My reminders do not arrive."),
+                ("ul", [
+                    "In your phone's settings, make sure notifications are "
+                    "allowed for Calesthetics.",
+                    "On some Android phones, battery saver can delay or block "
+                    "reminders. Set Calesthetics to **Unrestricted** (or remove "
+                    "its battery limits).",
+                    "Reminders are scheduled on your phone, so they work "
+                    "without internet.",
+                ]),
+            ],
+        },
+        {
+            "title": "Your Data and Privacy",
+            "blocks": [
+                ("h3", "How do I delete my account?"),
+                ("p", "Signed in: open **Profile > Delete Account**. We may "
+                      "first ask you to confirm it is you. As a guest, **Profile "
+                      "> Erase data on this phone** clears everything saved on "
+                      "your phone. Neither one cancels a subscription."),
+                ("h3", "What do you do with my data?"),
+                ("p", "We do not sell or share it. Read the details in our "
+                      "[[privacy]] and our [[terms]]."),
+            ],
+        },
+        {
+            "title": "Still Need Help?",
+            "blocks": [
+                ("p", "Email us and include, if you can: what happened and what "
+                      "you expected; your phone model and its system version; "
+                      "the app version (at the bottom of your Profile screen); "
+                      "and a screenshot. Please never send your password."),
                 ("contact", [
                     ("Application", APP),
                     ("Publisher", PUBLISHER),

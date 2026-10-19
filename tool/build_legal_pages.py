@@ -1,19 +1,22 @@
 #!/usr/bin/env python3
-"""Builds the Privacy Policy and Terms of Service pages from tool/legal_content.py.
+"""Builds the Privacy Policy, Terms of Service and Help & Support pages from
+tool/legal_content.py.
 
   python3 tool/build_legal_pages.py
-  PRIVACY_URL=https://.../privacy TERMS_URL=https://.../terms python3 tool/build_legal_pages.py
+  PRIVACY_URL=https://.../privacy TERMS_URL=https://.../terms \\
+    SUPPORT_URL=https://.../support python3 tool/build_legal_pages.py
 
 Writes
   legal_pages/privacy-policy.html      one self-contained page (inline styles)
   legal_pages/terms-of-service.html    one self-contained page
-  lib/features/legal/domain/legal_text.dart   the same text for the in-app screen
+  legal_pages/help-support.html        one self-contained page
+  lib/features/legal/domain/legal_text.dart   the same text for the in-app screens
 
 Each page is a single <div> with every style inline, so it can be pasted into
 a Blogger page's HTML view as it is (Blogger drops <style> blocks and the
 <html>/<head> tags, never inline styles). The links between the two pages
-default to the file names; set PRIVACY_URL / TERMS_URL (the Blogger addresses)
-and run again so the pages point at each other online.
+default to the file names; set PRIVACY_URL / TERMS_URL / SUPPORT_URL (the
+Blogger addresses) and run again so the pages point at each other online.
 """
 import html
 import json
@@ -31,6 +34,7 @@ OUT_DART = ROOT / "lib/features/legal/domain/legal_text.dart"
 
 PRIVACY_URL = os.environ.get("PRIVACY_URL", "privacy-policy.html")
 TERMS_URL = os.environ.get("TERMS_URL", "terms-of-service.html")
+SUPPORT_URL = os.environ.get("SUPPORT_URL", "help-support.html")
 
 # Calesthetics colours (lib/core/theme/app_colors.dart), light theme.
 INK = "#191719"        # headings
@@ -72,6 +76,7 @@ def inline(text):
     t = t.replace("[[email]]", link(f"mailto:{C.EMAIL}", C.EMAIL))
     t = t.replace("[[privacy]]", link(PRIVACY_URL, "Privacy Policy"))
     t = t.replace("[[terms]]", link(TERMS_URL, "Terms of Service"))
+    t = t.replace("[[support]]", link(SUPPORT_URL, "Help &amp; Support"))
     return t
 
 
@@ -142,8 +147,9 @@ def page(doc):
         f'for <span style="color: {ROSE}; font-family: {SERIF}; '
         f'font-weight: 500;">{C.APP}</span></h1>',
         f'<p style="color: {MUTED}; font-size: 14px; margin: 0px;">'
-        f'<b>Effective Date:</b> {C.EFFECTIVE} &nbsp;|&nbsp; '
-        f'<b>Last Updated:</b> {C.UPDATED}</p>',
+        + (f'<b>Effective Date:</b> {C.EFFECTIVE} &nbsp;|&nbsp; '
+           if doc.get("show_dates", True) else '')
+        + f'<b>Last Updated:</b> {C.UPDATED}</p>',
         f'<p style="color: {FAINT}; font-size: 13px; margin: 5px 0px 0px;">'
         f'Application: <b>{C.APP}</b> &nbsp;|&nbsp; Publisher: '
         f'<b>{C.PUBLISHER}</b></p>',
@@ -182,6 +188,7 @@ def plain(text):
     t = t.replace("[[email]]", C.EMAIL)
     t = t.replace("[[privacy]]", "Privacy Policy")
     t = t.replace("[[terms]]", "Terms of Service")
+    t = t.replace("[[support]]", "Help & Support")
     return t
 
 
@@ -240,13 +247,15 @@ def dart():
            "  final String heading;\n  final String body;\n}\n")
     return (head + cls + f"\nconst legalUpdated = {dart_str(C.UPDATED)};\n\n"
             + dart_sections("privacySections", C.PRIVACY) + "\n\n"
-            + dart_sections("termsSections", C.TERMS) + "\n")
+            + dart_sections("termsSections", C.TERMS) + "\n\n"
+            + dart_sections("supportSections", C.SUPPORT) + "\n")
 
 
 def main():
     OUT_DIR.mkdir(exist_ok=True)
     for doc, name in ((C.PRIVACY, "privacy-policy.html"),
-                      (C.TERMS, "terms-of-service.html")):
+                      (C.TERMS, "terms-of-service.html"),
+                      (C.SUPPORT, "help-support.html")):
         (OUT_DIR / name).write_text(page(doc), encoding="utf-8")
         print("wrote", (OUT_DIR / name).relative_to(ROOT))
     OUT_DART.write_text(dart(), encoding="utf-8")

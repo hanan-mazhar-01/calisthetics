@@ -1,14 +1,19 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../../../../core/theme/app_colors_extension.dart';
 import '../../../../core/theme/app_typography.dart';
 import '../../domain/legal_text.dart';
 
-enum LegalKind { privacy, terms }
+enum LegalKind { privacy, terms, support }
 
-/// The Privacy Policy or the Terms of Use, readable offline, from the
-/// profile, the settings and the paywall.
+const _supportEmail = 'support@veradostudio.com';
+
+/// The Privacy Policy, the Terms of Use or Help & Support, readable offline,
+/// from the profile, the settings and the paywall. Help & Support also has a
+/// button that starts an email to us.
 class LegalScreen extends StatelessWidget {
   const LegalScreen({super.key, required this.kind});
 
@@ -17,8 +22,11 @@ class LegalScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final c = context.appColors;
-    final privacy = kind == LegalKind.privacy;
-    final sections = privacy ? privacySections : termsSections;
+    final (title, sections) = switch (kind) {
+      LegalKind.privacy => ('Privacy Policy', privacySections),
+      LegalKind.terms => ('Terms of Use', termsSections),
+      LegalKind.support => ('Help & Support', supportSections),
+    };
     return Scaffold(
       backgroundColor: c.background,
       body: SafeArea(
@@ -36,7 +44,7 @@ class LegalScreen extends StatelessWidget {
                   ),
                   Expanded(
                     child: Text(
-                      privacy ? 'Privacy Policy' : 'Terms of Use',
+                      title,
                       style: AppTypography.title(
                         20,
                         c.textPrimary,
@@ -60,6 +68,10 @@ class LegalScreen extends StatelessWidget {
                     'Calesthetics by Verado Studio · Updated $legalUpdated',
                     style: AppTypography.body(c.textMuted, fontSize: 12.5),
                   ),
+                  if (kind == LegalKind.support) ...[
+                    const SizedBox(height: 16),
+                    const _EmailButton(),
+                  ],
                   for (final s in sections) ...[
                     const SizedBox(height: 22),
                     Text(
@@ -84,6 +96,67 @@ class LegalScreen extends StatelessWidget {
               ),
             ),
           ],
+        ),
+      ),
+    );
+  }
+}
+
+/// "Email us": opens the phone's mail app with our address and a subject;
+/// if there is no mail app, copies the address instead.
+class _EmailButton extends StatelessWidget {
+  const _EmailButton();
+
+  Future<void> _write(BuildContext context) async {
+    final uri = Uri.parse(
+      'mailto:$_supportEmail?subject=${Uri.encodeComponent('Calesthetics support')}',
+    );
+    var opened = false;
+    try {
+      opened = await launchUrl(uri);
+    } catch (_) {}
+    if (opened || !context.mounted) return;
+    await Clipboard.setData(const ClipboardData(text: _supportEmail));
+    if (!context.mounted) return;
+    ScaffoldMessenger.of(context)
+      ..hideCurrentSnackBar()
+      ..showSnackBar(const SnackBar(content: Text('Email address copied')));
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final c = context.appColors;
+    return Semantics(
+      button: true,
+      label: 'Email $_supportEmail',
+      excludeSemantics: true,
+      child: Material(
+        color: c.accent,
+        borderRadius: BorderRadius.circular(999),
+        child: InkWell(
+          borderRadius: BorderRadius.circular(999),
+          onTap: () => _write(context),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(Icons.mail_outline_rounded, size: 20, color: c.onAccent),
+                const SizedBox(width: 10),
+                Flexible(
+                  child: Text(
+                    'Email $_supportEmail',
+                    overflow: TextOverflow.ellipsis,
+                    style: AppTypography.title(
+                      15,
+                      c.onAccent,
+                      weight: FontWeight.w700,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
         ),
       ),
     );

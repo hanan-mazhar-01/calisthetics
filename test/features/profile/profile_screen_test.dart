@@ -43,7 +43,13 @@ Future<ProviderContainer> _pump(
   );
   addTearDown(container.dispose);
   final router = GoRouter(
-    routes: [GoRoute(path: '/', builder: (_, _) => const ProfileScreen())],
+    routes: [
+      GoRoute(path: '/', builder: (_, _) => const ProfileScreen()),
+      GoRoute(
+        path: '/support',
+        builder: (_, _) => const Scaffold(body: Text('SUPPORT PAGE')),
+      ),
+    ],
   );
   await tester.pumpWidget(
     UncontrolledProviderScope(
@@ -166,6 +172,13 @@ void main() {
     await tester.tap(find.text('Cancel'));
     await tester.pump(const Duration(milliseconds: 400));
     expect(find.text('Delete account?'), findsNothing);
+  });
+
+  testWidgets('Help & Support opens the support page', (tester) async {
+    await _pump(tester);
+    await tester.tap(find.text('Help & Support'));
+    await tester.pump(const Duration(milliseconds: 600));
+    expect(find.text('SUPPORT PAGE'), findsOneWidget);
   });
 
   testWidgets('appearance tabs switch the theme setting', (tester) async {
