@@ -7,6 +7,7 @@ import '../../../../core/theme/app_typography.dart';
 import '../../../../shared/widgets/glass/glass_button.dart';
 import '../../../../shared/widgets/glass/glass_card.dart';
 import '../../../../shared/widgets/primary_button.dart';
+import '../../../auth/domain/apple_sign_in.dart';
 import '../../../auth/presentation/providers/auth_providers.dart';
 import '../../../auth/presentation/widgets/auth_modal_sheet.dart';
 
@@ -85,11 +86,12 @@ class _AccountStepViewState extends ConsumerState<AccountStepView> {
     });
 
     final methods = [
-      (
-        icon: Icons.apple_rounded,
-        label: 'Continue with Apple',
-        onTap: _handleApple,
-      ),
+      if (appleSignInAvailable)
+        (
+          icon: Icons.apple_rounded,
+          label: 'Continue with Apple',
+          onTap: _handleApple,
+        ),
       (
         icon: Icons.g_mobiledata_rounded,
         label: 'Continue with Google',

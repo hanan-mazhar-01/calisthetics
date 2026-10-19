@@ -6,6 +6,7 @@ import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/theme/app_typography.dart';
 import '../../../../shared/widgets/glass/glass_button.dart';
 import '../../../../shared/widgets/primary_button.dart';
+import '../../domain/apple_sign_in.dart';
 import '../providers/auth_providers.dart';
 
 /// Opens the unified Authentication sheet.
@@ -253,18 +254,20 @@ class _AuthModalSheetState extends ConsumerState<AuthModalSheet> {
               const SizedBox(height: AppSpacing.xl),
 
               if (!_showEmailForm) ...[
-                // Apple Button
-                _SocialButton(
-                  icon: Icons.apple_rounded,
-                  label: _isSignUp
-                      ? 'Sign up with Apple'
-                      : 'Continue with Apple',
-                  color: Colors.black,
-                  textColor: Colors.white,
-                  isLoading: isBusy,
-                  onPressed: isBusy ? null : _handleApple,
-                ),
-                const SizedBox(height: AppSpacing.md),
+                // Apple Button: iPhone, iPad and Mac only
+                if (appleSignInAvailable) ...[
+                  _SocialButton(
+                    icon: Icons.apple_rounded,
+                    label: _isSignUp
+                        ? 'Sign up with Apple'
+                        : 'Continue with Apple',
+                    color: Colors.black,
+                    textColor: Colors.white,
+                    isLoading: isBusy,
+                    onPressed: isBusy ? null : _handleApple,
+                  ),
+                  const SizedBox(height: AppSpacing.md),
+                ],
 
                 // Google Button
                 _SocialButton(

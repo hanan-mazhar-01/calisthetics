@@ -4,6 +4,7 @@ import 'package:calisthenics/features/auth/presentation/providers/auth_providers
 import 'package:calisthenics/features/onboarding/data/onboarding_flow.dart';
 import 'package:calisthenics/features/onboarding/presentation/screens/onboarding_flow_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -75,5 +76,29 @@ void main() {
     expect(find.text('HOME'), findsOneWidget);
     expect(prefs.getBool('onboarding_completed'), isTrue);
     expect(prefs.getString('user_plans'), isNotNull);
+  });
+
+  testWidgets('Android: the sign-in step offers Google and email, not Apple', (
+    tester,
+  ) async {
+    await _atPaywall(tester, signedIn: false);
+    await tester.tap(find.text('Not now'));
+    await tester.pump(const Duration(seconds: 2));
+    expect(find.text('Continue with Apple'), findsNothing);
+    expect(find.text('Continue with Google'), findsOneWidget);
+    expect(find.text('Continue with email'), findsOneWidget);
+  });
+
+  testWidgets('iPhone: the sign-in step also offers Apple', (tester) async {
+    debugDefaultTargetPlatformOverride = TargetPlatform.iOS;
+    try {
+      await _atPaywall(tester, signedIn: false);
+      await tester.tap(find.text('Not now'));
+      await tester.pump(const Duration(seconds: 2));
+      expect(find.text('Continue with Apple'), findsOneWidget);
+      expect(find.text('Continue with Google'), findsOneWidget);
+    } finally {
+      debugDefaultTargetPlatformOverride = null;
+    }
   });
 }
