@@ -350,7 +350,8 @@ class ProfileScreen extends ConsumerWidget {
       message: signedIn
           ? 'Your account and everything in it (plans, history, favorites, '
                 'records and settings) are deleted from our servers and this '
-                'phone. It cannot be undone.'
+                'phone. It cannot be undone. If you signed in a while ago, '
+                'you will be asked to confirm it is you first.'
           : 'This erases your plan, history, favorites and settings from this '
                 'phone and takes you back to the start. It cannot be undone.',
       confirmLabel: 'Delete',

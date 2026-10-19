@@ -10,6 +10,7 @@ import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 
 import '../../../firebase_options.dart';
 import '../domain/auth_failure.dart';
+import '../domain/recent_sign_in.dart';
 
 /// Repository for handling all Firebase Authentication operations:
 /// - Email & Password (Sign In, Sign Up, Password Reset)
@@ -35,6 +36,21 @@ class AuthRepository {
       '6017591128-t5fhqdqlbt2b9l55mmmbjtilpabnsrn4.apps.googleusercontent.com';
 
   bool _googleInitialized = false;
+
+  /// The code Apple handed over at sign-in (iPhone). It lets the app revoke
+  /// Sign in with Apple when the account is deleted, which the App Store
+  /// requires. Apple's codes last minutes and are used once, so it is kept
+  /// in memory only and only for the recent-sign-in window.
+  String? _appleCode;
+  DateTime? _appleCodeAt;
+
+  String? _takeFreshAppleCode() {
+    final code = _appleCode;
+    final at = _appleCodeAt;
+    _appleCode = null;
+    _appleCodeAt = null;
+    return code != null && signInIsRecent(at, DateTime.now()) ? code : null;
+  }
 
   void _initGoogleSignIn() {
     if (!kIsWeb && !_googleInitialized) {
@@ -175,6 +191,8 @@ class AuthRepository {
             );
 
         final userCredential = await _auth.signInWithCredential(credential);
+        _appleCode = appleCredential.authorizationCode;
+        _appleCodeAt = DateTime.now();
 
         if (appleCredential.givenName != null ||
             appleCredential.familyName != null) {
@@ -212,6 +230,8 @@ class AuthRepository {
 
   /// Sign out from all providers.
   Future<void> signOut() async {
+    _appleCode = null;
+    _appleCodeAt = null;
     if (!_ready) return;
     try {
       if (!kIsWeb) {
@@ -221,10 +241,14 @@ class AuthRepository {
     await _auth.signOut();
   }
 
-  /// Deletes the signed-in Firebase user. The user first confirms who they
-  /// are with their provider (Google, Apple) or password ([askPassword]),
-  /// since Firebase only deletes a fresh sign-in; on iPhone this also
-  /// revokes the app's Sign in with Apple token, as the App Store requires.
+  /// Deletes the signed-in Firebase user.
+  ///
+  /// Firebase only deletes a recent sign-in, so the user is asked to confirm
+  /// who they are (Google, Apple, password via [askPassword]) only when their
+  /// sign-in is older than [recentSignInWindow]. A sign-in made a moment ago
+  /// deletes straight away. On iPhone the app's Sign in with Apple token is
+  /// revoked too, as the App Store requires.
+  ///
   /// [deleteData] runs after that and before the user is deleted, while
   /// Firestore still lets them delete their own document. If anything up
   /// to and including [deleteData] fails, nothing has been deleted.
@@ -236,9 +260,17 @@ class AuthRepository {
     if (user == null) return;
     final providers = {for (final p in user.providerData) p.providerId};
     try {
-      await _reauthenticate(user, providers, askPassword);
+      await _confirmIdentity(user, providers, askPassword);
       await deleteData();
-      await user.delete();
+      try {
+        await user.delete();
+      } on FirebaseAuthException catch (e) {
+        // The sign-in looked recent here but Firebase disagreed (a clock
+        // that is off, say): ask once, then delete.
+        if (e.code != 'requires-recent-login') rethrow;
+        await _reauthenticate(user, providers, askPassword);
+        await user.delete();
+      }
       try {
         if (!kIsWeb) await _googleSignIn.signOut();
       } catch (_) {}
@@ -263,14 +295,70 @@ class AuthRepository {
     }
   }
 
+  bool get _appleOnIphone =>
+      !kIsWeb &&
+      (defaultTargetPlatform == TargetPlatform.iOS ||
+          defaultTargetPlatform == TargetPlatform.macOS);
+
+  Future<bool> _signedInRecently(User user) async {
+    try {
+      final result = await user.getIdTokenResult();
+      return signInIsRecent(result.authTime, DateTime.now());
+    } catch (_) {
+      return false;
+    }
+  }
+
+  /// Makes sure Firebase will accept the deletion: nothing to do for a
+  /// sign-in made a moment ago, otherwise the user confirms who they are.
+  Future<void> _confirmIdentity(
+    User user,
+    Set<String> providers,
+    Future<String?> Function() askPassword,
+  ) async {
+    if (await _signedInRecently(user)) {
+      if (!(providers.contains('apple.com') && _appleOnIphone)) return;
+      // Apple needs the code from a sign-in to revoke its token: the one
+      // from the sign-in just made will do, no second Apple sheet.
+      final code = _takeFreshAppleCode();
+      if (code != null) {
+        try {
+          await _auth.revokeTokenWithAuthorizationCode(code);
+        } catch (e) {
+          debugPrint('Apple token revoke failed: $e');
+        }
+        return;
+      }
+    }
+    await _reauthenticate(user, providers, askPassword);
+  }
+
+  /// The Google account to confirm with: the one already used for this app,
+  /// picked quietly (no chooser) when the phone allows it. If that is not
+  /// possible, or it is another account, the chooser is shown.
+  Future<GoogleSignInAccount> _googleAccountFor(User user) async {
+    _initGoogleSignIn();
+    try {
+      final quiet = _googleSignIn.attemptLightweightAuthentication();
+      final account = quiet == null ? null : await quiet;
+      final mine = user.email?.toLowerCase();
+      if (account != null &&
+          (mine == null || account.email.toLowerCase() == mine)) {
+        return account;
+      }
+    } catch (_) {
+      // Fall through to the chooser.
+    }
+    return _googleSignIn.authenticate();
+  }
+
   Future<void> _reauthenticate(
     User user,
     Set<String> providers,
     Future<String?> Function() askPassword,
   ) async {
     if (providers.contains('google.com') && !kIsWeb) {
-      _initGoogleSignIn();
-      final account = await _googleSignIn.authenticate();
+      final account = await _googleAccountFor(user);
       final idToken = account.authentication.idToken;
       if (idToken == null) {
         throw const AuthFailure('Failed to obtain Google ID token.');
