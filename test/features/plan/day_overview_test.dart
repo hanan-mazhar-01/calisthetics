@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:calisthenics/core/storage/shared_preferences_provider.dart';
 import 'package:calisthenics/core/theme/app_theme.dart';
 import 'package:calisthenics/features/exercises/domain/exercise_lookup.dart';
@@ -40,11 +42,15 @@ void main() {
   final session = week.days[weekday].session!;
 
   Object? pushed;
-  Future<void> pump(WidgetTester tester, {int? weekParam}) async {
+  Future<void> pump(
+    WidgetTester tester, {
+    int? weekParam,
+    Map<String, Object> prefs = const {},
+  }) async {
     tester.view.physicalSize = const Size(390, 844);
     tester.view.devicePixelRatio = 1;
     addTearDown(tester.view.reset);
-    SharedPreferences.setMockInitialValues({});
+    SharedPreferences.setMockInitialValues(prefs);
     final sp = await SharedPreferences.getInstance();
     pushed = null;
     final router = GoRouter(
@@ -169,5 +175,45 @@ void main() {
     expect(find.textContaining('exercise-'), findsNothing);
     expect(pushed, isNull);
     expect(find.text('START'), findsOneWidget);
+  });
+
+  // Monday 12 Oct is the plan's first day (plan weeks start on its first day).
+  const key = 'foundation-full-body|2026-10-12';
+  final finishedOn12th = jsonEncode([
+    {
+      'finishedAt': DateTime(2026, 10, 12, 8).toIso8601String(),
+      'templateId': 'foundation-full-body',
+      'sessionName': 's',
+      'durationSeconds': 600,
+      'exerciseNumbers': [1],
+    },
+  ]);
+
+  testWidgets('an open day left half-way says so and offers RESUME', (
+    tester,
+  ) async {
+    await pump(tester, prefs: {'user_partial_progress': '{"$key":40}'});
+    expect(find.text('40% done'), findsOneWidget);
+    expect(find.text('RESUME'), findsOneWidget);
+    await tester.tap(find.byKey(const ValueKey('day-start')));
+    await tester.pump(const Duration(milliseconds: 500));
+    expect((pushed as WorkoutRequest).progressKey, key);
+  });
+
+  testWidgets('a finished day ignores old half-way progress', (tester) async {
+    await pump(
+      tester,
+      prefs: {
+        'user_history': finishedOn12th,
+        'user_partial_progress': '{"$key":26}',
+      },
+    );
+    expect(find.text('26% done'), findsNothing);
+    expect(find.text('RESUME'), findsNothing);
+    expect(find.text('START'), findsOneWidget);
+    await tester.tap(find.byKey(const ValueKey('day-start')));
+    await tester.pump(const Duration(milliseconds: 500));
+    // Starts from the top and saves no half-way progress of its own.
+    expect((pushed as WorkoutRequest).progressKey, isNull);
   });
 }

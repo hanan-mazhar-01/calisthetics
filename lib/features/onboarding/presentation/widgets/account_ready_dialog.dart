@@ -77,6 +77,7 @@ Future<void> showAccountReadyDialog(
                 ),
                 const SizedBox(height: 22),
                 Semantics(
+                  container: true,
                   button: true,
                   label: 'Get started',
                   excludeSemantics: true,

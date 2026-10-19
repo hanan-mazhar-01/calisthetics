@@ -77,15 +77,23 @@ class DayOverviewScreen extends ConsumerWidget {
     // The same picture this day wears on the Plan tab.
     final timeline = ref.watch(planTimelineProvider);
     var hero = session.cover;
+    // A day that is already done carries no half-way progress: any older
+    // percentage saved for it is stale (a finished session ticks off the
+    // earliest open day), so it neither shows nor resumes.
+    var done = false;
     if (timeline != null) {
       final date = PlanTimeline.dateOf(plan, shownWeek, weekday);
       final days = [for (final ph in timeline.phases) ...ph.days];
       final covers = coverPictures(days);
       for (final d in days) {
-        if (d.date == date) hero = covers[d.dayNumber] ?? hero;
+        if (d.date == date) {
+          hero = covers[d.dayNumber] ?? hero;
+          done = d.status == TimelineStatus.done;
+        }
       }
     }
     return _Body(
+      done: done,
       heroNumber: hero,
       session: session,
       templateId: plan.templateId,
@@ -113,12 +121,14 @@ String? _levelLabel(PlanTemplate? t, int stageIndex, PlanLevel chosen) {
 
 class _Body extends ConsumerWidget {
   const _Body({
+    required this.done,
     required this.heroNumber,
     required this.session,
     required this.templateId,
     required this.progressKey,
     required this.level,
   });
+  final bool done;
   final int heroNumber;
   final BuiltSession session;
   final String templateId;
@@ -129,7 +139,9 @@ class _Body extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final c = context.appColors;
     final rest = ref.watch(restSecondsProvider);
-    final percent = ref.watch(partialProgressProvider)[progressKey];
+    final percent = done
+        ? null
+        : ref.watch(partialProgressProvider)[progressKey];
     final musicOn =
         (ref.watch(settingsProvider)['musicEnabled'] as bool?) ?? true;
     final top = MediaQuery.paddingOf(context).top;
@@ -221,7 +233,9 @@ class _Body extends ConsumerWidget {
                 extra: WorkoutRequest(
                   templateId: templateId,
                   session: session,
-                  progressKey: progressKey,
+                  // A finished day starts from the top and saves no half-way
+                  // progress of its own.
+                  progressKey: done ? null : progressKey,
                 ),
               ),
             ),

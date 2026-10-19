@@ -16,6 +16,7 @@ Future<bool> showSwitchPlanDialog(
     builder: (context) {
       final c = context.appColors;
       Widget button(String label, bool primary) => Semantics(
+        container: true,
         button: true,
         label: label,
         excludeSemantics: true,

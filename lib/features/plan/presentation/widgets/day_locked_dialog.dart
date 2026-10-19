@@ -59,6 +59,7 @@ Future<void> showDayLockedDialog(
               ),
               const SizedBox(height: 22),
               Semantics(
+                container: true,
                 button: true,
                 label: 'Got it',
                 excludeSemantics: true,

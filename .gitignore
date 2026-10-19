@@ -50,3 +50,6 @@ app.*.map.json
 # Local tooling / archives
 .claude/
 lib.zip
+
+# Working copies of edited exercise videos (large; not part of the app)
+/videos/
