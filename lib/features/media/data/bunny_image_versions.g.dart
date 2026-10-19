@@ -41,7 +41,7 @@ const bunnyImageVersions = <String, String>{
   'onboarding/welcome-hero': 'fd1b6c4a',
   'onboarding/your-plan/1': '3fd21725',
   'onboarding/your-plan/10-min': '0f261b5b',
-  'onboarding/your-plan/15-min': 'f0a40672',
+  'onboarding/your-plan/15-min': '04f30759',
   'onboarding/your-plan/2': 'ad693530',
   'onboarding/your-plan/2-days': 'd6cdbfc2',
   'onboarding/your-plan/20-min': 'e655d0ed',
