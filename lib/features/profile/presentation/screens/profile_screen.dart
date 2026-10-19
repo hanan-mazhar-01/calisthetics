@@ -426,9 +426,12 @@ class _AccountCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final c = context.appColors;
-    final displayName = user?.displayName?.trim().isNotEmpty == true
-        ? user!.displayName!.trim()
-        : (name.isNotEmpty ? name : 'Athlete');
+    // The name the user chose here (and in onboarding) comes first: the
+    // account's own name (Google, Apple) only fills in when none was set.
+    final accountName = user?.displayName?.trim() ?? '';
+    final displayName = name.isNotEmpty
+        ? name
+        : (accountName.isNotEmpty ? accountName : 'Athlete');
     final initial = displayName.characters.first.toUpperCase();
 
     return Container(

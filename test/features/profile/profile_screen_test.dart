@@ -1,25 +1,45 @@
 import 'package:calisthenics/core/storage/shared_preferences_provider.dart';
 import 'package:calisthenics/core/theme/app_theme.dart';
+import 'package:calisthenics/features/auth/presentation/providers/auth_providers.dart';
 import 'package:calisthenics/features/onboarding/presentation/providers/onboarding_controller.dart';
 import 'package:calisthenics/features/profile/presentation/screens/profile_screen.dart';
 import 'package:calisthenics/features/user/presentation/providers/user_providers.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+/// A signed-in account whose own name (say, from Google) is [displayName].
+class _FakeUser implements User {
+  _FakeUser(this.displayName);
+  @override
+  final String? displayName;
+  @override
+  String get uid => 'test-user';
+  @override
+  String? get email => 'test@example.com';
+  @override
+  dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
+}
+
 Future<ProviderContainer> _pump(
   WidgetTester tester, {
   bool dark = false,
+  User? user,
+  String name = 'Hanan',
 }) async {
   tester.view.physicalSize = const Size(900, 3600);
   tester.view.devicePixelRatio = 2;
   addTearDown(tester.view.reset);
-  SharedPreferences.setMockInitialValues({'onboarding_name': 'Hanan'});
+  SharedPreferences.setMockInitialValues({'onboarding_name': name});
   final sp = await SharedPreferences.getInstance();
   final container = ProviderContainer(
-    overrides: [sharedPreferencesProvider.overrideWithValue(sp)],
+    overrides: [
+      sharedPreferencesProvider.overrideWithValue(sp),
+      if (user != null) currentUserProvider.overrideWithValue(user),
+    ],
   );
   addTearDown(container.dispose);
   final router = GoRouter(
@@ -87,6 +107,35 @@ void main() {
     await tester.pump(const Duration(milliseconds: 400));
     expect(container.read(onboardingControllerProvider).name, 'Sara');
     expect(find.text('Sara'), findsOneWidget);
+  });
+
+  testWidgets('signed in: an edited name replaces the account name', (
+    tester,
+  ) async {
+    final container = await _pump(
+      tester,
+      user: _FakeUser('Google Name'),
+      name: 'Hanan',
+    );
+    // The name chosen in the app wins over the Google account's name.
+    expect(find.text('Hanan'), findsOneWidget);
+    expect(find.text('Google Name'), findsNothing);
+
+    await tester.tap(find.byTooltip('Edit name'));
+    await tester.pump(const Duration(milliseconds: 400));
+    await tester.enterText(find.byType(TextField), 'Sara');
+    await tester.tap(find.text('Save'));
+    await tester.pump(const Duration(milliseconds: 400));
+    expect(container.read(onboardingControllerProvider).name, 'Sara');
+    expect(find.text('Sara'), findsOneWidget);
+    expect(find.text('Google Name'), findsNothing);
+  });
+
+  testWidgets('signed in with no name set: the account name is shown', (
+    tester,
+  ) async {
+    await _pump(tester, user: _FakeUser('Google Name'), name: '');
+    expect(find.text('Google Name'), findsOneWidget);
   });
 
   testWidgets('delete account asks for confirmation', (tester) async {
