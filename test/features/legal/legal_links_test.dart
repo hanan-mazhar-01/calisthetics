@@ -42,6 +42,8 @@ void main() {
       'Profile > Downloaded videos > Clear',
       'Profile > Reminders',
       'Forgot password?',
+      'Are the people in the videos real?',
+      'Google Flow',
     ]) {
       expect(support, contains(needle), reason: needle);
     }
@@ -62,6 +64,11 @@ void main() {
     expect(terms, contains(r'$9.99'));
     expect(terms, contains(r'$49.99'));
     expect(terms, contains('7-day free trial'));
+    // The content was made with AI tools, and nothing the user does is sent to one.
+    expect(privacy, contains('No AI Processing of Your Data'));
+    expect(privacy, contains('Google Flow'));
+    expect(terms, contains('AI-generated media'));
+    expect(terms, contains('Poppins and Lora'));
     expect(privacy, contains('Profile > Delete Account'));
     // Guests have no account to delete: both texts name the button they see.
     expect(privacy, contains('Profile > Erase data on this phone'));

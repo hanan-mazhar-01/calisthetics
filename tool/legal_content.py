@@ -23,6 +23,19 @@ EMAIL = "support@veradostudio.com"
 EFFECTIVE = "October 19, 2026"
 UPDATED = "October 19, 2026"
 
+# Credit for the workout background music (assets/audio/gym_background_music.mp3),
+# shown in the Terms ("Credits") and Help & Support once it is filled in:
+# title, artist, where it comes from and the licence it is used under, e.g.
+#   '"Song Title" by Artist (youtube.com/..., licence: CC BY 4.0).'
+# Left empty, no music credit is printed. Do not publish a credit that is not
+# backed by a real licence: a credit is not permission.
+MUSIC_CREDIT = ""
+
+CREDIT_ITEMS = (
+    (["**Music:** " + MUSIC_CREDIT] if MUSIC_CREDIT else [])
+    + ["**Fonts:** Poppins and Lora, under the SIL Open Font License."]
+)
+
 # ---------------------------------------------------------------- privacy ---
 PRIVACY = {
     "title": "Privacy Policy",
@@ -120,6 +133,10 @@ PRIVACY = {
                     "**No Advertising Trackers:** We do not include third-party "
                     "advertising SDKs, cross-app tracking libraries, or marketing "
                     "pixels.",
+                    "**No AI Processing of Your Data:** We do not send anything "
+                    "you enter or do in the app to an AI service. The exercise "
+                    "videos and pictures were made in advance with AI tools "
+                    "(Google Flow) and ship as fixed content.",
                     "**Trusted Service Providers:** We use these providers only "
                     "to run the app, each acting on our instructions: **Google** "
                     "(Firebase Authentication, Cloud Firestore and Google "
@@ -436,12 +453,18 @@ TERMS = {
                     "plans and text belong to Verado Studio or its licensors. "
                     "We give you a limited, personal, non-exclusive, "
                     "non-transferable, revocable license to use the app.",
+                    "**AI-generated media:** The exercise videos and pictures "
+                    "were created with AI tools (Google Flow). The people and "
+                    "places in them are AI-generated, not real athletes. They "
+                    "show how a move is meant to look: follow the written "
+                    "steps and cues, and stop if anything hurts.",
                     "**Yours:** What you enter (your name, answers, activities, "
                     "favorites) stays yours. You allow us to store and process "
                     "it only to run the app for you, as the [[privacy]] "
                     "describes.",
                     "**Feedback:** If you send us ideas, we may use them without "
                     "owing you anything.",
+                    *CREDIT_ITEMS,
                 ]),
             ],
         },
@@ -637,6 +660,16 @@ SUPPORT = {
                       "of a day's preview). Switch **Music** on or off and "
                       "slide the volume. This changes only the background "
                       "music, never the coach's voice in the videos."),
+                ("h3", "Are the people in the videos real?"),
+                ("p", "No. The videos and pictures were made with AI tools "
+                      "(Google Flow), so the coach you see is AI-generated. "
+                      "They show how a move is meant to look: follow the "
+                      "written cues, and stop if anything hurts."),
+                *(
+                    [("h3", "Where does the music come from?"),
+                     ("p", "Credits are in our [[terms]]: " + MUSIC_CREDIT)]
+                    if MUSIC_CREDIT else []
+                ),
                 ("h3", "I cannot hear the coach."),
                 ("p", "Check that your phone is not on silent and that the "
                       "media volume is up. The music switch does not affect "
