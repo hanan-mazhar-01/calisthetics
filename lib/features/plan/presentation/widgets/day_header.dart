@@ -17,7 +17,7 @@ class DayHeaderDelegate extends SliverPersistentHeaderDelegate {
     required this.topInset,
     required this.musicOn,
     required this.onBack,
-    required this.onToggleMusic,
+    required this.onMusic,
     required this.animate,
     this.expandedBody = 240,
   });
@@ -27,7 +27,9 @@ class DayHeaderDelegate extends SliverPersistentHeaderDelegate {
   final double topInset;
   final bool musicOn;
   final VoidCallback onBack;
-  final VoidCallback onToggleMusic;
+
+  /// Opens the music panel under the button it is given.
+  final void Function(BuildContext anchor) onMusic;
   final bool animate;
   final double expandedBody;
 
@@ -109,15 +111,17 @@ class DayHeaderDelegate extends SliverPersistentHeaderDelegate {
                   onPressed: onBack,
                 ),
                 const Spacer(),
-                DayCircleButton(
-                  key: const ValueKey('day-music'),
-                  icon: musicOn
-                      ? Icons.music_note_rounded
-                      : Icons.music_off_rounded,
-                  tooltip: musicOn ? 'Turn music off' : 'Turn music on',
-                  fill: circle,
-                  color: iconColor,
-                  onPressed: onToggleMusic,
+                Builder(
+                  builder: (anchor) => DayCircleButton(
+                    key: const ValueKey('day-music'),
+                    icon: musicOn
+                        ? Icons.music_note_rounded
+                        : Icons.music_off_rounded,
+                    tooltip: 'Music settings',
+                    fill: circle,
+                    color: iconColor,
+                    onPressed: () => onMusic(anchor),
+                  ),
                 ),
               ],
             ),

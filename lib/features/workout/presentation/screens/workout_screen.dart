@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 
 import '../../../media/data/exercise_videos.dart';
 import '../../data/background_music.dart';
+import '../../domain/music_settings.dart';
+import '../widgets/music_panel.dart';
 import '../widgets/equalizer_icon.dart';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -41,6 +43,7 @@ class _WorkoutScreenState extends ConsumerState<WorkoutScreen> {
   final _music = BackgroundMusic();
   bool? _musicPlaying;
   bool? _musicDucked;
+  double? _musicLevel;
 
   @override
   void dispose() {
@@ -50,7 +53,15 @@ class _WorkoutScreenState extends ConsumerState<WorkoutScreen> {
 
   /// Keeps the background music in step with the workout: on while the
   /// music switch is on and the workout runs, low while a video talks.
-  void _syncMusic({required bool playing, required bool ducked}) {
+  void _syncMusic({
+    required bool playing,
+    required bool ducked,
+    double? level,
+  }) {
+    if (level != null && _musicLevel != level) {
+      _musicLevel = level;
+      _music.setLevel(level);
+    }
     if (_musicPlaying != playing) {
       _musicPlaying = playing;
       _music.setPlaying(playing);
@@ -92,8 +103,8 @@ class _WorkoutScreenState extends ConsumerState<WorkoutScreen> {
   }
 
   void _toggleMusic() {
-    final on = (ref.read(settingsProvider)['musicEnabled'] as bool?) ?? true;
-    ref.read(settingsProvider.notifier).set('musicEnabled', !on);
+    final on = musicEnabledIn(ref.read(settingsProvider));
+    ref.read(settingsProvider.notifier).set(musicEnabledKey, !on);
   }
 
   Widget _transition(Widget child, Animation<double> a) => FadeTransition(
@@ -134,10 +145,11 @@ class _WorkoutScreenState extends ConsumerState<WorkoutScreen> {
     final ctl = ref.read(provider.notifier);
     final interlude =
         phase == WorkoutPhase.preview || phase == WorkoutPhase.rest;
-    final musicOn =
-        (ref.watch(settingsProvider)['musicEnabled'] as bool?) ?? true;
+    final settings = ref.watch(settingsProvider);
+    final musicOn = musicEnabledIn(settings);
     // The set's video speaks (rest clips are silent): duck the music then.
     _syncMusic(
+      level: musicVolumeIn(settings),
       playing: musicOn && !state.paused,
       ducked:
           phase == WorkoutPhase.work &&
@@ -182,7 +194,7 @@ class _WorkoutScreenState extends ConsumerState<WorkoutScreen> {
                     onQuit: _quit,
                     onToggleDetails: () =>
                         setState(() => _detailsOpen = !_detailsOpen),
-                    onMusic: _toggleMusic,
+                    onMusic: showMusicPanel,
                   ),
                   _ => _RatingTop(state: state, onQuit: _quit),
                 },
@@ -349,11 +361,13 @@ class _BarAndButtons extends ConsumerWidget {
   });
   final WorkoutState state;
   final VoidCallback onQuit;
-  final VoidCallback? onMusic;
+
+  /// Opens the music panel under the button it is given.
+  final void Function(BuildContext anchor)? onMusic;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final on = (ref.watch(settingsProvider)['musicEnabled'] as bool?) ?? true;
+    final on = musicEnabledIn(ref.watch(settingsProvider));
     final filled = state.index + 1;
     return Column(
       children: [
@@ -368,10 +382,12 @@ class _BarAndButtons extends ConsumerWidget {
               onPressed: onQuit,
             ),
             if (onMusic != null)
-              PlayerRoundButton(
-                icon: on ? Icons.music_note_rounded : Icons.music_off_rounded,
-                tooltip: on ? 'Turn music off' : 'Turn music on',
-                onPressed: onMusic!,
+              Builder(
+                builder: (anchor) => PlayerRoundButton(
+                  icon: on ? Icons.music_note_rounded : Icons.music_off_rounded,
+                  tooltip: 'Music settings',
+                  onPressed: () => onMusic!(anchor),
+                ),
               ),
           ],
         ),
@@ -394,7 +410,7 @@ class _ActiveTop extends StatelessWidget {
   final bool detailsOpen;
   final VoidCallback onQuit;
   final VoidCallback onToggleDetails;
-  final VoidCallback onMusic;
+  final void Function(BuildContext anchor) onMusic;
 
   @override
   Widget build(BuildContext context) {
@@ -543,7 +559,7 @@ class _ActiveBottom extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final c = context.appColors;
     final step = state.step;
-    final on = (ref.watch(settingsProvider)['musicEnabled'] as bool?) ?? true;
+    final on = musicEnabledIn(ref.watch(settingsProvider));
     return ColoredBox(
       color: c.surface,
       child: SafeArea(

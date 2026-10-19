@@ -481,4 +481,10 @@ class SettingsNotifier extends Notifier<Map<String, dynamic>> {
     state = {...state, key: value};
     await ref.read(userDataStoreProvider).writeSettings(state);
   }
+
+  /// Changes a setting on screen without saving it yet: for a slider that is
+  /// being dragged. [set] with the final value saves it.
+  void setLive(String key, Object? value) {
+    state = {...state, key: value};
+  }
 }

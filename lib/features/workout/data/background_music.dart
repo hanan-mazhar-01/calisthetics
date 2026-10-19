@@ -19,9 +19,11 @@ class BackgroundMusic {
   /// Tests switch this off so no widget test touches the audio plugin.
   static bool enabled = true;
 
-  /// Volume while nothing else is speaking, and while a video talks.
+  /// The volume while nothing else is speaking, unless the user chose
+  /// another with [setLevel]. While a video talks the music drops to this
+  /// share of it.
   static const fullVolume = 0.6;
-  static const duckedVolume = 0.22;
+  static const duckedShare = 0.37;
 
   AudioPlayer? _player;
   bool _failed = false;
@@ -30,7 +32,8 @@ class BackgroundMusic {
 
   bool _playing = false; // what the workout wants
   bool _ducked = false;
-  double _volume = 0;
+  double _level = fullVolume; // the user's volume (0 to 1)
+  double _volume = 0; // what is sounding now
   Timer? _fade;
 
   /// Every platform call runs one after another, so quick pause/resume
@@ -47,12 +50,30 @@ class BackgroundMusic {
     });
   }
 
-  double get _target => _ducked ? duckedVolume : fullVolume;
+  double get _target => _ducked ? _level * duckedShare : _level;
+
+  /// The volume the track is heading for right now.
+  @visibleForTesting
+  double get targetVolume => _target;
 
   /// Plays (fading in) or pauses (fading out) the track.
   void setPlaying(bool playing) {
     _playing = playing;
     _run(_apply);
+  }
+
+  /// The user's music volume, 0 to 1. Follows the slider at once (no fade);
+  /// only this track changes, never the video's sound.
+  void setLevel(double level) {
+    final next = level.clamp(0.0, 1.0);
+    if (next == _level) return;
+    _level = next;
+    _run(() async {
+      if (!_playing || _player == null) return;
+      _fade?.cancel();
+      _volume = _target;
+      await _player?.setVolume(_volume);
+    });
   }
 
   /// Lowers the music while a video's own sound plays.

@@ -7,6 +7,8 @@ import 'package:go_router/go_router.dart';
 import '../../../../core/theme/app_colors_extension.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/theme/app_typography.dart';
+import '../../../workout/domain/music_settings.dart';
+import '../../../workout/presentation/widgets/music_panel.dart';
 import '../../../plans/domain/plan_builder.dart';
 import '../../../plans/domain/plan_template.dart';
 import '../../../user/presentation/providers/user_providers.dart';
@@ -142,8 +144,7 @@ class _Body extends ConsumerWidget {
     final percent = done
         ? null
         : ref.watch(partialProgressProvider)[progressKey];
-    final musicOn =
-        (ref.watch(settingsProvider)['musicEnabled'] as bool?) ?? true;
+    final musicOn = musicEnabledIn(ref.watch(settingsProvider));
     final top = MediaQuery.paddingOf(context).top;
     final animate = !MediaQuery.disableAnimationsOf(context);
 
@@ -178,8 +179,7 @@ class _Body extends ConsumerWidget {
           musicOn: musicOn,
           animate: animate,
           onBack: () => context.pop(),
-          onToggleMusic: () =>
-              ref.read(settingsProvider.notifier).set('musicEnabled', !musicOn),
+          onMusic: showMusicPanel,
         ),
       ),
       SliverToBoxAdapter(

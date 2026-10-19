@@ -141,7 +141,9 @@ void main() {
     await t.pump(const Duration(milliseconds: 400));
   });
 
-  testWidgets('music button toggles the musicEnabled setting', (t) async {
+  testWidgets('music button opens a panel with a switch and a volume slider', (
+    t,
+  ) async {
     t.view.physicalSize = const Size(800, 1600);
     t.view.devicePixelRatio = 2;
     addTearDown(t.view.reset);
@@ -159,7 +161,47 @@ void main() {
     await t.tap(find.text('Skip'));
     await t.pump(const Duration(milliseconds: 400));
     expect(find.text('Music on'), findsOneWidget);
-    await t.tap(find.byTooltip('Turn music off'));
+
+    // The button no longer flips the music: it opens the panel.
+    await t.tap(find.byTooltip('Music settings'));
+    await t.pump(const Duration(milliseconds: 400));
+    expect(container.read(settingsProvider)['musicEnabled'], isNull);
+    expect(find.byKey(const ValueKey('music-switch')), findsOneWidget);
+    expect(find.byKey(const ValueKey('music-volume')), findsOneWidget);
+    expect(find.text('60%'), findsOneWidget);
+
+    // The switch turns the music off (the volume slider is then locked).
+    await t.tap(find.byKey(const ValueKey('music-switch')));
+    await t.pump(const Duration(milliseconds: 400));
+    expect(container.read(settingsProvider)['musicEnabled'], false);
+    expect(
+      t.widget<Slider>(find.byKey(const ValueKey('music-volume'))).onChanged,
+      isNull,
+    );
+    await t.tap(find.byKey(const ValueKey('music-switch')));
+    await t.pump(const Duration(milliseconds: 400));
+    expect(container.read(settingsProvider)['musicEnabled'], true);
+
+    // Dragging the slider sets the volume, and it is saved when let go.
+    final slider = find.byKey(const ValueKey('music-volume'));
+    await t.drag(slider, const Offset(-4000, 0));
+    await t.pump(const Duration(milliseconds: 400));
+    expect(container.read(settingsProvider)['musicVolume'], 0.0);
+    expect(find.text('0%'), findsOneWidget);
+    await t.drag(slider, const Offset(4000, 0));
+    await t.pump(const Duration(milliseconds: 400));
+    expect(container.read(settingsProvider)['musicVolume'], 1.0);
+    expect(find.text('100%'), findsOneWidget);
+
+    // Tapping outside closes the panel.
+    await t.tapAt(const Offset(20, 700));
+    await t.pump(const Duration(milliseconds: 400));
+    await t.pump(const Duration(milliseconds: 400));
+    expect(find.byKey(const ValueKey('music-switch')), findsNothing);
+
+    // The quick switch at the bottom still works.
+    expect(find.text('Music on'), findsOneWidget);
+    await t.tap(find.text('Music on'));
     await t.pump(const Duration(milliseconds: 400));
     expect(container.read(settingsProvider)['musicEnabled'], false);
     expect(find.text('Music off'), findsOneWidget);

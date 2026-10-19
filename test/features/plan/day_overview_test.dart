@@ -158,12 +158,16 @@ void main() {
     expect(find.byKey(const ValueKey('day-back')), findsOneWidget);
   });
 
-  testWidgets('music button toggles the setting', (tester) async {
+  testWidgets('music button opens the music panel', (tester) async {
     await pump(tester);
     await tester.tap(find.byKey(const ValueKey('day-music')));
-    await tester.pump();
-    expect(find.byTooltip('Turn music on'), findsNothing);
-    expect(find.bySemanticsLabel('Turn music on'), findsOneWidget);
+    await tester.pump(const Duration(milliseconds: 400));
+    expect(find.byKey(const ValueKey('music-switch')), findsOneWidget);
+    expect(find.byKey(const ValueKey('music-volume')), findsOneWidget);
+    await tester.tap(find.byKey(const ValueKey('music-switch')));
+    await tester.pump(const Duration(milliseconds: 400));
+    // Off: the button shows the crossed-out note.
+    expect(find.byIcon(Icons.music_off_rounded), findsWidgets);
   });
 
   testWidgets('tapping an exercise row only previews: nothing opens', (

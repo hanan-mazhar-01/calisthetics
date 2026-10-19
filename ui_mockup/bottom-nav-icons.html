@@ -1,0 +1,217 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Bottom Nav Icons</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="shared.css">
+<style>
+  /* The app's own colours (lib/core/theme/app_colors.dart). */
+  .light { --bg:#F7F7F7; --card:#FFFFFF; --ink:#191719; --ink2:#746D70; --ink3:#BDB1B3; --line:#EBE3E3;
+           --accent:#D85F70; --accent-text:#D85F70; --glass:rgba(255,255,255,.74); --glass-line:rgba(0,0,0,.05);
+           --tone:rgba(216,95,112,.40); --halo:rgba(216,95,112,.14); --shadow:0 10px 30px rgba(120,60,70,.16); }
+  .dark  { --bg:#171516; --card:#242021; --ink:#FAF6F4; --ink2:#AAA1A3; --ink3:#6E6567; --line:#332E30;
+           --accent:#D85F70; --accent-text:#E27A88; --glass:rgba(40,35,37,.74); --glass-line:rgba(255,255,255,.07);
+           --tone:rgba(226,122,136,.46); --halo:rgba(226,122,136,.16); --shadow:0 10px 30px rgba(0,0,0,.5); }
+
+  body { gap: 30px; }
+  header { max-width: 860px; text-align: center; }
+  header h1 { font-size: 28px; font-weight: 700; letter-spacing: -.02em; color: #4d4548; }
+  header p { margin-top: 8px; font-size: 14.5px; line-height: 1.55; color: #6b6265; }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) header h1 { color: #FAF6F4; }
+    :root:not([data-theme="light"]) header p { color: #AAA1A3; }
+  }
+  h2.sec { width: 100%; max-width: 1000px; font-size: 13px; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; color: #8a8083; }
+
+  .modes { width: 100%; max-width: 1000px; display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 22px; }
+  .panel { background: var(--bg); color: var(--ink); border-radius: 26px; padding: 22px; box-shadow: 0 10px 30px rgba(0,0,0,.08); }
+  .panel h3 { font-size: 15px; font-weight: 700; margin-bottom: 16px; }
+  .panel h3 small { font-weight: 500; color: var(--ink2); margin-left: 6px; }
+
+  /* icon sheet */
+  .sheet { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
+  .cell { background: var(--card); border-radius: 18px; padding: 16px 6px 12px; text-align: center; box-shadow: inset 0 0 0 1px var(--line); }
+  .cell .pair { display: flex; justify-content: center; align-items: center; gap: 12px; height: 62px; }
+  .cell b { display: block; margin-top: 10px; font-size: 12.5px; font-weight: 600; }
+  .cell span { display: block; font-size: 10.5px; color: var(--ink2); margin-top: 2px; }
+  .ico { width: 34px; height: 34px; color: var(--ink2); }
+  .ico.on { color: var(--accent-text); }
+  .ico use { pointer-events: none; }
+  .tag { margin-top: 12px; display: flex; justify-content: center; gap: 22px; font-size: 10.5px; color: var(--ink2); }
+
+  /* the bar, exactly like the app: glass pill, soft circles, active tab = rose pill + label */
+  .bar { position: relative; height: 64px; border-radius: 32px; padding: 6px; display: flex; gap: 0; align-items: stretch;
+         background: var(--glass); box-shadow: var(--shadow), inset 0 0 0 1px var(--glass-line); backdrop-filter: blur(14px); }
+  .tab { position: relative; flex: 1 1 0; display: flex; align-items: center; justify-content: center; border-radius: 999px; color: var(--ink2); font: 700 13px "Poppins", sans-serif; white-space: nowrap; }
+  .tab .c { flex: none; width: 40px; height: 40px; border-radius: 50%; background: var(--halo); display: grid; place-items: center; }
+  .tab .c svg { width: 22px; height: 22px; }
+  .tab em { display: none; font-style: normal; padding: 0 12px 0 0; }
+  .tab.on { flex: 2.35 1 0; background: var(--accent); color: #fff; box-shadow: 0 4px 14px rgba(216,95,112,.4); }
+  .tab.on .c { background: transparent; }
+  .tab.on em { display: block; }
+
+  .bars { display: grid; gap: 14px; }
+
+  /* icon drawing: stroke style + soft second tone (shows when active) */
+  svg.i { fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+  svg.i .t { fill: none; stroke: none; }
+  .on svg.i .t, svg.i.on .t { fill: var(--tone); }
+  .tab.on svg.i .t { fill: rgba(255,255,255,.34); }
+  .tab.on svg.i { stroke-width: 2; }
+  svg.i.on { stroke-width: 2; }
+  svg.i .dot { fill: currentColor; stroke: none; }
+
+  /* phones */
+  .phones { width: 100%; max-width: 1000px; display: flex; flex-wrap: wrap; gap: 38px; justify-content: center; }
+  .pcol { display: flex; flex-direction: column; align-items: center; gap: 12px; }
+  .pcol h4 { font-size: 13px; font-weight: 700; letter-spacing: .12em; color: #8a8083; text-transform: uppercase; }
+  .phone { background: var(--bg); color: var(--ink); width: 330px; }
+  .phone .status { color: var(--ink); }
+  .scr { position: absolute; inset: 0; padding: 56px 18px 0; }
+  .scr h5 { font-size: 26px; font-weight: 700; letter-spacing: -.02em; }
+  .sk { margin-top: 14px; background: var(--card); border-radius: 22px; height: 92px; box-shadow: inset 0 0 0 1px var(--line); display: flex; align-items: center; gap: 12px; padding: 12px; }
+  .sk i { width: 68px; height: 68px; border-radius: 16px; background: var(--halo); }
+  .sk u { text-decoration: none; display: block; height: 10px; border-radius: 6px; background: var(--line); }
+  .sk div { flex: 1; display: grid; gap: 9px; }
+  .dock { position: absolute; left: 36px; right: 36px; bottom: 26px; }
+
+  .notes { width: 100%; max-width: 1000px; background: var(--bg); color: var(--ink); border-radius: 22px; padding: 22px 26px; font-size: 13.5px; line-height: 1.65; box-shadow: 0 10px 30px rgba(0,0,0,.06); }
+  .notes b { font-weight: 700; }
+  .notes ul { margin: 8px 0 0 18px; }
+  .notes code { font-size: 12px; background: var(--line); padding: 1px 6px; border-radius: 6px; }
+</style>
+</head>
+<body>
+
+<!-- Icon library: 24 x 24, 1.8 px round strokes. ".t" = soft second tone that fills in when a tab is active. -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <symbol id="plan" viewBox="0 0 24 24">
+      <rect class="t" x="3.5" y="5" width="17" height="15.5" rx="4.5"/>
+      <rect x="3.5" y="5" width="17" height="15.5" rx="4.5"/>
+      <path d="M8 3v3.6M16 3v3.6"/>
+      <path d="M3.8 10.2h16.4"/>
+      <path d="M8.6 15.3l2.3 2.3 4.6-4.8"/>
+    </symbol>
+    <symbol id="discover" viewBox="0 0 24 24">
+      <circle class="t" cx="12" cy="12" r="9"/>
+      <circle cx="12" cy="12" r="9"/>
+      <path class="t" d="M15.9 8.1l-2.2 5.6-5.6 2.2 2.2-5.6z"/>
+      <path d="M15.9 8.1l-2.2 5.6-5.6 2.2 2.2-5.6z"/>
+      <circle class="dot" cx="12" cy="12" r="1.15"/>
+    </symbol>
+    <symbol id="progress" viewBox="0 0 24 24">
+      <rect class="t" x="4" y="13" width="3.8" height="7.5" rx="1.5"/>
+      <rect class="t" x="10.1" y="9" width="3.8" height="11.5" rx="1.5"/>
+      <rect class="t" x="16.2" y="4.5" width="3.8" height="16" rx="1.5"/>
+      <rect x="4" y="13" width="3.8" height="7.5" rx="1.5"/>
+      <rect x="10.1" y="9" width="3.8" height="11.5" rx="1.5"/>
+      <rect x="16.2" y="4.5" width="3.8" height="16" rx="1.5"/>
+    </symbol>
+    <symbol id="profile" viewBox="0 0 24 24">
+      <circle class="t" cx="12" cy="8.3" r="3.9"/>
+      <circle cx="12" cy="8.3" r="3.9"/>
+      <path class="t" d="M4.6 20.3c0-3.9 3.2-6.2 7.4-6.2s7.4 2.3 7.4 6.2z"/>
+      <path d="M4.6 20.3c0-3.9 3.2-6.2 7.4-6.2s7.4 2.3 7.4 6.2"/>
+    </symbol>
+  </defs>
+</svg>
+
+<header>
+  <h1>Bottom nav · custom icons</h1>
+  <p>One drawing per tab, two states. <b>Idle</b> is a clean outline in the muted text colour; <b>active</b> adds a soft second tone and a slightly heavier line, and turns white on the rose pill. Light and dark use the same shapes with the app's own colours for each theme, so the bar always matches the rest of the screen.</p>
+</header>
+
+<h2 class="sec">1 · The set</h2>
+<div class="modes">
+  <div class="panel light">
+    <h3>Light<small>idle · active</small></h3>
+    <div class="sheet" id="sheet-light"></div>
+  </div>
+  <div class="panel dark">
+    <h3>Dark<small>idle · active</small></h3>
+    <div class="sheet" id="sheet-dark"></div>
+  </div>
+</div>
+
+<h2 class="sec">2 · In the bar, every tab</h2>
+<div class="modes">
+  <div class="panel light"><h3>Light</h3><div class="bars" id="bars-light"></div></div>
+  <div class="panel dark"><h3>Dark</h3><div class="bars" id="bars-dark"></div></div>
+</div>
+
+<h2 class="sec">3 · On a screen</h2>
+<div class="phones">
+  <div class="pcol">
+    <h4>Light</h4>
+    <div class="phone light">
+      <div class="status"><span>9:41</span><span>●●●</span></div>
+      <div class="scr"><h5>Personal Plan</h5>
+        <div class="sk"><i></i><div><u style="width:55%"></u><u style="width:80%"></u></div></div>
+        <div class="sk"><i></i><div><u style="width:48%"></u><u style="width:72%"></u></div></div>
+        <div class="sk"><i></i><div><u style="width:60%"></u><u style="width:66%"></u></div></div>
+      </div>
+      <div class="dock"><div class="bar" id="dock-light"></div></div>
+    </div>
+  </div>
+  <div class="pcol">
+    <h4>Dark</h4>
+    <div class="phone dark">
+      <div class="status"><span>9:41</span><span>●●●</span></div>
+      <div class="scr"><h5>Personal Plan</h5>
+        <div class="sk"><i></i><div><u style="width:55%"></u><u style="width:80%"></u></div></div>
+        <div class="sk"><i></i><div><u style="width:48%"></u><u style="width:72%"></u></div></div>
+        <div class="sk"><i></i><div><u style="width:60%"></u><u style="width:66%"></u></div></div>
+      </div>
+      <div class="dock"><div class="bar" id="dock-dark"></div></div>
+    </div>
+  </div>
+</div>
+
+<div class="notes light">
+  <b>How these would go into the app</b>
+  <ul>
+    <li>The four drawings (24 × 24, round 1.8 px line) become small vector assets. Colour comes from the theme at draw time: idle <code>textSecondary</code>, active <code>onAccent</code> on the rose pill, second tone <code>onAccent</code> at about 34 % (the soft fill). One set of shapes serves both themes.</li>
+    <li>The bar itself does not change: same floating glass pill, drag-to-switch, active tab widens into the rose pill with its label.</li>
+    <li>Tab names stay Plan, Discover, Progress, Profile.</li>
+  </ul>
+</div>
+
+<script>
+  const tabs = [
+    { id: 'plan', label: 'Plan' },
+    { id: 'discover', label: 'Discover' },
+    { id: 'progress', label: 'Progress' },
+    { id: 'profile', label: 'Profile' },
+  ];
+  const icon = (id, cls = '') => `<svg class="i ${cls}" viewBox="0 0 24 24"><use href="#${id}"/></svg>`;
+
+  function sheet(el) {
+    el.innerHTML = tabs.map(t => `
+      <div class="cell">
+        <div class="pair">
+          <svg class="ico i" viewBox="0 0 24 24"><use href="#${t.id}"/></svg>
+          <svg class="ico i on" viewBox="0 0 24 24"><use href="#${t.id}"/></svg>
+        </div>
+        <b>${t.label}</b><span>idle · active</span>
+      </div>`).join('');
+  }
+  function bar(el, active) {
+    el.innerHTML = tabs.map((t, i) => `
+      <div class="tab ${i === active ? 'on' : ''}">
+        <div class="c">${icon(t.id)}</div><em>${t.label}</em>
+      </div>`).join('');
+  }
+  for (const m of ['light', 'dark']) {
+    sheet(document.getElementById('sheet-' + m));
+    const wrap = document.getElementById('bars-' + m);
+    wrap.innerHTML = tabs.map((_, i) => `<div class="bar" data-i="${i}"></div>`).join('');
+    wrap.querySelectorAll('.bar').forEach(b => bar(b, Number(b.dataset.i)));
+    bar(document.getElementById('dock-' + m), 0);
+  }
+</script>
+</body>
+</html>
