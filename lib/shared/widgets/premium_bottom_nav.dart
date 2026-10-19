@@ -5,16 +5,18 @@ import '../../core/theme/app_motion.dart';
 import '../../core/theme/app_spacing.dart';
 import '../../core/theme/app_typography.dart';
 import 'glass/glass_surface.dart';
+import 'nav_icons.dart';
 
 /// A single tab for [PremiumBottomNavigationBar].
 class PremiumNavItem {
   const PremiumNavItem({
-    required this.icon,
+    required this.kind,
     required this.label,
     this.showBadge = false,
   });
 
-  final IconData icon;
+  /// Which hand-drawn icon the tab shows.
+  final NavIconKind kind;
   final String label;
 
   /// Small notification dot on the icon's corner, for tabs like an inbox.
@@ -47,7 +49,7 @@ class PremiumBottomNavigationBar extends StatefulWidget {
 }
 
 class _PremiumBottomNavigationBarState extends State<PremiumBottomNavigationBar>
-    with SingleTickerProviderStateMixin {
+    with TickerProviderStateMixin {
   static const _barHeight = 64.0;
   static const _inset = 6.0;
   static const _circle = 44.0;
@@ -58,6 +60,27 @@ class _PremiumBottomNavigationBarState extends State<PremiumBottomNavigationBar>
 
   late final AnimationController _position;
   bool _dragging = false;
+
+  /// Plays an icon's own little animation each time its tab is tapped.
+  late final AnimationController _tap = AnimationController(
+    vsync: this,
+    duration: navIconDuration,
+  );
+  int _tapIndex = -1;
+
+  void _play(int i) {
+    _tapIndex = i;
+    if (MediaQuery.disableAnimationsOf(context)) {
+      _tap.value = 1;
+    } else {
+      _tap.forward(from: 0);
+    }
+  }
+
+  void _select(int i) {
+    _play(i);
+    widget.onItemSelected(i);
+  }
 
   int get _count => widget.items.length;
 
@@ -77,6 +100,10 @@ class _PremiumBottomNavigationBarState extends State<PremiumBottomNavigationBar>
   void didUpdateWidget(covariant PremiumBottomNavigationBar oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (widget.currentIndex != oldWidget.currentIndex &&
+        _tapIndex != widget.currentIndex) {
+      _play(widget.currentIndex); // changed from outside, e.g. a deep link
+    }
+    if (widget.currentIndex != oldWidget.currentIndex &&
         !_dragging &&
         _position.value != widget.currentIndex) {
       _position.animateTo(
@@ -88,6 +115,7 @@ class _PremiumBottomNavigationBarState extends State<PremiumBottomNavigationBar>
 
   @override
   void dispose() {
+    _tap.dispose();
     _position.dispose();
     super.dispose();
   }
@@ -109,7 +137,7 @@ class _PremiumBottomNavigationBarState extends State<PremiumBottomNavigationBar>
       duration: AppDurations.selection,
       curve: AppCurves.standard,
     );
-    if (nearest != widget.currentIndex) widget.onItemSelected(nearest);
+    if (nearest != widget.currentIndex) _select(nearest);
   }
 
   @override
@@ -221,7 +249,8 @@ class _PremiumBottomNavigationBarState extends State<PremiumBottomNavigationBar>
               // 0 = inactive circle, 1 = fully the active pill.
               activeness: (1 - (pos - i).abs()).clamp(0.0, 1.0),
               selected: i == widget.currentIndex,
-              onTap: () => widget.onItemSelected(i),
+              iconAnimation: i == _tapIndex ? _tap : null,
+              onTap: () => _select(i),
             ),
           ),
       ],
@@ -234,12 +263,14 @@ class _TabCell extends StatelessWidget {
     required this.item,
     required this.activeness,
     required this.selected,
+    required this.iconAnimation,
     required this.onTap,
   });
 
   final PremiumNavItem item;
   final double activeness;
   final bool selected;
+  final Animation<double>? iconAnimation;
   final VoidCallback onTap;
 
   @override
@@ -273,7 +304,13 @@ class _TabCell extends StatelessWidget {
                     clipBehavior: Clip.none,
                     alignment: Alignment.center,
                     children: [
-                      Icon(item.icon, size: 22, color: iconColor),
+                      NavIcon(
+                        kind: item.kind,
+                        color: iconColor,
+                        tone: c.onAccent.withValues(alpha: 0.34),
+                        activeness: activeness,
+                        animation: iconAnimation,
+                      ),
                       if (item.showBadge)
                         Positioned(
                           right: 9,

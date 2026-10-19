@@ -5,13 +5,14 @@ import '../../features/plan/presentation/screens/plan_screen.dart';
 import '../../features/progress/presentation/screens/progress_screen.dart';
 import '../../features/profile/presentation/screens/profile_screen.dart';
 import '../../shared/widgets/glass/app_background.dart';
+import '../../shared/widgets/nav_icons.dart';
 import '../../shared/widgets/premium_bottom_nav.dart';
 
 const appTabs = [
-  PremiumNavItem(icon: Icons.event_note_rounded, label: 'Plan'),
-  PremiumNavItem(icon: Icons.explore_rounded, label: 'Discover'),
-  PremiumNavItem(icon: Icons.insights_rounded, label: 'Progress'),
-  PremiumNavItem(icon: Icons.person_rounded, label: 'Profile'),
+  PremiumNavItem(kind: NavIconKind.plan, label: 'Plan'),
+  PremiumNavItem(kind: NavIconKind.discover, label: 'Discover'),
+  PremiumNavItem(kind: NavIconKind.progress, label: 'Progress'),
+  PremiumNavItem(kind: NavIconKind.profile, label: 'Profile'),
 ];
 
 /// Authenticated app shell: four tabs (Plan · Discover · Progress · Profile)
