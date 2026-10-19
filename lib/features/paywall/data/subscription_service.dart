@@ -275,20 +275,32 @@ class RevenueCatSubscriptionService implements SubscriptionService {
     return (await Purchases.getOfferings()).current;
   }
 
+  /// The store's real offers. An empty list means the store could not be
+  /// reached or has no products to show: the paywall then says so and lets
+  /// the user retry, instead of showing prices that may not be real.
   @override
   Future<List<PaywallOffer>> offers() async {
     try {
       final o = await _offering();
-      if (o == null) return defaultPaywallOffers;
+      if (o == null) return const [];
       final monthly = o.monthly?.storeProduct;
       final annual = o.annual?.storeProduct;
+      var monthlyTrial = monthly == null ? null : _trialDays(monthly);
+      if (monthly != null && monthlyTrial != null && await _isApple) {
+        // On iPhone the trial is offered once per Apple ID (per group): only
+        // promise it when Apple says this user can still have it.
+        monthlyTrial = await _trialStillAvailable(monthly)
+            ? monthlyTrial
+            : null;
+      }
       return [
         if (monthly != null)
           PaywallOffer(
             plan: PremiumPlan.monthly,
             price: monthly.priceString,
             period: 'month',
-            trialDays: _trialDays(monthly),
+            trialDays: monthlyTrial,
+            amount: monthly.price,
           ),
         if (annual != null)
           PaywallOffer(
@@ -296,11 +308,27 @@ class RevenueCatSubscriptionService implements SubscriptionService {
             price: annual.priceString,
             period: 'year',
             perMonth: _perMonth(annual),
+            amount: annual.price,
           ),
       ];
     } catch (e) {
       debugPrint('RevenueCat offerings failed: $e');
-      return defaultPaywallOffers;
+      return const [];
+    }
+  }
+
+  static Future<bool> get _isApple async =>
+      !kIsWeb && (Platform.isIOS || Platform.isMacOS);
+
+  static Future<bool> _trialStillAvailable(StoreProduct product) async {
+    try {
+      final result = await Purchases.checkTrialOrIntroductoryPriceEligibility([
+        product.identifier,
+      ]);
+      return result[product.identifier]?.status ==
+          IntroEligibilityStatus.introEligibilityStatusEligible;
+    } catch (_) {
+      return false; // not sure: do not promise it
     }
   }
 

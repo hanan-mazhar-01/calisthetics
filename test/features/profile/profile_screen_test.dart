@@ -1,6 +1,10 @@
 import 'package:calisthenics/core/storage/shared_preferences_provider.dart';
 import 'package:calisthenics/core/theme/app_theme.dart';
 import 'package:calisthenics/features/auth/presentation/providers/auth_providers.dart';
+import 'package:calisthenics/features/paywall/data/subscription_service.dart';
+import 'package:calisthenics/features/paywall/domain/paywall_offer.dart';
+import 'package:calisthenics/features/paywall/domain/subscription.dart';
+import 'package:calisthenics/features/paywall/presentation/providers/subscription_providers.dart';
 import 'package:calisthenics/features/onboarding/presentation/providers/onboarding_controller.dart';
 import 'package:calisthenics/features/profile/presentation/screens/profile_screen.dart';
 import 'package:calisthenics/features/user/presentation/providers/user_providers.dart';
@@ -24,11 +28,41 @@ class _FakeUser implements User {
   dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
 }
 
+/// RevenueCat stand-in: real payments, an active yearly plan, and a restore
+/// that fails (no network).
+class _LivePremium implements SubscriptionService {
+  var restores = 0;
+  @override
+  bool get isLive => true;
+  @override
+  bool get canCancelInApp => false;
+  @override
+  SubscriptionStatus get cached =>
+      const SubscriptionStatus(plan: PremiumPlan.yearly);
+  @override
+  Future<SubscriptionStatus> refresh() async => cached;
+  @override
+  Future<List<PaywallOffer>> offers() async => defaultPaywallOffers;
+  @override
+  Future<SubscriptionStatus> purchase(PremiumPlan plan) async => cached;
+  @override
+  Future<SubscriptionStatus> restore() async {
+    restores++;
+    throw Exception('offline');
+  }
+
+  @override
+  Future<SubscriptionStatus> cancel() async => cached;
+  @override
+  Future<void> setAccount(String? uid) async {}
+}
+
 Future<ProviderContainer> _pump(
   WidgetTester tester, {
   bool dark = false,
   User? user,
   String name = 'Hanan',
+  SubscriptionService? store,
 }) async {
   tester.view.physicalSize = const Size(900, 3600);
   tester.view.devicePixelRatio = 2;
@@ -39,6 +73,7 @@ Future<ProviderContainer> _pump(
     overrides: [
       sharedPreferencesProvider.overrideWithValue(sp),
       if (user != null) currentUserProvider.overrideWithValue(user),
+      if (store != null) subscriptionServiceProvider.overrideWithValue(store),
     ],
   );
   addTearDown(container.dispose);
@@ -172,6 +207,28 @@ void main() {
     await tester.tap(find.text('Cancel'));
     await tester.pump(const Duration(milliseconds: 400));
     expect(find.text('Delete account?'), findsNothing);
+  });
+
+  testWidgets('Manage: a store button, and a failed restore says so', (
+    tester,
+  ) async {
+    final store = _LivePremium();
+    await _pump(tester, store: store);
+    await tester.tap(find.text('Manage'));
+    await tester.pump(const Duration(milliseconds: 600));
+    await tester.pump(const Duration(seconds: 1));
+    expect(find.text('Manage in Google Play'), findsOneWidget);
+    expect(find.text('Switch to Monthly'), findsOneWidget);
+    await tester.tap(find.text('Restore purchases'));
+    await tester.pump(const Duration(milliseconds: 600));
+    await tester.pump(const Duration(milliseconds: 600));
+    expect(store.restores, 1);
+    // No crash, and the user is told.
+    expect(tester.takeException(), isNull);
+    expect(
+      find.text('Could not restore purchases. Please try again.'),
+      findsOneWidget,
+    );
   });
 
   testWidgets('Help & Support opens the support page', (tester) async {

@@ -1,7 +1,10 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/foundation.dart'
+    show TargetPlatform, defaultTargetPlatform, kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../../../../core/motion/calesthetics_motion.dart';
 import '../../../../core/theme/app_colors_extension.dart';
@@ -239,6 +242,11 @@ class ProfileScreen extends ConsumerWidget {
     if (!home) router.go('/');
   }
 
+  static bool get _isApple =>
+      !kIsWeb &&
+      (defaultTargetPlatform == TargetPlatform.iOS ||
+          defaultTargetPlatform == TargetPlatform.macOS);
+
   static Future<void> _manageSubscription(
     BuildContext context,
     WidgetRef ref,
@@ -288,6 +296,14 @@ class ProfileScreen extends ConsumerWidget {
                 const SizedBox(height: 10),
                 item('change', Icons.swap_horiz_rounded, 'Switch to $other'),
                 item('restore', Icons.refresh_rounded, 'Restore purchases'),
+                if (!service.canCancelInApp)
+                  item(
+                    'store',
+                    Icons.open_in_new_rounded,
+                    _isApple
+                        ? 'Manage in the App Store'
+                        : 'Manage in Google Play',
+                  ),
                 if (service.canCancelInApp)
                   item(
                     'cancel',
@@ -315,15 +331,39 @@ class ProfileScreen extends ConsumerWidget {
     switch (choice) {
       case 'change':
         context.push('/paywall');
-      case 'restore':
-        final s = await notifier.restore();
-        if (context.mounted) {
+      case 'store':
+        // Where the store lets the user see, change or cancel the plan.
+        final opened = await launchUrl(
+          Uri.parse(
+            _isApple
+                ? 'https://apps.apple.com/account/subscriptions'
+                : 'https://play.google.com/store/account/subscriptions',
+          ),
+          mode: LaunchMode.externalApplication,
+        ).catchError((_) => false);
+        if (!opened && context.mounted) {
           _snack(
             context,
-            s.isPremium
-                ? 'Your Premium is active.'
-                : 'No active subscription was found.',
+            _isApple
+                ? 'Open Settings > your name > Subscriptions.'
+                : 'Open Google Play > Payments & subscriptions.',
           );
+        }
+      case 'restore':
+        try {
+          final s = await notifier.restore();
+          if (context.mounted) {
+            _snack(
+              context,
+              s.isPremium
+                  ? 'Your Premium is active.'
+                  : 'No active subscription was found.',
+            );
+          }
+        } catch (_) {
+          if (context.mounted) {
+            _snack(context, 'Could not restore purchases. Please try again.');
+          }
         }
       case 'cancel':
         final ok = await showPlanConfirmDialog(

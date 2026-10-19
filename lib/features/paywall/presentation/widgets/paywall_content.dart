@@ -1,7 +1,8 @@
 import 'dart:async';
 import 'dart:math' as math;
 
-import 'package:flutter/foundation.dart' show kReleaseMode;
+import 'package:flutter/foundation.dart'
+    show TargetPlatform, defaultTargetPlatform, kIsWeb, kReleaseMode;
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -73,6 +74,24 @@ class _PaywallContentState extends ConsumerState<PaywallContent> {
     }
   }
 
+  /// The auto-renewal terms the stores require next to the buy button.
+  static String _renewalNote(bool trial) {
+    final apple =
+        !kIsWeb &&
+        (defaultTargetPlatform == TargetPlatform.iOS ||
+            defaultTargetPlatform == TargetPlatform.macOS);
+    final account = apple ? 'Apple ID' : 'Google Play account';
+    final manage = apple
+        ? 'your Apple ID settings (Subscriptions)'
+        : 'Google Play (Payments & subscriptions)';
+    final charged = trial
+        ? 'when the free trial ends'
+        : 'at confirmation of purchase';
+    return 'Payment is charged to your $account $charged. It renews '
+        'automatically unless you cancel at least 24 hours before the period '
+        'ends. Manage or cancel in $manage.';
+  }
+
   Future<void> _restore() async {
     setState(() => _busy = true);
     try {
@@ -93,25 +112,46 @@ class _PaywallContentState extends ConsumerState<PaywallContent> {
   @override
   Widget build(BuildContext context) {
     final c = context.appColors;
+    final live = ref.watch(subscriptionServiceProvider).isLive;
+    final offersState = ref.watch(paywallOffersProvider);
+    // The test store shows the launch prices. With real payments connected
+    // only the store's own offers are shown: never a typed-in price that the
+    // store may not honour.
     final offers =
-        ref.watch(paywallOffersProvider).asData?.value ?? defaultPaywallOffers;
+        offersState.asData?.value ?? (live ? const [] : defaultPaywallOffers);
     final current = ref.watch(subscriptionProvider);
-    PaywallOffer offerFor(PremiumPlan p) =>
+    PaywallOffer? offerFor(PremiumPlan p) =>
         offers.where((o) => o.plan == p).firstOrNull ??
-        defaultPaywallOffers.firstWhere((o) => o.plan == p);
+        (live ? null : defaultPaywallOffers.firstWhere((o) => o.plan == p));
     final chosen = offerFor(_choice);
-    final trial = current.isPremium ? null : chosen.trialDays;
+    final loadingPrices = live && chosen == null && offersState.isLoading;
+    final noPrices = chosen == null && !loadingPrices;
+    final trial = current.isPremium ? null : chosen?.trialDays;
+    final saving = yearlySavingPercent(offers);
 
     final cta = current.plan == _choice
         ? 'Your current plan'
+        : loadingPrices
+        ? 'Loading prices…'
+        : noPrices
+        ? 'Try again'
         : trial != null
         ? 'Start my free trial'
-        : 'Continue · ${chosen.price}/${chosen.period}';
-    final hint = trial != null
-        ? '$trial days free, then ${chosen.price}/${chosen.period}'
-        : chosen.perMonth != null
+        : 'Continue · ${chosen!.price}/${chosen.period}';
+    final hint = loadingPrices
+        ? 'Getting the price from the store…'
+        : noPrices
+        ? 'The price could not be loaded. Check your connection.'
+        : trial != null
+        ? '$trial days free, then ${chosen!.price}/${chosen.period}'
+        : chosen!.perMonth != null
         ? 'Only ${chosen.perMonth} a month'
         : 'Billed every ${chosen.period}';
+    final VoidCallback? onBuy = current.plan == _choice || loadingPrices
+        ? null
+        : noPrices
+        ? () => ref.invalidate(paywallOffersProvider)
+        : _buy;
 
     return Stack(
       children: [
@@ -178,7 +218,9 @@ class _PaywallContentState extends ConsumerState<PaywallContent> {
                               const SizedBox(height: 18),
                               _PlanToggle(
                                 value: _choice,
-                                yearlyTag: 'Save 58%',
+                                yearlyTag: saving == null
+                                    ? null
+                                    : 'Save $saving%',
                                 onChanged: (p) {
                                   Haptics.light();
                                   setState(() => _choice = p);
@@ -186,8 +228,12 @@ class _PaywallContentState extends ConsumerState<PaywallContent> {
                               ),
                               const SizedBox(height: 14),
                               _Price(
-                                price: chosen.price,
-                                period: chosen.period,
+                                price: chosen?.price ?? '—',
+                                period:
+                                    chosen?.period ??
+                                    (_choice == PremiumPlan.yearly
+                                        ? 'year'
+                                        : 'month'),
                                 hint: hint,
                               ),
                             ],
@@ -207,14 +253,13 @@ class _PaywallContentState extends ConsumerState<PaywallContent> {
                         child: _BuyButton(
                           label: cta,
                           busy: _busy,
-                          onTap: current.plan == _choice ? null : _buy,
+                          onTap: onBuy,
                         ),
                       ),
                       const SizedBox(height: 7),
                       Text(
-                        (kReleaseMode ||
-                                ref.read(subscriptionServiceProvider).isLive)
-                            ? 'Renews automatically until you cancel in your store settings.'
+                        (kReleaseMode || live)
+                            ? _renewalNote(trial != null)
                             : 'Test mode: no payment is taken.',
                         textAlign: TextAlign.center,
                         style: AppTypography.body(
@@ -601,7 +646,7 @@ class _PlanToggle extends StatelessWidget {
 
   final PremiumPlan value;
   final ValueChanged<PremiumPlan> onChanged;
-  final String yearlyTag;
+  final String? yearlyTag;
 
   @override
   Widget build(BuildContext context) {
