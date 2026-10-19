@@ -7,7 +7,6 @@ import 'package:go_router/go_router.dart';
 
 import '../../../../core/motion/calesthetics_motion.dart';
 import '../../../../core/theme/app_colors_extension.dart';
-import '../../../../core/theme/app_motion.dart';
 import '../../../auth/presentation/providers/auth_providers.dart';
 import '../../../paywall/presentation/widgets/paywall_content.dart';
 import '../../../user/presentation/providers/user_providers.dart';
@@ -64,9 +63,6 @@ class OnboardingFlowScreen extends ConsumerStatefulWidget {
 }
 
 class _OnboardingFlowScreenState extends ConsumerState<OnboardingFlowScreen> {
-  int? _previousIndex;
-  bool _forward = true;
-
   @override
   void initState() {
     super.initState();
@@ -78,15 +74,9 @@ class _OnboardingFlowScreenState extends ConsumerState<OnboardingFlowScreen> {
   @override
   Widget build(BuildContext context) {
     final controller = ref.read(onboardingControllerProvider.notifier);
-    final index = ref.watch(
-      onboardingControllerProvider.select((s) => s.index),
-    );
+    // Rebuild whenever the step changes.
+    ref.watch(onboardingControllerProvider.select((s) => s.index));
     final step = controller.currentStep;
-
-    if (_previousIndex != null && index != _previousIndex) {
-      _forward = index > _previousIndex!;
-    }
-    _previousIndex = index;
 
     return PopScope(
       canPop: controller.isFirstStep,
@@ -108,30 +98,13 @@ class _OnboardingFlowScreenState extends ConsumerState<OnboardingFlowScreen> {
             ),
           ),
           child: SafeArea(
-            child: AnimatedSwitcher(
-              duration: AppDurations.stepTransition,
-              switchInCurve: AppCurves.standard,
-              switchOutCurve: AppCurves.standard,
-              transitionBuilder: (child, animation) {
-                final isOutgoing = animation.status == AnimationStatus.reverse;
-                final dx = isOutgoing
-                    ? (_forward ? -0.04 : 0.04)
-                    : (_forward ? 0.04 : -0.04);
-                return FadeTransition(
-                  opacity: animation,
-                  child: SlideTransition(
-                    position: Tween<Offset>(
-                      begin: Offset(dx, 0),
-                      end: Offset.zero,
-                    ).animate(animation),
-                    child: child,
-                  ),
-                );
-              },
-              child: KeyedSubtree(
-                key: ValueKey(step.id),
-                child: _StepBody(step: step),
-              ),
+            // No cross-fade or slide between steps: the old screen must be
+            // gone the moment the next one appears, so its text never
+            // lingers under the new headline. The new screen brings its own
+            // entrance (the headline types itself out, options step in).
+            child: KeyedSubtree(
+              key: ValueKey(step.id),
+              child: _StepBody(step: step),
             ),
           ),
         ),
