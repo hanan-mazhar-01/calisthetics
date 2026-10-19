@@ -61,6 +61,13 @@ class LocalReminderService implements ReminderService {
       await _plugin.initialize(
         settings: const InitializationSettings(
           android: AndroidInitializationSettings('@mipmap/ic_launcher'),
+          // iPhone: nothing is asked at start-up. The permission prompt
+          // appears when the user switches reminders on (requestPermission).
+          iOS: DarwinInitializationSettings(
+            requestAlertPermission: false,
+            requestBadgePermission: false,
+            requestSoundPermission: false,
+          ),
         ),
       );
       return true;
@@ -75,10 +82,19 @@ class LocalReminderService implements ReminderService {
         AndroidFlutterLocalNotificationsPlugin
       >();
 
+  IOSFlutterLocalNotificationsPlugin? get _ios => _plugin
+      .resolvePlatformSpecificImplementation<
+        IOSFlutterLocalNotificationsPlugin
+      >();
+
   @override
   Future<bool> isPermitted() async {
     if (!await _init()) return false;
     try {
+      final ios = _ios;
+      if (ios != null) {
+        return (await ios.checkPermissions())?.isEnabled ?? false;
+      }
       return await _android?.areNotificationsEnabled() ?? false;
     } catch (_) {
       return false;
@@ -89,6 +105,12 @@ class LocalReminderService implements ReminderService {
   Future<bool> requestPermission() async {
     if (!await _init()) return false;
     try {
+      final ios = _ios;
+      if (ios != null) {
+        // iOS asks once; after a refusal it only answers false, and the
+        // user has to allow notifications in Settings.
+        return await ios.requestPermissions(alert: true, sound: true) ?? false;
+      }
       return await _android?.requestNotificationsPermission() ?? false;
     } catch (_) {
       return false;
@@ -116,6 +138,12 @@ class LocalReminderService implements ReminderService {
               channelDescription: 'A reminder on the days your plan trains.',
               importance: Importance.defaultImportance,
               priority: Priority.defaultPriority,
+            ),
+            iOS: DarwinNotificationDetails(
+              presentAlert: true,
+              presentBanner: true,
+              presentList: true,
+              presentSound: true,
             ),
           ),
           // Inexact: no special alarm permission, and a few minutes of drift
