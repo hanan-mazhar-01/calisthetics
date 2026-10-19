@@ -21,6 +21,8 @@ import '../../../plan/presentation/widgets/plan_confirm_dialog.dart';
 import '../../../sync/presentation/providers/sync_providers.dart';
 import '../../../user/presentation/providers/user_providers.dart';
 import '../widgets/reminder_sheet.dart';
+import '../../../legal/presentation/open_legal.dart';
+import '../../../legal/presentation/screens/legal_screen.dart';
 
 const _supportEmail = 'support@veradostudio.com';
 
@@ -134,12 +136,12 @@ class ProfileScreen extends ConsumerWidget {
               _RowData(
                 icon: Icons.shield_outlined,
                 title: 'Privacy Policy',
-                onTap: () => context.push('/privacy'),
+                onTap: () => openLegal(context, LegalKind.privacy),
               ),
               _RowData(
                 icon: Icons.description_outlined,
                 title: 'Terms of Use',
-                onTap: () => context.push('/terms'),
+                onTap: () => openLegal(context, LegalKind.terms),
               ),
               if (user != null)
                 _RowData(

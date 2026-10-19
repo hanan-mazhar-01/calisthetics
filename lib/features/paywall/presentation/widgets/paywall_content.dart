@@ -5,7 +5,6 @@ import 'package:flutter/foundation.dart' show kReleaseMode;
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
 
 import '../../../../core/theme/app_colors_extension.dart';
 import '../../../../core/theme/app_typography.dart';
@@ -19,6 +18,8 @@ import '../../domain/paywall_offer.dart';
 import '../../domain/subscription.dart';
 import '../providers/subscription_providers.dart';
 import '../../../../core/haptics/haptics.dart';
+import '../../../legal/presentation/open_legal.dart';
+import '../../../legal/presentation/screens/legal_screen.dart';
 
 const _pinkA = Color(0xFFFF7E98);
 const _pinkB = Color(0xFFEF5B82);
@@ -228,11 +229,11 @@ class _PaywallContentState extends ConsumerState<PaywallContent> {
                           _LinkButton(label: 'Restore', onTap: _restore),
                           _LinkButton(
                             label: 'Terms',
-                            onTap: () => context.push('/terms'),
+                            onTap: () => openLegal(context, LegalKind.terms),
                           ),
                           _LinkButton(
                             label: 'Privacy',
-                            onTap: () => context.push('/privacy'),
+                            onTap: () => openLegal(context, LegalKind.privacy),
                           ),
                         ],
                       ),

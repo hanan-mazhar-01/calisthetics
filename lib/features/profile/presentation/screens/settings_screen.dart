@@ -13,6 +13,8 @@ import '../providers/profile_providers.dart';
 import '../widgets/profile_chrome.dart';
 import '../../../auth/domain/auth_failure.dart';
 import '../../../sync/presentation/providers/sync_providers.dart';
+import '../../../legal/presentation/open_legal.dart';
+import '../../../legal/presentation/screens/legal_screen.dart';
 
 const _supportEmail = 'support@veradostudio.com';
 
@@ -125,12 +127,12 @@ class SettingsScreen extends ConsumerWidget {
           _Row(
             icon: Icons.privacy_tip_outlined,
             title: 'Privacy Policy',
-            onTap: () => context.push('/privacy'),
+            onTap: () => openLegal(context, LegalKind.privacy),
           ),
           _Row(
             icon: Icons.description_outlined,
             title: 'Terms',
-            onTap: () => context.push('/terms'),
+            onTap: () => openLegal(context, LegalKind.terms),
           ),
           _Row(
             icon: Icons.mail_outline_rounded,

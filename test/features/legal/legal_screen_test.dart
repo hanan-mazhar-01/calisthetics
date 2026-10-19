@@ -5,8 +5,12 @@ import 'package:flutter_test/flutter_test.dart';
 
 void main() {
   for (final (kind, title, section) in [
-    (LegalKind.privacy, 'Privacy Policy', 'Delete your data'),
-    (LegalKind.terms, 'Terms of Use', 'Billing and renewal'),
+    (
+      LegalKind.privacy,
+      'Privacy Policy',
+      '5. User Rights, Data Control & Account Deletion',
+    ),
+    (LegalKind.terms, 'Terms of Use', '5. Subscriptions, Free Trial & Billing'),
   ]) {
     testWidgets('$title shows its sections', (tester) async {
       tester.view.physicalSize = const Size(900, 6000);
@@ -19,7 +23,18 @@ void main() {
         ),
       );
       expect(find.text(title), findsOneWidget);
+      // A long text: a section further down shows once scrolled to.
+      await tester.scrollUntilVisible(
+        find.text(section),
+        400,
+        scrollable: find.byType(Scrollable).first,
+      );
       expect(find.text(section), findsOneWidget);
+      await tester.scrollUntilVisible(
+        find.textContaining('Support Email'),
+        600,
+        scrollable: find.byType(Scrollable).first,
+      );
       expect(find.textContaining('support@veradostudio.com'), findsWidgets);
     });
   }
