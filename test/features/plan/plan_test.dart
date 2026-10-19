@@ -230,6 +230,11 @@ void main() {
       expect(find.textContaining('Phase 1'), findsOneWidget);
       expect(find.text('Day 2'), findsOneWidget);
       expect(find.text('Add More Plan'), findsNothing);
+      // No "not available yet" line at the end of the plan (scroll to it).
+      await tester.drag(find.byType(ListView).first, const Offset(0, -5000));
+      await tester.pump(const Duration(milliseconds: 500));
+      expect(find.textContaining('Download plan for offline'), findsNothing);
+      expect(find.textContaining('not available yet'), findsNothing);
       expect(tester.takeException(), isNull);
     });
   }

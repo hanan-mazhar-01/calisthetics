@@ -107,8 +107,6 @@ class _PlanScreenState extends ConsumerState<PlanScreen> {
                           timeline,
                           overview.plan.templateId,
                         ),
-                        const SizedBox(height: AppSpacing.xl),
-                        const _OfflineRow(),
                       ],
                     ],
                   ),
@@ -392,37 +390,6 @@ class _LevelUpCard extends ConsumerWidget {
                 ),
               ),
             ],
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class _OfflineRow extends StatelessWidget {
-  const _OfflineRow();
-
-  @override
-  Widget build(BuildContext context) {
-    final c = context.appColors;
-    return Semantics(
-      label: 'Download plan for offline, not available yet',
-      excludeSemantics: true,
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Icon(
-            Icons.download_for_offline_rounded,
-            size: 18,
-            color: c.textMuted,
-          ),
-          const SizedBox(width: 6),
-          Flexible(
-            child: Text(
-              'Download plan for offline · not available yet',
-              textAlign: TextAlign.center,
-              style: AppTypography.body(c.textMuted, fontSize: 12.5),
-            ),
           ),
         ],
       ),
