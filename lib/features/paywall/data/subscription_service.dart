@@ -19,8 +19,9 @@ class PurchaseFailure implements Exception {
 }
 
 /// Buying and checking Premium. Two implementations:
-///  * [RevenueCatSubscriptionService] once RevenueCat keys are passed in
-///    (`--dart-define=REVENUECAT_ANDROID_KEY=...` / `REVENUECAT_IOS_KEY`);
+///  * [RevenueCatSubscriptionService] once a RevenueCat key is set for the
+///    platform (iOS is built in; Android: `--dart-define=
+///    REVENUECAT_ANDROID_KEY=...`);
 ///  * [LocalSubscriptionService] until then: purchases succeed on the phone
 ///    without any payment, so the whole flow can be tried.
 abstract class SubscriptionService {
@@ -203,13 +204,18 @@ class RevenueCatSubscriptionService implements SubscriptionService {
 
   static const entitlementId = 'premium';
 
+  /// RevenueCat's SDK keys are public keys made to ship inside the app (the
+  /// secret `sk_` key must never be). `--dart-define` overrides the iOS one.
   static const _androidKey = String.fromEnvironment('REVENUECAT_ANDROID_KEY');
-  static const _iosKey = String.fromEnvironment('REVENUECAT_IOS_KEY');
+  static const iosKey = String.fromEnvironment(
+    'REVENUECAT_IOS_KEY',
+    defaultValue: 'appl_fwvaYbmjxPvSssHbyVBLhApShNZ',
+  );
 
   /// The RevenueCat key for this platform, or null when not set.
   static String? platformKey() {
     if (kIsWeb) return null;
-    final key = Platform.isIOS || Platform.isMacOS ? _iosKey : _androidKey;
+    final key = Platform.isIOS || Platform.isMacOS ? iosKey : _androidKey;
     return key.isEmpty ? null : key;
   }
 
