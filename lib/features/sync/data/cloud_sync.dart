@@ -6,6 +6,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/widgets.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../../paywall/data/subscription_service.dart' show subscriptionPrefsKey;
+
 /// Keeps a signed-in user's data in Firestore (`users/{uid}`), so it comes
 /// back on any phone they sign in on.
 ///
@@ -65,6 +67,13 @@ class CloudSync with WidgetsBindingObserver {
 
   static bool _synced(String key) =>
       key.startsWith('user_') || key.startsWith('onboarding_');
+
+  /// Whether [key] goes up to the cloud copy and is taken back from it.
+  /// The subscription status never does: the store (through RevenueCat) is
+  /// the only truth about Premium, and a copy kept in the user's own
+  /// document could be edited by the user. (It is still wiped on sign-out.)
+  @visibleForTesting
+  static bool shared(String key) => _synced(key) && key != subscriptionPrefsKey;
 
   String? get _lastPushed => prefs.getString(_pushedKey);
 
@@ -268,7 +277,7 @@ class CloudSync with WidgetsBindingObserver {
 
   /// Keys sorted, so the same data always encodes to the same string.
   Map<String, dynamic> _snapshot() => {
-    for (final k in prefs.getKeys().where(_synced).toList()..sort())
+    for (final k in prefs.getKeys().where(shared).toList()..sort())
       k: prefs.get(k),
   };
 
@@ -280,6 +289,7 @@ class CloudSync with WidgetsBindingObserver {
 
   Future<void> _writeLocal(Map<String, dynamic> data) async {
     for (final e in data.entries) {
+      if (!shared(e.key)) continue; // never take Premium from the cloud
       final v = e.value;
       if (v is bool) {
         await prefs.setBool(e.key, v);
