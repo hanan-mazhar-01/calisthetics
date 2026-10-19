@@ -38,6 +38,9 @@ void main() {
     expect(terms, contains(r'$49.99'));
     expect(terms, contains('7-day free trial'));
     expect(privacy, contains('Profile > Delete Account'));
+    // Guests have no account to delete: both texts name the button they see.
+    expect(privacy, contains('Profile > Erase data on this phone'));
+    expect(terms, contains('Profile > Erase data on this phone'));
     expect(legalUpdated, 'October 19, 2026');
   });
 }

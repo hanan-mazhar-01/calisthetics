@@ -157,9 +157,13 @@ class ProfileScreen extends ConsumerWidget {
                   value: 'Connect account',
                   onTap: () => _connect(context, ref),
                 ),
+              // A guest has no account to delete: the row erases the data
+              // on this phone instead, and says so.
               _RowData(
                 icon: Icons.delete_outline_rounded,
-                title: 'Delete Account',
+                title: user == null
+                    ? 'Erase data on this phone'
+                    : 'Delete Account',
                 destructive: true,
                 onTap: () => _confirmDelete(context, ref),
               ),
@@ -345,18 +349,20 @@ class ProfileScreen extends ConsumerWidget {
     BuildContext context,
     WidgetRef ref,
   ) async {
-    final signedIn = ref.read(authRepositoryProvider).currentUser != null;
+    final signedIn = ref.read(currentUserProvider) != null;
     final ok = await showPlanConfirmDialog(
       context,
-      title: 'Delete account?',
+      title: signedIn ? 'Delete account?' : 'Erase data on this phone?',
       message: signedIn
           ? 'Your account and everything in it (plans, history, favorites, '
                 'records and settings) are deleted from our servers and this '
                 'phone. It cannot be undone. If you signed in a while ago, '
                 'you will be asked to confirm it is you first.'
           : 'This erases your plan, history, favorites and settings from this '
-                'phone and takes you back to the start. It cannot be undone.',
-      confirmLabel: 'Delete',
+                'phone and takes you back to the start. It cannot be undone. '
+                'If you bought Premium on this phone, tap Restore purchases '
+                'afterwards to get it back.',
+      confirmLabel: signedIn ? 'Delete' : 'Erase',
     );
     if (!ok || !context.mounted) return;
     final router = GoRouter.of(context);

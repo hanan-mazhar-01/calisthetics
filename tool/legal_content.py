@@ -139,8 +139,9 @@ PRIVACY = {
             "blocks": [
                 ("ul", [
                     "**Guest:** Your plan, progress and settings are stored only "
-                    "on your phone. Nothing is uploaded. Deleting the app or "
-                    "clearing its data erases them.",
+                    "on your phone. Nothing is uploaded. Deleting the app, "
+                    "clearing its data, or using **Profile > Erase data on this "
+                    "phone** erases them.",
                     "**Account:** Your data is saved in one private record that "
                     "belongs to your account (Google Cloud Firestore), protected "
                     "by security rules so that only you, signed in, can read or "
@@ -192,8 +193,13 @@ PRIVACY = {
                       "cleared from your phone. If your last sign-in was a while "
                       "ago, you may first be asked to confirm that it is you "
                       "(with Google, Apple or your password). On iPhone, the "
-                      "app's Sign in with Apple access is also revoked. Without "
-                      "an account, Delete Account clears the data on your phone."),
+                      "app's Sign in with Apple access is also revoked."),
+                ("p", "**Without an account (guest):** nothing is stored on our "
+                      "servers, so there is no account to delete. To clear what "
+                      "is saved on your phone (plan, history, favorites and "
+                      "settings), use **Profile > Erase data on this phone**. "
+                      "If you bought Premium on that phone, use Restore "
+                      "purchases afterwards to get it back."),
                 ("ul", [
                     "**Subscription Cancellation Reminder:** Deleting your "
                     "account does **not** cancel an active Apple or Google "
@@ -348,7 +354,8 @@ TERMS = {
                     "else is using your account.",
                     "**Delete it anytime:** In the app, go to **Profile > Delete "
                     "Account**. This erases your account and its data (see our "
-                    "[[privacy]]).",
+                    "[[privacy]]). As a guest, **Profile > Erase data on this "
+                    "phone** clears what is saved on your phone.",
                 ]),
             ],
         },
@@ -464,7 +471,8 @@ TERMS = {
             "title": "Ending Your Use",
             "blocks": [
                 ("p", "You can stop using the app at any time and delete your "
-                      "account in **Profile > Delete Account**. We may suspend "
+                      "account in **Profile > Delete Account** (as a guest: "
+                      "**Profile > Erase data on this phone**). We may suspend "
                       "or end access if you seriously or repeatedly break these "
                       "terms or misuse the app. Anything that by its nature "
                       "should continue (such as ownership and liability limits) "

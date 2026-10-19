@@ -77,7 +77,7 @@ void main() {
         'Terms of Use',
         'Sign in / Sign up',
         'Connect account',
-        'Delete Account',
+        'Erase data on this phone',
         'Calesthetics 1.0.0',
       ]) {
         expect(find.text(t), findsOneWidget, reason: t);
@@ -138,11 +138,31 @@ void main() {
     expect(find.text('Google Name'), findsOneWidget);
   });
 
-  testWidgets('delete account asks for confirmation', (tester) async {
-    await _pump(tester);
+  testWidgets(
+    'guest: the row erases data on this phone, not "Delete Account"',
+    (tester) async {
+      await _pump(tester);
+      expect(find.text('Delete Account'), findsNothing);
+      await tester.tap(find.text('Erase data on this phone'));
+      await tester.pump(const Duration(milliseconds: 400));
+      expect(find.text('Erase data on this phone?'), findsOneWidget);
+      expect(find.textContaining('Restore purchases'), findsOneWidget);
+      expect(find.text('Erase'), findsOneWidget);
+      await tester.tap(find.text('Cancel'));
+      await tester.pump(const Duration(milliseconds: 400));
+      expect(find.text('Erase data on this phone?'), findsNothing);
+    },
+  );
+
+  testWidgets('signed in: Delete Account asks for confirmation', (
+    tester,
+  ) async {
+    await _pump(tester, user: _FakeUser('Google Name'));
+    expect(find.text('Erase data on this phone'), findsNothing);
     await tester.tap(find.text('Delete Account'));
     await tester.pump(const Duration(milliseconds: 400));
     expect(find.text('Delete account?'), findsOneWidget);
+    expect(find.textContaining('deleted from our servers'), findsOneWidget);
     await tester.tap(find.text('Cancel'));
     await tester.pump(const Duration(milliseconds: 400));
     expect(find.text('Delete account?'), findsNothing);
