@@ -13,7 +13,7 @@ const navIconDuration = Duration(milliseconds: 800);
 ///
 /// [animation] runs 0 to 1 when the tab is tapped and gives each icon its own
 /// little move: the plan's tick draws itself and its rings wiggle, the
-/// compass needle swings to north, the progress line draws up to its arrow,
+/// compass needle swings to north, the progress bars grow one after another,
 /// the profile's head drops in while the shoulders rise. Null (or 1) is the
 /// icon at rest.
 class NavIcon extends StatelessWidget {
@@ -176,55 +176,27 @@ class NavIconPainter extends CustomPainter {
     );
   }
 
-  // Progress: a chart with a rising trend line. The line draws itself up
-  // to the arrow, which pops at the end.
+  // Progress: three rising bars. They grow up one after another.
   void _progress(Canvas canvas, Paint line, Paint fill) {
-    final axes = Path()
-      ..moveTo(4, 4.5)
-      ..lineTo(4, 17.5)
-      ..arcToPoint(
-        const Offset(6.5, 20),
-        radius: const Radius.circular(2.5),
-        clockwise: false,
-      )
-      ..lineTo(20, 20);
-    canvas.drawPath(axes, line);
-
-    final draw = _seg(t, .08, .75);
-    final area = Path()
-      ..moveTo(8, 15.5)
-      ..lineTo(11.5, 11.5)
-      ..lineTo(14.5, 14)
-      ..lineTo(19.5, 8)
-      ..lineTo(19.5, 17.5)
-      ..lineTo(8, 17.5)
-      ..close();
-    canvas.drawPath(
-      area,
-      Paint()
-        ..color = fill.color.withValues(alpha: fill.color.a * draw)
-        ..style = PaintingStyle.fill,
-    );
-
-    final trend = Path()
-      ..moveTo(8, 15.5)
-      ..lineTo(11.5, 11.5)
-      ..lineTo(14.5, 14)
-      ..lineTo(19.5, 8);
-    _drawPartial(canvas, trend, line, draw);
-
-    // The arrow head, popping about its tip.
-    final pop = _keys(_win(t, .6, 1), const [0, .6, 1], const [0, 1.45, 1]);
-    if (pop > 0.001) {
+    const bars = [
+      Rect.fromLTWH(4, 13, 3.8, 7.5),
+      Rect.fromLTWH(10.1, 9, 3.8, 11.5),
+      Rect.fromLTWH(16.2, 4.5, 3.8, 16),
+    ];
+    for (var i = 0; i < bars.length; i++) {
+      final grow = _keys(
+        _win(t, i * .125, i * .125 + .625),
+        const [0, .6, 1],
+        const [0, 1.14, 1],
+      );
+      if (grow < 0.02) continue;
+      final bar = RRect.fromRectAndRadius(bars[i], const Radius.circular(1.5));
       canvas.save();
-      canvas.translate(19.5, 8);
-      canvas.scale(pop);
-      canvas.translate(-19.5, -8);
-      final head = Path()
-        ..moveTo(15.8, 8)
-        ..lineTo(19.5, 8)
-        ..lineTo(19.5, 11.7);
-      canvas.drawPath(head, line);
+      canvas.translate(0, 20.5); // the bars grow from the baseline
+      canvas.scale(1, grow);
+      canvas.translate(0, -20.5);
+      canvas.drawRRect(bar, fill);
+      canvas.drawRRect(bar, line);
       canvas.restore();
     }
   }
