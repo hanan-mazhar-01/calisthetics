@@ -29,6 +29,7 @@ ALIASES = {
     "marchinplacebeginner": "marchinplace", "burpee": "burpeestepbackvariation", "pikepushup": "pikepushup",
     "bentkneeraise": "bentkneelegraise", "controlledraise": "controlledhanginglegraise",
     "controlledhangingleg": "controlledhanginglegraise",
+    "kneeraisetoches": "kneeraisetochest",
 }
 
 
@@ -42,8 +43,9 @@ def stem(name):
     s = Path(name).stem
     s = re.sub(r"(?i)\(\d+\)", "", s)
     s = re.sub(r"(?i)[ _]*(1st[ _]?clip|clip[ _]*\d*|clip_)\b.*$", "", s)
+    s = re.sub(r"(?i)[ _]*clip[ _\d]*$", "", s)        # "..._clip_1_" and the like
     s = re.sub(r"(?i)_?1080p.*$", "", s)
-    s = re.sub(r"(?i)_1$", "", s)
+    s = re.sub(r"(?i)[ _]1$", "", s)
     s = re.sub(r"\d{14}", "", s)
     k = norm(s)
     return ALIASES.get(k, k)

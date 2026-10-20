@@ -121,14 +121,14 @@
  },
  "calesthetics_011_bird_dog_beginner_v1": {
   "clip": {
-   "guid": "697a96a7-3dc3-4943-97c9-75459dd264e7",
-   "sha": "749885f0a91c",
-   "source": "Foundation_Core/Bird_Dog_1080p_20261013015320.mp4"
+   "guid": "02091d84-1ae6-45b8-80b2-b19eb1cf5f56",
+   "sha": "1afa0d9b73c9",
+   "source": "Bird dog/Bird_Dog_clip_1.mp4"
   },
   "main": {
-   "guid": "a1c4d075-3d36-4fb3-b35e-bef35e0a0282",
-   "sha": "3a3925d103c0",
-   "source": "Foundation_Core/Bird Dog.mp4"
+   "guid": "ae94e4d4-2719-4559-a218-50e2d483d311",
+   "sha": "1b7a85b925ae",
+   "source": "Bird dog/Bird Dog.mp4"
   }
  },
  "calesthetics_012_knee_plank_beginner_v1": {
@@ -145,14 +145,14 @@
  },
  "calesthetics_013_forearm_plank_beg-int_v1": {
   "clip": {
-   "guid": "7eed8057-798a-47a7-9336-7e289f95bdd6",
-   "sha": "e2e74c1ff37b",
-   "source": "Foundation_Core/Forearm_Plank_1080p_20261013092845.mp4"
+   "guid": "968126c6-ed66-4b89-b1c8-e590e863240e",
+   "sha": "31ef6382eee6",
+   "source": "Forearm Plank/Forearm_Plank_clip_1.mp4"
   },
   "main": {
-   "guid": "d8afed22-e8ee-4b23-b25c-8948cbfb296e",
-   "sha": "6f8c909c8ab6",
-   "source": "Foundation_Core/Forearm Plank.mp4"
+   "guid": "1501a9d2-8195-431d-8a32-4476eab6b6ae",
+   "sha": "fc4b4f7241f9",
+   "source": "Forearm Plank/Forearm Plank.mp4"
   }
  },
  "calesthetics_014_side_plank_beg-int_v1": {
@@ -925,182 +925,182 @@
  },
  "calesthetics_084_hanging_knee_raise_beginner_v1": {
   "clip": {
-   "guid": "789e5394-2052-4f81-9755-91e71e39a203",
-   "sha": "e8b2a6bc77f5",
-   "source": "Hanging_Knee_Raise__ clip 1.mp4"
+   "guid": "e9695260-990f-45f3-8db1-15f2b754a67d",
+   "sha": "2165a9c9713f",
+   "source": "Tose to bar new/Hanging_Knee_Raise_clip_1_.mp4"
   },
   "main": {
-   "guid": "ed41879d-cc9c-4028-8383-043c5fde01b0",
-   "sha": "8d798876afa9",
-   "source": "Hanging Knee Raise.mp4"
+   "guid": "af3701ac-16e8-4913-9edd-1c5e9721c531",
+   "sha": "f1f679e4b91f",
+   "source": "Tose to bar new/Hanging Knee Raise.mp4"
   }
  },
  "calesthetics_085_bent_knee_leg_raise_beginner_v1": {
   "clip": {
-   "guid": "cd4560c9-a6ef-42ba-afff-4fd74f405ae5",
-   "sha": "84af1b9e6734",
-   "source": "Bent-Knee_Leg_Raise_ clip 1.mp4"
+   "guid": "81312c95-acd0-419e-9158-275c68807add",
+   "sha": "50423f9d8f62",
+   "source": "Tose to bar new/Bent-Knee_Leg_Raise_ clip 1.mp4"
   },
   "main": {
-   "guid": "3494949d-ea3d-4d9b-b2e1-6f7f0355739c",
-   "sha": "63fd058c7043",
-   "source": "Bent Knee Raise .mp4"
+   "guid": "3c2d3ed5-aea1-4690-98ab-5a50ccd5e089",
+   "sha": "fbdaaebdeaa5",
+   "source": "Tose to bar new/Bent-Knee Leg Raise 1.mp4"
   }
  },
  "calesthetics_086_straight_leg_raise_intermediate_v1": {
   "clip": {
-   "guid": "3a7d511e-34c6-4597-a252-755f7122b202",
-   "sha": "0ec376393c7a",
-   "source": "Straight-Leg_Raise_ clip 1.mp4"
+   "guid": "b3c7493b-6001-4c1d-a486-949742879525",
+   "sha": "aeefbf7273a2",
+   "source": "Tose to bar new/Straight-Leg_Raise_clip 1.mp4"
   },
   "main": {
-   "guid": "2dfc2c8d-8f3b-47ef-948d-9e4abfadf5a0",
-   "sha": "6e8126483036",
-   "source": "Straight-Leg Raise.mp4"
+   "guid": "42994ac6-5be4-4f53-a7f9-8100b02507a7",
+   "sha": "b1d5eb38a3a8",
+   "source": "Tose to bar new/Straight-Leg Raise .mp4"
   }
  },
  "calesthetics_087_controlled_hanging_leg_raise_intermediate_v1": {
   "clip": {
-   "guid": "dd079e7b-6c80-42ad-8973-c29a4cf092b9",
-   "sha": "cff221257cfc",
-   "source": "Controlled_Hanging_Leg clip 1.mp4"
+   "guid": "71913869-d503-4b58-916d-e755866a9308",
+   "sha": "68ac5518f234",
+   "source": "Tose to bar new/Controlled Hanging Leg Raise clip 1.mp4"
   },
   "main": {
-   "guid": "9da1fbee-c869-4a6a-9f39-67c660c5f66c",
-   "sha": "f0f74d1c7981",
-   "source": "Controlled Raise.mp4"
+   "guid": "e654e340-21d3-46d4-be76-36c5d6e83a15",
+   "sha": "55051dd66ad5",
+   "source": "Tose to bar new/Controlled Hanging Leg Raise.mp4"
   }
  },
  "calesthetics_088_knee_raise_to_chest_intermediate_v1": {
   "clip": {
-   "guid": "0081ab40-40fc-4d2f-b044-54d61fa5603c",
-   "sha": "f4789de16993",
-   "source": "Knee_Raise_to_Chest_ Clip 1.mp4"
+   "guid": "fca7b978-b1cc-4762-ab31-ba1cebef2dcf",
+   "sha": "5338ee7100dc",
+   "source": "Tose to bar new/Knee_Raise_to_Ches_ clip 1.mp4"
   },
   "main": {
-   "guid": "8b1b1639-23fe-4e70-ae8a-45f139baa42f",
-   "sha": "cb3ec80648b0",
-   "source": "Knee Raise to Chest.mp4"
+   "guid": "29f12fc7-ec5f-4c5a-ae51-a9ddbbd9b66e",
+   "sha": "f97615fb7f73",
+   "source": "Tose to bar new/Knee Raise to Chest.mp4"
   }
  },
  "calesthetics_089_toes_to_bar_negative_int-adv_v1": {
   "clip": {
-   "guid": "bb402b01-0d17-4167-96eb-9709a283402e",
-   "sha": "05771bd647c7",
-   "source": "Toes-to-Bar Negative clip 1.mp4"
+   "guid": "06b8e754-8b10-4b4f-b8e8-9d0356182985",
+   "sha": "38fccd82b03a",
+   "source": "Tose to bar new/Toes-to-Bar_Negative_ clip 1.mp4"
   },
   "main": {
-   "guid": "dbec4dd8-049e-41bb-81f4-ee7f8b1f0151",
-   "sha": "8e7c9b5887e9",
-   "source": "Toes-to-Bar Negative.mp4"
+   "guid": "9e1969c4-55d2-4649-b654-f35baf74d961",
+   "sha": "9627e09d2191",
+   "source": "Tose to bar new/Toes-to-Bar Negative.mp4"
   }
  },
  "calesthetics_090_strict_toes_to_bar_advanced_v1": {
   "clip": {
-   "guid": "072877e9-d7e5-46af-ab1e-0a36e1b9485a",
-   "sha": "baeec8d0bb1c",
-   "source": "Strict_Toes-to-Bar_ clip 1.mp4"
+   "guid": "081149b2-724c-453e-942c-6a7eb386c96d",
+   "sha": "b64b428add05",
+   "source": "Tose to bar new/Strict_Toes-to-Bar_ clip 1.mp4"
   },
   "main": {
-   "guid": "19d6fc3a-649b-45aa-aeb5-4d0a3a981ae2",
-   "sha": "03c44a6891ff",
-   "source": "Strict Toes-to-Bar.mp4"
+   "guid": "b6b583e8-430d-41b9-946f-efad939cb719",
+   "sha": "d194a9a07df4",
+   "source": "Tose to bar new/Strict Toes-to-Bar.mp4"
   }
  },
  "calesthetics_092_arm_circles_beginner_v1": {
   "clip": {
-   "guid": "c13e9b73-e969-4037-a6f3-24bd64724579",
-   "sha": "3f9ebf8e0ad9",
-   "source": "warm_up_mobility_cooldown/Arm_Circles clip 1.mp4"
+   "guid": "b78804b8-a63e-4206-a49a-17c62fca1947",
+   "sha": "6a754caa96cf",
+   "source": "Warm-Up, Mobility & Cool-Down new/Arm_Circles_ clip 1.mp4"
   },
   "main": {
-   "guid": "5c606fce-0ed8-402f-8879-93d49135b9ac",
-   "sha": "97547c1b4bed",
-   "source": "warm_up_mobility_cooldown/Arm Circles.mp4"
+   "guid": "01b879a8-ed35-4344-a425-af1787cedda8",
+   "sha": "a8fe47682bea",
+   "source": "Warm-Up, Mobility & Cool-Down new/Arm Circles.mp4"
   }
  },
  "calesthetics_093_shoulder_rotations_beginner_v1": {
   "clip": {
-   "guid": "5349b2b4-9d8c-478f-af28-8b0797553832",
-   "sha": "7f1173d85bd1",
-   "source": "warm_up_mobility_cooldown/Shoulder_Rotations clip 1.mp4"
+   "guid": "05d81e95-13d9-49a5-bb7f-fd31500ced6a",
+   "sha": "3407a98042d8",
+   "source": "Warm-Up, Mobility & Cool-Down new/Shoulder_Rotations_clip 1.mp4"
   },
   "main": {
-   "guid": "07571be5-4a83-460a-9187-b8f199e2aa67",
-   "sha": "96fef1162e14",
-   "source": "warm_up_mobility_cooldown/Shoulder Rotations.mp4"
+   "guid": "f4d7224c-8ca4-4aa6-8dc2-461b98230482",
+   "sha": "a1e28d805556",
+   "source": "Warm-Up, Mobility & Cool-Down new/Shoulder Rotations.mp4"
   }
  },
  "calesthetics_094_wrist_circles_and_wrist_rocks_beginner_v1": {
   "clip": {
-   "guid": "8f076189-6860-485d-8271-797bd7c9447e",
-   "sha": "6581138887f2",
-   "source": "warm_up_mobility_cooldown/Wrist_Circles_&_Wrist_Rocks clip 1.mp4"
+   "guid": "922770c7-9e14-4a21-abfc-9e5d0d7a37f7",
+   "sha": "5618c7813ef3",
+   "source": "Warm-Up, Mobility & Cool-Down new/Wrist_Circles_&_Wrist_Rocks_Clip 1.mp4"
   },
   "main": {
-   "guid": "87fc21ef-e0ba-47ea-b0e8-8c3abe65da9e",
-   "sha": "3c98829c9961",
-   "source": "warm_up_mobility_cooldown/Wrist Circles & Wrist Rocks.mp4"
+   "guid": "4cbb89ee-6722-4f8a-903f-d6252793b00c",
+   "sha": "7d32292840b1",
+   "source": "Warm-Up, Mobility & Cool-Down new/Wrist Circles & Wrist Rocks.mp4"
   }
  },
  "calesthetics_095_scapular_activation_drill_beginner_v1": {
   "clip": {
-   "guid": "d5be9aa5-2d1b-47a9-a884-f20232f8a61a",
-   "sha": "6add0f15c9f9",
-   "source": "warm_up_mobility_cooldown/Scapular_Activation_Drill clip 1.mp4"
+   "guid": "25d99f7e-2a7b-4b28-b71f-9621b0d74a0c",
+   "sha": "4ecb97a6a57b",
+   "source": "Warm-Up, Mobility & Cool-Down new/Scapular_Activation_Drill_clip_1_.mp4"
   },
   "main": {
-   "guid": "9c320f34-8a57-4bfe-91f6-8ec09565ca6a",
-   "sha": "0b15179ee4ea",
-   "source": "warm_up_mobility_cooldown/Scapular Activation Drill.mp4"
+   "guid": "966e5518-0786-44cb-87e1-1bec25b62dda",
+   "sha": "73e01c8470b4",
+   "source": "Warm-Up, Mobility & Cool-Down new/Scapular Activation Drill.mp4"
   }
  },
  "calesthetics_096_cat_cow_beginner_v1": {
   "clip": {
-   "guid": "02cd65c3-4e3f-4cb0-9a53-6d6021e67655",
-   "sha": "3bb5e7cbd88e",
-   "source": "warm_up_mobility_cooldown/Cat-Cow clip 1.mp4"
+   "guid": "266a00c2-206e-4119-99bb-c548abfdfb6e",
+   "sha": "d289dc8d7ea2",
+   "source": "Warm-Up, Mobility & Cool-Down new/Cat-Cow_clip_1_.mp4"
   },
   "main": {
-   "guid": "a217071c-fb13-4890-b673-6c51d2b12c91",
-   "sha": "dd760548e69b",
-   "source": "warm_up_mobility_cooldown/Cat-Cow.mp4"
+   "guid": "8a2c5bf5-edec-4917-b707-d7d306fd84c3",
+   "sha": "a6fca1f230cf",
+   "source": "Warm-Up, Mobility & Cool-Down new/Cat-Cow.mp4"
   }
  },
  "calesthetics_097_hip_circles_beginner_v1": {
   "clip": {
-   "guid": "d1e3c5ec-e9d5-48da-8050-1925b08ce29b",
-   "sha": "e23a7f11f32a",
-   "source": "warm_up_mobility_cooldown/Hip_Circles clip 1.mp4"
+   "guid": "1ff8654c-abf4-4189-a896-078f3a006db3",
+   "sha": "0c878a1bbee3",
+   "source": "Warm-Up, Mobility & Cool-Down new/Hip_Circles_clip_1_.mp4"
   },
   "main": {
-   "guid": "920731af-9ff8-4769-9478-b206ae402e72",
-   "sha": "390dc96735e7",
-   "source": "warm_up_mobility_cooldown/Hip Circles.mp4"
+   "guid": "85aec029-f478-4b65-9392-fee8f9827cb4",
+   "sha": "f883ad8b77d5",
+   "source": "Warm-Up, Mobility & Cool-Down new/Hip Circles.mp4"
   }
  },
  "calesthetics_098_leg_swings_beg-int_v1": {
   "clip": {
-   "guid": "abe14e84-bdf3-4043-aa68-8f265a31812f",
-   "sha": "c85ac68bf2b4",
-   "source": "warm_up_mobility_cooldown/Leg_Swings clip 1.mp4"
+   "guid": "d2f1a42f-48a6-4257-a38c-dc65ac97d34a",
+   "sha": "5118b1676198",
+   "source": "Warm-Up, Mobility & Cool-Down new/Leg_Swings_clip_1.mp4"
   },
   "main": {
-   "guid": "5f69feec-47ca-4dbd-aed7-90d51cb1004e",
-   "sha": "a737d6d6777f",
-   "source": "warm_up_mobility_cooldown/Leg Swings.mp4"
+   "guid": "c6cfa360-7426-4e0f-bf7d-6206a7582fe2",
+   "sha": "4138c9b98793",
+   "source": "Warm-Up, Mobility & Cool-Down new/Leg Swings.mp4"
   }
  },
  "calesthetics_099_ankle_mobility_rocks_beginner_v1": {
   "clip": {
-   "guid": "8785641e-4663-40e0-b686-df1e90d5fbfb",
-   "sha": "118014e459d9",
-   "source": "warm_up_mobility_cooldown/Ankle_Mobility_Rocks clip 1.mp4"
+   "guid": "ff87ea62-fc5a-4def-9eca-bee85c0126c9",
+   "sha": "1b55ff7a6e00",
+   "source": "Warm-Up, Mobility & Cool-Down new/Ankle_Mobility_Rocks_clip_1_.mp4"
   },
   "main": {
-   "guid": "5319b754-0ca0-4e7f-af35-b15feee7847a",
-   "sha": "d307ab03e5e3",
-   "source": "warm_up_mobility_cooldown/Ankle Mobility Rocks.mp4"
+   "guid": "701f175d-7999-4326-8810-9fcfdc6dc7fa",
+   "sha": "c840f76ace6f",
+   "source": "Warm-Up, Mobility & Cool-Down new/Ankle Mobility Rocks.mp4"
   }
  },
  "calesthetics_101_downward_dog_beg-int_v1": {
@@ -1110,9 +1110,9 @@
    "source": "warm_up_mobility_cooldown/Downward_Dog_1080p clip 1.mp4"
   },
   "main": {
-   "guid": "c6f615a5-292f-45fe-aab6-47780b20008f",
-   "sha": "f8ba5b4bdd95",
-   "source": "warm_up_mobility_cooldown/Downward Dog.mp4"
+   "guid": "e92f09b9-8645-4661-acb1-738465d84477",
+   "sha": "70d752b253d1",
+   "source": "Warm-Up, Mobility & Cool-Down new/Downward Dog.mp4"
   }
  },
  "calesthetics_102_child_s_pose_beginner_v1": {
@@ -1122,45 +1122,45 @@
    "source": "warm_up_mobility_cooldown/Child\u2019s_Pose_1080p Clip 1.mp4"
   },
   "main": {
-   "guid": "b32ae82a-8a34-4aff-955b-79090602c3a0",
-   "sha": "fb48c3e97fe2",
-   "source": "warm_up_mobility_cooldown/Child\u2019s Pose.mp4"
+   "guid": "1801d411-ad49-4d4a-881e-094fd078b097",
+   "sha": "e1c8e028b58b",
+   "source": "Warm-Up, Mobility & Cool-Down new/Child\u2019s Pose.mp4"
   }
  },
  "calesthetics_103_hamstring_stretch_beginner_v1": {
   "clip": {
-   "guid": "8ae81790-8f28-426c-b1b5-e01ea4f20d45",
-   "sha": "96b0c5fcdbe9",
-   "source": "warm_up_mobility_cooldown/Hamstring_Stretch Clip 1.mp4"
+   "guid": "b805e79f-fdc5-4348-8e9b-fad3e6f39479",
+   "sha": "e3f30d6ff185",
+   "source": "Warm-Up, Mobility & Cool-Down new/Hamstring_Stretch_clip_1_.mp4"
   },
   "main": {
-   "guid": "904cd472-d898-4405-91f7-2b517c53c30c",
-   "sha": "8454ca241313",
-   "source": "warm_up_mobility_cooldown/Hamstring Stretch.mp4"
+   "guid": "3e93a7d9-1ae1-4e90-91f9-1b04eeddad12",
+   "sha": "95cd2ed1aac3",
+   "source": "Warm-Up, Mobility & Cool-Down new/Hamstring Stretch.mp4"
   }
  },
  "calesthetics_104_chest_and_shoulder_stretch_beginner_v1": {
   "clip": {
-   "guid": "25b722be-359d-449b-a44e-557774f44ce6",
-   "sha": "09fd91aa1b1b",
-   "source": "warm_up_mobility_cooldown/Chest_&_Shoulder_Stretch clip 1.mp4"
+   "guid": "51d711e9-c811-4405-b6d6-6af7a38cc1c1",
+   "sha": "c405c89a0f99",
+   "source": "Warm-Up, Mobility & Cool-Down new/Chest_&_Shoulder_Stretch_clip_1.mp4"
   },
   "main": {
-   "guid": "b3839c8d-a593-4903-8c19-bd739d0b40d1",
-   "sha": "027648c72b29",
-   "source": "warm_up_mobility_cooldown/Chest & Shoulder Stretch.mp4"
+   "guid": "01bde973-f3e6-4d99-859e-26a315b083c6",
+   "sha": "56c7d3d1e36c",
+   "source": "Warm-Up, Mobility & Cool-Down new/Chest & Shoulder Stretch.mp4"
   }
  },
  "calesthetics_105_slow_breathing_relaxation_beginner_v1": {
   "clip": {
-   "guid": "3f6eaf38-64a2-4fc6-a8cc-26435f0a0419",
-   "sha": "2eefbcb6db2f",
-   "source": "warm_up_mobility_cooldown/Slow_Breathing___Relaxation clip 1.mp4"
+   "guid": "4aa60e56-230c-4c28-845f-5c7faddaac9d",
+   "sha": "1cc2433310e6",
+   "source": "Warm-Up, Mobility & Cool-Down new/Slow_Breathing___Relaxation_clip 1.mp4"
   },
   "main": {
-   "guid": "07cee64a-5cb9-421d-a525-5e6c6fbdd78c",
-   "sha": "22e06bc32267",
-   "source": "warm_up_mobility_cooldown/Slow Breathing  Relaxation.mp4"
+   "guid": "37a8e6c8-44d8-45c6-a698-9310b8ebeeae",
+   "sha": "abd732c9b069",
+   "source": "Warm-Up, Mobility & Cool-Down new/Slow Breathing  Relaxation.mp4"
   }
  },
  "calesthetics_114_standing_knee_raise_beginner_v1": {
