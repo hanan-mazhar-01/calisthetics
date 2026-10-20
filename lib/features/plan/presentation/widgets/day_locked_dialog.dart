@@ -4,13 +4,14 @@ import '../../../../core/haptics/haptics.dart';
 import '../../../../core/theme/app_colors_extension.dart';
 import '../../../../core/theme/app_typography.dart';
 
-/// Shown when a day is tapped before the one in front of it is finished: a
-/// short, friendly note naming the day to finish first, and one button that
-/// closes it.
+/// Shown when a day is tapped before it has opened: a short, friendly note
+/// saying it opens on its weekday ([opensOn]) or as soon as the day before
+/// it ([finishDay]) is finished, and one button that closes it.
 Future<void> showDayLockedDialog(
   BuildContext context, {
   required int finishDay,
   required int tappedDay,
+  required String opensOn,
 }) {
   Haptics.medium();
   return showDialog<void>(
@@ -38,7 +39,7 @@ Future<void> showDayLockedDialog(
               ),
               const SizedBox(height: 18),
               Text(
-                'Finish Day $finishDay first',
+                'Day $tappedDay opens on $opensOn',
                 textAlign: TextAlign.center,
                 style: AppTypography.title(
                   22,
@@ -48,8 +49,8 @@ Future<void> showDayLockedDialog(
               ),
               const SizedBox(height: 10),
               Text(
-                'Day $tappedDay opens once you have completed Day $finishDay. '
-                'Each session builds on the one before, so take them in order.',
+                'It opens on $opensOn, or sooner: as soon as you complete '
+                'Day $finishDay. Each session builds on the one before.',
                 textAlign: TextAlign.center,
                 style: AppTypography.body(
                   c.textSecondary,

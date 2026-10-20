@@ -61,14 +61,18 @@ void main() {
     expect(t.phases.first.percent, 33);
   });
 
-  test(
-    'a skipped day is missed and the hero moves to the next upcoming day',
-    () {
-      final t = _build(start: monday, today: DateTime(2026, 10, 15));
-      expect(t.phases.first.days[0].status, TimelineStatus.missed);
-      expect(t.hero!.dayNumber, 3); // Friday 16 Oct
-    },
-  );
+  test('a skipped day is missed; the next day opens on its own date, not before', () {
+    // Thursday 15 Oct: Mon and Wed were skipped, Friday's day is not open yet.
+    final t = _build(start: monday, today: DateTime(2026, 10, 15));
+    expect(t.phases.first.days[0].status, TimelineStatus.missed);
+    expect(t.phases.first.days[1].status, TimelineStatus.missed);
+    expect(t.isLocked(t.phases.first.days[2]), isTrue); // Friday 16 Oct
+    expect(t.hero!.dayNumber, 1); // the earliest missed day still waiting
+    // On Friday it opens by itself and becomes the day to do.
+    final friday = _build(start: monday, today: DateTime(2026, 10, 16));
+    expect(friday.isLocked(friday.phases.first.days[2]), isFalse);
+    expect(friday.hero!.dayNumber, 3);
+  });
 
   test('a plan started mid-week has no days before its start date', () {
     final t = _build(

@@ -45,7 +45,8 @@ class NoopReminderService implements ReminderService {
 class LocalReminderService implements ReminderService {
   LocalReminderService();
 
-  static const _channelId = 'daily_reminder';
+  // A new id, so phones that already have the old, quieter channel get this one.
+  static const _channelId = 'daily_reminder_v2';
   static const _idBase = 4100;
 
   final _plugin = FlutterLocalNotificationsPlugin();
@@ -111,7 +112,15 @@ class LocalReminderService implements ReminderService {
         // user has to allow notifications in Settings.
         return await ios.requestPermissions(alert: true, sound: true) ?? false;
       }
-      return await _android?.requestNotificationsPermission() ?? false;
+      final android = _android;
+      if (android == null) return false;
+      final allowed = await android.requestNotificationsPermission() ?? false;
+      if (allowed && !(await android.canScheduleExactNotifications() ?? true)) {
+        // Android 12+ keeps exact alarms behind a switch in Settings; without
+        // it the system may hold a reminder back for hours.
+        await android.requestExactAlarmsPermission();
+      }
+      return allowed;
     } catch (_) {
       return false;
     }
@@ -125,6 +134,10 @@ class LocalReminderService implements ReminderService {
     if (!await _init()) return;
     try {
       await cancelAll();
+      // Exact, so the reminder arrives at the chosen minute even when the
+      // phone is idle or the app is closed. If Android has not allowed exact
+      // alarms, the system may delay it.
+      final exact = await _android?.canScheduleExactNotifications() ?? true;
       for (final weekday in weekdays) {
         await _plugin.zonedSchedule(
           id: _idBase + weekday,
@@ -136,8 +149,8 @@ class LocalReminderService implements ReminderService {
               _channelId,
               'Training reminders',
               channelDescription: 'A reminder on the days your plan trains.',
-              importance: Importance.defaultImportance,
-              priority: Priority.defaultPriority,
+              importance: Importance.high,
+              priority: Priority.high,
             ),
             iOS: DarwinNotificationDetails(
               presentAlert: true,
@@ -146,9 +159,9 @@ class LocalReminderService implements ReminderService {
               presentSound: true,
             ),
           ),
-          // Inexact: no special alarm permission, and a few minutes of drift
-          // is fine for a "time to train" nudge.
-          androidScheduleMode: AndroidScheduleMode.inexactAllowWhileIdle,
+          androidScheduleMode: exact
+              ? AndroidScheduleMode.exactAllowWhileIdle
+              : AndroidScheduleMode.inexactAllowWhileIdle,
           matchDateTimeComponents: DateTimeComponents.dayOfWeekAndTime,
         );
       }

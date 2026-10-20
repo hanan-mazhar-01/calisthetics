@@ -78,20 +78,33 @@ class PlanTimeline {
   /// before it: nothing to skip.
   static int leadingSkip(ActivePlan plan) => 0;
 
-  const PlanTimeline({required this.phases, required this.hero});
+  const PlanTimeline({
+    required this.phases,
+    required this.hero,
+    required this.today,
+  });
 
   final List<TimelinePhase> phases;
 
-  /// Next training day that isn't done and isn't in the past, or null when
-  /// the block is finished.
+  /// The day to do now (see [PlanTimeline.build]), or null when the block is
+  /// finished.
   final TimelineDay? hero;
 
-  /// A day is locked until the one to do now ([hero]) is finished: every day
-  /// after the hero. Days before it are done or already missed (a missed day
-  /// never blocks the rest, or one skipped day would stall the whole plan).
+  /// The calendar day this timeline was built for.
+  final DateTime today;
+
+  List<TimelineDay> get days => [for (final p in phases) ...p.days];
+
+  /// A day opens on its own date, or earlier as soon as the day before it is
+  /// finished. Until then it is locked. A day that was missed stays open, and
+  /// never holds back the next one: that opens on its own date.
   bool isLocked(TimelineDay day) {
-    final next = hero;
-    return next != null && day.dayNumber > next.dayNumber;
+    if (day.status == TimelineStatus.done) return false;
+    if (!day.date.isAfter(today)) return false; // its day has come
+    final all = days;
+    final i = all.indexWhere((d) => d.dayNumber == day.dayNumber);
+    if (i <= 0) return false;
+    return all[i - 1].status != TimelineStatus.done;
   }
 
   /// Training days in this 4-week block, and how many are done.
@@ -209,16 +222,20 @@ class PlanTimeline {
       }
     }
 
+    final draft = PlanTimeline(phases: phases, hero: null, today: todayDate);
+    // The day to do now: the first open day that is not done and not in the
+    // past (today's session, or the next one opened by finishing the last).
+    // When none is left, the earliest missed day still waiting.
     TimelineDay? hero;
-    for (final p in phases) {
-      for (final d in p.days) {
-        if (hero == null &&
-            (d.status == TimelineStatus.today ||
-                d.status == TimelineStatus.upcoming)) {
-          hero = d;
-        }
+    for (final d in draft.days) {
+      if (d.status == TimelineStatus.done || draft.isLocked(d)) continue;
+      if (d.status == TimelineStatus.missed) {
+        hero ??= d;
+      } else {
+        hero = d;
+        break;
       }
     }
-    return PlanTimeline(phases: phases, hero: hero);
+    return PlanTimeline(phases: phases, hero: hero, today: todayDate);
   }
 }

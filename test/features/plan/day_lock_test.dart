@@ -45,7 +45,7 @@ PlanTimeline _timeline(DateTime today, [List<CompletedSession> h = const []]) =>
 
 void main() {
   group('which days are locked', () {
-    test('everything after the day to do now', () {
+    test('on the first day, every later day waits for its date', () {
       final t = _timeline(_start);
       final days = [for (final p in t.phases) ...p.days];
       expect(t.hero!.dayNumber, 1);
@@ -71,6 +71,41 @@ void main() {
       expect(t.isLocked(days[0]), isFalse);
       expect(t.isLocked(days[1]), isFalse);
       expect(t.isLocked(days[2]), isTrue);
+    });
+
+    test('a day opens on its own date even if the one before is not done', () {
+      // Mon 12 = day 1, Wed 14 = day 2, Fri 16 = day 3. Nothing was done.
+      List<bool> locks(DateTime today) {
+        final t = _timeline(today);
+        return [
+          for (final d in [for (final p in t.phases) ...p.days].take(3))
+            t.isLocked(d),
+        ];
+      }
+
+      expect(locks(DateTime(2026, 10, 13)), [false, true, true]); // Tuesday
+      expect(locks(DateTime(2026, 10, 14)), [false, false, true]); // Wednesday
+      expect(locks(DateTime(2026, 10, 16)), [false, false, false]); // Friday
+    });
+
+    test(
+      'on Tuesday with day 1 missed, day 1 is the one to do and day 2 waits',
+      () {
+        final t = _timeline(DateTime(2026, 10, 13));
+        final days = [for (final p in t.phases) ...p.days];
+        expect(days[0].status, TimelineStatus.missed);
+        expect(t.hero!.dayNumber, 1);
+        expect(t.isLocked(days[1]), isTrue);
+      },
+    );
+
+    test('finishing a day opens the next one early, before its date', () {
+      // Day 1 done on Monday: on Tuesday day 2 (Wednesday's) is already open.
+      final t = _timeline(DateTime(2026, 10, 13), [_done(_start)]);
+      final days = [for (final p in t.phases) ...p.days];
+      expect(t.isLocked(days[1]), isFalse);
+      expect(t.hero!.dayNumber, 2);
+      expect(t.isLocked(days[2]), isTrue); // day 3 still waits for Friday
     });
 
     test('nothing is locked when the block is finished', () {
@@ -132,16 +167,16 @@ void main() {
       final opened = await pump(tester);
       await tester.tap(find.text('Day 2'));
       await tester.pump(const Duration(milliseconds: 400));
-      expect(find.text('Finish Day 1 first'), findsOneWidget);
+      expect(find.text('Day 2 opens on Wednesday'), findsOneWidget);
       expect(
-        find.textContaining('Day 2 opens once you have completed Day 1'),
+        find.textContaining('as soon as you complete Day 1'),
         findsOneWidget,
       );
       expect(opened, isEmpty);
 
       await tester.tap(find.text('Got it'));
       await tester.pump(const Duration(milliseconds: 400));
-      expect(find.text('Finish Day 1 first'), findsNothing);
+      expect(find.text('Day 2 opens on Wednesday'), findsNothing);
       expect(opened, isEmpty);
     });
 
@@ -156,7 +191,7 @@ void main() {
       // The big card for Day 1 opens its preview from the picture.
       await tester.tap(find.text('Upper body & core').first);
       await tester.pump(const Duration(milliseconds: 600));
-      expect(find.text('Finish Day 1 first'), findsNothing);
+      expect(find.text('Day 2 opens on Wednesday'), findsNothing);
       expect(opened, isNotEmpty);
     });
   });

@@ -20,6 +20,15 @@ import '../widgets/day_locked_dialog.dart';
 import '../widgets/plan_dropdown.dart';
 
 const _weekdayShort = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+const _weekdayFull = [
+  'Monday',
+  'Tuesday',
+  'Wednesday',
+  'Thursday',
+  'Friday',
+  'Saturday',
+  'Sunday',
+];
 
 /// Plan tab. The title and plan selector stay pinned; below them the plan's
 /// current 4-week block scrolls as phases (one per week) of training days:
@@ -197,8 +206,9 @@ class _PlanScreenState extends ConsumerState<PlanScreen> {
                       day: day,
                       templateId: templateId,
                       cover: covers[day.dayNumber] ?? day.session.cover,
-                      // Locked until the day to do now is finished.
-                      mustFinishDay: t.isLocked(day) ? t.hero!.dayNumber : null,
+                      // Locked until its own date, or until the day before it
+                      // is finished, whichever comes first.
+                      mustFinishDay: t.isLocked(day) ? day.dayNumber - 1 : null,
                     ),
             ),
           ),
@@ -824,6 +834,7 @@ class _CompactDay extends ConsumerWidget {
             context,
             finishDay: first,
             tappedDay: day.dayNumber,
+            opensOn: _weekdayFull[day.date.weekday - 1],
           );
           return;
         }
