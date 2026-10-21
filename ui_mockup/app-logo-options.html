@@ -1,0 +1,134 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>App Logo Options</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Lora:wght@500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="shared.css">
+<style>
+  :root { --rose:#D85F70; --rose-deep:#B94A5B; --mist:#FBE9EC; --night:#171516; }
+  body { gap: 24px; }
+  header { max-width: 860px; text-align: center; }
+  header h1 { font-size: 28px; font-weight: 700; letter-spacing: -.02em; color: #4d4548; }
+  header p { margin-top: 8px; font-size: 14.5px; line-height: 1.55; color: #6b6265; }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) header h1 { color: #FAF6F4; }
+    :root:not([data-theme="light"]) header p { color: #AAA1A3; }
+  }
+  .grid { width: 100%; max-width: 1100px; display: grid; grid-template-columns: repeat(auto-fit, minmax(330px, 1fr)); gap: 20px; }
+  .card { background: #fff; border-radius: 26px; padding: 18px; box-shadow: 0 10px 30px rgba(0,0,0,.07); display: grid; gap: 14px; }
+  @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .card { background: #1E1B1C; color: #FAF6F4; } }
+  .card h2 { font-size: 16px; font-weight: 700; display: flex; align-items: baseline; gap: 8px; }
+  .card h2 b { font-size: 12px; color: var(--rose); letter-spacing: .1em; }
+  .card p { font-size: 12.5px; line-height: 1.5; color: #8a8083; margin-top: -8px; }
+  .row { display: flex; gap: 14px; align-items: center; flex-wrap: wrap; }
+  .lab { font-size: 10.5px; font-weight: 600; letter-spacing: .1em; text-transform: uppercase; color: #8a8083; margin-bottom: 6px; }
+  .ios { width: 132px; height: 132px; border-radius: 22.37%; overflow: hidden; box-shadow: 0 8px 22px rgba(0,0,0,.18); flex: none; }
+  .ios svg, .and svg { display: block; width: 100%; height: 100%; }
+  .ands { display: flex; gap: 10px; }
+  .and { width: 56px; height: 56px; overflow: hidden; box-shadow: 0 5px 14px rgba(0,0,0,.16); flex: none; }
+  .and.c { border-radius: 50%; } .and.s { border-radius: 36%; } .and.r { border-radius: 16%; }
+  .minis { display: flex; gap: 10px; }
+  .mini { width: 118px; height: 196px; border-radius: 18px; position: relative; overflow: hidden; display: grid; place-items: center; box-shadow: inset 0 0 0 1px rgba(0,0,0,.06); flex: none; }
+  .mini.l { background: linear-gradient(#F7D5DB, #F7F7F7 62%); color: #191719; }
+  .mini.d { background: linear-gradient(#2A2023, #171516 60%); color: #FAF6F4; }
+  .mini .lock { display: grid; justify-items: center; gap: 10px; transform: translateY(-14px); }
+  .mini .logo { width: 62px; height: 62px; border-radius: 22.37%; overflow: hidden; box-shadow: 0 8px 18px rgba(216,95,112,.35); }
+  .mini .logo svg { display: block; width: 100%; height: 100%; }
+  .mini .name { font: 600 12px "Poppins", sans-serif; letter-spacing: -.01em; }
+  .mini .name i { font-family: "Lora", serif; font-style: normal; color: var(--rose); font-weight: 500; }
+  .mini .btn { position: absolute; left: 12px; right: 12px; bottom: 14px; height: 22px; border-radius: 99px; background: var(--rose); }
+  .bar { display: flex; gap: 8px; }
+  .bar button { border: 0; border-radius: 99px; padding: 8px 14px; font: 600 12px "Poppins", sans-serif; background: #F3E9E8; color: #4d4548; cursor: pointer; }
+  .bar button:hover { background: var(--rose); color: #fff; }
+  .note { max-width: 900px; font-size: 13.5px; line-height: 1.6; color: #6b6265; text-align: center; }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>App logo · 10 options</h1>
+  <p>Each option is drawn as a vector on a 1024 grid in the app's own rose, and shown as the <b>iPhone icon</b>, the <b>Android</b> icon in three launcher shapes, and on the <b>onboarding start screen</b> (light and dark). Pick one (or two to mix) and I will make the real icon files and the in-app logo from it.</p>
+</header>
+
+<div class="grid" id="grid"></div>
+
+<p class="note">Android launchers cut the icon into a circle, a squircle or a rounded square, so every mark sits inside the centre 66 % (the safe zone). iPhone applies its own rounded corners, so the picture is a plain full square with no transparency.</p>
+
+<script>
+  /* Marks are drawn on a 100 x 100 box with currentColor; --cut is the background colour, for cut-outs. */
+  const CONCEPTS = [
+    { name: 'Rise', note: 'An open C with a dot inside: the head, the first rep, the first step.',
+      bg: ['#E8788C', '#C9505F'], fg: '#fff',
+      mark: `<path d="M71 31A28 28 0 1 0 71 69" fill="none" stroke="currentColor" stroke-width="10" stroke-linecap="round"/><circle cx="52" cy="50" r="7" fill="currentColor"/>` },
+    { name: 'Bar', note: 'A pull-up bar, a chin above it, arms in a V: the first pull-up.',
+      bg: ['#E8788C', '#C9505F'], fg: '#fff',
+      mark: `<path d="M16 40h68" stroke="currentColor" stroke-width="9" stroke-linecap="round"/><circle cx="50" cy="22" r="9" fill="currentColor"/><path d="M32 40 47 68M68 40 53 68" stroke="currentColor" stroke-width="8" stroke-linecap="round" fill="none"/>` },
+    { name: 'Rings', note: 'Gymnastic rings hanging from the bar: calisthenics at a glance.',
+      bg: ['#2B2326', '#171516'], fg: '#F08A9B',
+      mark: `<path d="M18 16h64" stroke="currentColor" stroke-width="8" stroke-linecap="round"/><path d="M34 16v16M66 16v16" stroke="currentColor" stroke-width="6" stroke-linecap="round"/><circle cx="34" cy="50" r="15" fill="none" stroke="currentColor" stroke-width="9"/><circle cx="66" cy="50" r="15" fill="none" stroke="currentColor" stroke-width="9"/>` },
+    { name: 'Ladder', note: 'Three rising bars and a spark: the progression, rung by rung.',
+      bg: ['#FBE9EC', '#F6CBD2'], fg: '#D85F70',
+      mark: `<rect x="17" y="54" width="17" height="26" rx="8.5" fill="currentColor"/><rect x="41.5" y="38" width="17" height="42" rx="8.5" fill="currentColor"/><rect x="66" y="22" width="17" height="58" rx="8.5" fill="currentColor"/><path d="M26 30l2.2 5.6L34 38l-5.8 2.4L26 46l-2.2-5.6L18 38l5.8-2.4z" fill="currentColor"/>` },
+    { name: 'Bloom', note: 'Six petals around a centre: strength that grows, softly.',
+      bg: ['#E8788C', '#C9505F'], fg: '#fff',
+      mark: `<g fill="currentColor" opacity=".95">${[0,60,120,180,240,300].map(a => `<ellipse cx="50" cy="29" rx="11.5" ry="20" transform="rotate(${a} 50 50)"/>`).join('')}</g><circle cx="50" cy="50" r="9" style="fill:var(--cut)"/>` },
+    { name: 'Serif C', note: 'A single serif C like the app\'s accent word, and a small star.',
+      bg: ['#FBE9EC', '#F6CBD2'], fg: '#C9505F',
+      mark: `<text x="47" y="75" text-anchor="middle" font-family="Lora, Georgia, serif" font-weight="600" font-size="92" fill="currentColor">C</text><path d="M77 22l2.6 6.4L86 31l-6.4 2.6L77 40l-2.6-6.4L68 31l6.4-2.6z" fill="currentColor"/>` },
+    { name: 'Handstand', note: 'An upside-down figure: the skill everyone is working toward.',
+      bg: ['#2B2326', '#171516'], fg: '#F08A9B',
+      mark: `<circle cx="50" cy="80" r="8.5" fill="currentColor"/><path d="M50 66V38" stroke="currentColor" stroke-width="10" stroke-linecap="round"/><path d="M50 38 33 14M50 38 67 14" stroke="currentColor" stroke-width="9" stroke-linecap="round" fill="none"/>` },
+    { name: 'Plank', note: 'A plank in one line: head, a long straight body, hands on the floor.',
+      bg: ['#E8788C', '#C9505F'], fg: '#fff',
+      mark: `<circle cx="20" cy="38" r="8.5" fill="currentColor"/><path d="M34 46 84 66" stroke="currentColor" stroke-width="10" stroke-linecap="round"/><path d="M36 52V80" stroke="currentColor" stroke-width="8" stroke-linecap="round"/><path d="M12 84h78" stroke="currentColor" stroke-width="6" stroke-linecap="round" opacity=".55"/>` },
+    { name: 'Spark', note: 'A bright four-point star: the moment it clicks.',
+      bg: ['#D85F70', '#A93E50'], fg: '#fff',
+      mark: `<path d="M50 10C54 35 65 46 90 50 65 54 54 65 50 90 46 65 35 54 10 50 35 46 46 35 50 10z" fill="currentColor"/>` },
+    { name: 'Steps', note: 'A staircase line with a dot on top: one step at a time.',
+      bg: ['#FBE9EC', '#F6CBD2'], fg: '#D85F70',
+      mark: `<path d="M14 80h20V62h20V44h20V26h12" fill="none" stroke="currentColor" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/><circle cx="86" cy="26" r="8" fill="currentColor"/>` },
+  ];
+
+  const icon = (c, size, pad) => {
+    const [a, b] = c.bg, id = 'g' + Math.random().toString(36).slice(2, 8);
+    const s = 100 - pad * 2, k = s / 100;
+    return `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" style="--cut:${a}">
+      <defs><linearGradient id="${id}" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="${a}"/><stop offset="1" stop-color="${b}"/></linearGradient></defs>
+      <rect width="100" height="100" fill="url(#${id})"/>
+      <g transform="translate(${pad} ${pad}) scale(${k})" style="color:${c.fg}">${c.mark}</g></svg>`;
+  };
+
+  const grid = document.getElementById('grid');
+  grid.innerHTML = CONCEPTS.map((c, i) => `
+    <article class="card">
+      <h2><b>${String(i + 1).padStart(2, '0')}</b>${c.name}</h2>
+      <p>${c.note}</p>
+      <div class="row">
+        <div><div class="lab">iPhone</div><div class="ios">${icon(c, 100, 14)}</div></div>
+        <div><div class="lab">Android</div>
+          <div class="ands"><div class="and c">${icon(c, 100, 18)}</div><div class="and s">${icon(c, 100, 18)}</div><div class="and r">${icon(c, 100, 18)}</div></div>
+          <div class="bar" style="margin-top:14px"><button data-i="${i}">Download SVG</button></div>
+        </div>
+      </div>
+      <div><div class="lab">Onboarding start screen</div>
+        <div class="minis">
+          ${['l', 'd'].map(t => `<div class="mini ${t}"><div class="lock"><div class="logo">${icon(c, 100, 14)}</div><div class="name">Cal<i>esthetics</i></div></div><div class="btn"></div></div>`).join('')}
+        </div>
+      </div>
+    </article>`).join('');
+
+  grid.addEventListener('click', e => {
+    const b = e.target.closest('button[data-i]'); if (!b) return;
+    const c = CONCEPTS[b.dataset.i];
+    const svg = icon(c, 100, 14).replace('<svg ', '<svg width="1024" height="1024" ');
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(new Blob([svg], { type: 'image/svg+xml' }));
+    a.download = `calesthetics-logo-${String(+b.dataset.i + 1).padStart(2, '0')}-${c.name.toLowerCase().replace(/\W+/g, '-')}.svg`;
+    a.click();
+  });
+</script>
+</body>
+</html>
