@@ -6,6 +6,7 @@ import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/theme/app_typography.dart';
 import '../../../../shared/widgets/glass/glass_button.dart';
 import '../../../../shared/widgets/primary_button.dart';
+import '../../../onboarding/presentation/providers/onboarding_controller.dart';
 import '../../domain/apple_sign_in.dart';
 import '../providers/auth_providers.dart';
 
@@ -48,7 +49,10 @@ class _AuthModalSheetState extends ConsumerState<AuthModalSheet> {
   bool _obscurePassword = true;
 
   final _formKey = GlobalKey<FormState>();
-  late final TextEditingController _nameController = TextEditingController();
+  // Starts with the name given in onboarding; what is typed here replaces it.
+  late final TextEditingController _nameController = TextEditingController(
+    text: ref.read(onboardingControllerProvider).name,
+  );
   late final TextEditingController _emailController = TextEditingController(
     text: widget.initialEmail ?? '',
   );
@@ -93,7 +97,13 @@ class _AuthModalSheetState extends ConsumerState<AuthModalSheet> {
         password: password,
         displayName: name.isEmpty ? null : name,
       );
-      if (user != null) _onSuccess();
+      if (user != null) {
+        // The name chosen at sign-up is the one the profile shows.
+        if (name.isNotEmpty) {
+          ref.read(onboardingControllerProvider.notifier).setName(name);
+        }
+        _onSuccess();
+      }
     } else {
       final user = await ctl.signInWithEmail(email: email, password: password);
       if (user != null) _onSuccess();
