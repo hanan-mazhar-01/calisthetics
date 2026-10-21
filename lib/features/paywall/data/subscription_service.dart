@@ -234,24 +234,8 @@ class RevenueCatSubscriptionService implements SubscriptionService {
   @override
   SubscriptionStatus get cached => _readCache(prefs);
 
-  SubscriptionStatus _fromInfo(CustomerInfo info) {
-    final e = info.entitlements.active[entitlementId];
-    if (e == null || !e.isActive) return const SubscriptionStatus.free();
-    final id = e.productIdentifier.toLowerCase();
-    final yearly =
-        id.contains('year') || id.contains('annual') || id.contains('49');
-    final expires = e.expirationDate == null
-        ? null
-        : DateTime.tryParse(e.expirationDate!)?.toLocal();
-    final trial = e.periodType == PeriodType.trial;
-    return SubscriptionStatus(
-      plan: yearly ? PremiumPlan.yearly : PremiumPlan.monthly,
-      inTrial: trial,
-      trialEndsAt: trial ? expires : null,
-      renewsAt: expires,
-      willRenew: e.willRenew,
-    );
-  }
+  SubscriptionStatus _fromInfo(CustomerInfo info) =>
+      statusFromCustomerInfo(info);
 
   Future<SubscriptionStatus> _save(CustomerInfo info) async {
     final s = _fromInfo(info);
@@ -398,4 +382,74 @@ class RevenueCatSubscriptionService implements SubscriptionService {
       debugPrint('RevenueCat account switch failed: $e');
     }
   }
+}
+
+/// Whether [productId] is one of this app's Premium subscriptions.
+bool _isOurProduct(String productId) =>
+    productId.toLowerCase().contains('calisthenics_subscription');
+
+PremiumPlan _planOf(String productId) {
+  final id = productId.toLowerCase();
+  return id.contains('year') || id.contains('annual')
+      ? PremiumPlan.yearly
+      : PremiumPlan.monthly;
+}
+
+/// What the customer has, from RevenueCat's customer info.
+///
+/// The `premium` entitlement decides. If it is not there (the products were
+/// not attached to it in the RevenueCat dashboard, or it is named otherwise)
+/// any other active entitlement counts, and failing that an active
+/// subscription to one of this app's own products does: a paid purchase must
+/// never leave the user on Free.
+@visibleForTesting
+SubscriptionStatus statusFromCustomerInfo(CustomerInfo info) {
+  DateTime? date(String? v) =>
+      v == null ? null : DateTime.tryParse(v)?.toLocal();
+
+  final active = info.entitlements.active;
+  final e =
+      active[RevenueCatSubscriptionService.entitlementId] ??
+      active.values.where((x) => x.isActive).firstOrNull;
+  if (e != null && e.isActive) {
+    final trial = e.periodType == PeriodType.trial;
+    final expires = date(e.expirationDate);
+    return SubscriptionStatus(
+      plan: _planOf(e.productIdentifier),
+      inTrial: trial,
+      trialEndsAt: trial ? expires : null,
+      renewsAt: expires,
+      willRenew: e.willRenew,
+    );
+  }
+
+  final ours = [
+    for (final sub in info.subscriptionsByProductIdentifier.values)
+      if (sub.isActive && _isOurProduct(sub.productIdentifier)) sub,
+  ];
+  if (ours.isNotEmpty) {
+    final sub = ours.first;
+    final trial = sub.periodType == PeriodType.trial;
+    final expires = date(sub.expiresDate);
+    debugPrint(
+      'RevenueCat: ${sub.productIdentifier} is active but no entitlement '
+      'carries it: attach it to the "${RevenueCatSubscriptionService.entitlementId}" entitlement.',
+    );
+    return SubscriptionStatus(
+      plan: _planOf(sub.productIdentifier),
+      inTrial: trial,
+      trialEndsAt: trial ? expires : null,
+      renewsAt: expires,
+      willRenew: sub.willRenew,
+    );
+  }
+
+  final id = info.activeSubscriptions.where(_isOurProduct).firstOrNull;
+  if (id != null) {
+    final expires = date(
+      info.allExpirationDates[id] ?? info.latestExpirationDate,
+    );
+    return SubscriptionStatus(plan: _planOf(id), renewsAt: expires);
+  }
+  return const SubscriptionStatus.free();
 }
