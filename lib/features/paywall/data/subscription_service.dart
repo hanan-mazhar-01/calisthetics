@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:io' show Platform;
 
@@ -49,6 +50,10 @@ abstract class SubscriptionService {
 
   /// Whether real payments are connected.
   bool get isLive;
+
+  /// Status changes that happen outside the app's own actions: a renewal, a
+  /// cancellation, an expiry, a purchase made on another device.
+  Stream<SubscriptionStatus> get changes;
 }
 
 /// The status is kept under a `user_` key, so (like the rest of the user's
@@ -92,6 +97,9 @@ class LocalSubscriptionService implements SubscriptionService {
 
   @override
   bool get isLive => false;
+
+  @override
+  Stream<SubscriptionStatus> get changes => const Stream.empty();
 
   @override
   bool get canCancelInApp => allowPurchases;
@@ -223,7 +231,22 @@ class RevenueCatSubscriptionService implements SubscriptionService {
   Future<void> _configure() => _ready ??= () async {
     await Purchases.setLogLevel(kDebugMode ? LogLevel.debug : LogLevel.warn);
     await Purchases.configure(PurchasesConfiguration(apiKey));
+    // RevenueCat calls this whenever the customer's status changes: a
+    // renewal, a cancellation, an expiry, a purchase on another device.
+    Purchases.addCustomerInfoUpdateListener((info) {
+      _changes.add(statusFromCustomerInfo(info));
+    });
   }();
+
+  final _changes = StreamController<SubscriptionStatus>.broadcast();
+
+  @override
+  Stream<SubscriptionStatus> get changes async* {
+    await for (final s in _changes.stream) {
+      await _writeCache(prefs, s);
+      yield s;
+    }
+  }
 
   @override
   bool get isLive => true;

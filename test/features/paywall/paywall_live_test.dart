@@ -22,6 +22,8 @@ class _LiveStore implements SubscriptionService {
   @override
   bool get isLive => true;
   @override
+  Stream<SubscriptionStatus> get changes => const Stream.empty();
+  @override
   bool get canCancelInApp => false;
   @override
   SubscriptionStatus get cached => const SubscriptionStatus.free();

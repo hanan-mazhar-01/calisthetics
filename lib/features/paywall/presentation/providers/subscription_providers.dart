@@ -29,6 +29,12 @@ class SubscriptionNotifier extends Notifier<SubscriptionStatus> {
   @override
   SubscriptionStatus build() {
     final service = ref.watch(subscriptionServiceProvider);
+    // A renewal, cancellation or expiry while the app is open (or a purchase
+    // on another device) updates the screens at once.
+    final sub = service.changes.listen((fresh) {
+      if (ref.mounted && fresh != state) state = fresh;
+    });
+    ref.onDispose(sub.cancel);
     Future.microtask(() async {
       final fresh = await service.refresh();
       if (ref.mounted && fresh != state) state = fresh;
