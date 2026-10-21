@@ -49,15 +49,21 @@ class _AuthModalSheetState extends ConsumerState<AuthModalSheet> {
   bool _obscurePassword = true;
 
   final _formKey = GlobalKey<FormState>();
-  // Starts with the name given in onboarding; what is typed here replaces it.
-  late final TextEditingController _nameController = TextEditingController(
-    text: ref.read(onboardingControllerProvider).name,
-  );
+  late final TextEditingController _nameController;
   late final TextEditingController _emailController = TextEditingController(
     text: widget.initialEmail ?? '',
   );
   late final TextEditingController _passwordController =
       TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    // Starts with the name given in onboarding; what is typed here replaces it.
+    _nameController = TextEditingController(
+      text: ref.read(onboardingControllerProvider).name,
+    );
+  }
 
   @override
   void dispose() {

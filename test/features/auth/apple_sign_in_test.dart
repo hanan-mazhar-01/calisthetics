@@ -1,3 +1,4 @@
+import 'package:calisthenics/core/storage/shared_preferences_provider.dart';
 import 'package:calisthenics/core/theme/app_theme.dart';
 import 'package:calisthenics/features/auth/domain/apple_sign_in.dart';
 import 'package:calisthenics/features/auth/presentation/widgets/auth_modal_sheet.dart';
@@ -5,14 +6,18 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 Future<void> _openSheet(WidgetTester tester, TargetPlatform platform) async {
   debugDefaultTargetPlatformOverride = platform;
   tester.view.physicalSize = const Size(900, 2200);
   tester.view.devicePixelRatio = 2;
   addTearDown(tester.view.reset);
+  SharedPreferences.setMockInitialValues({});
+  final prefs = await SharedPreferences.getInstance();
   await tester.pumpWidget(
     ProviderScope(
+      overrides: [sharedPreferencesProvider.overrideWithValue(prefs)],
       child: MaterialApp(
         theme: AppTheme.light,
         home: const Scaffold(body: AuthModalSheet()),
