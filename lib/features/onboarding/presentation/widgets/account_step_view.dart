@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../core/theme/app_colors_extension.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/theme/app_typography.dart';
+import '../../../../shared/widgets/dots_loader.dart';
 import '../../../../shared/widgets/glass/glass_button.dart';
 import '../../../../shared/widgets/glass/glass_card.dart';
 import '../../../../shared/widgets/google_logo.dart';
@@ -37,15 +38,22 @@ class AccountStepView extends ConsumerStatefulWidget {
 }
 
 class _AccountStepViewState extends ConsumerState<AccountStepView> {
+  /// The row that was tapped: only it shows the loader.
+  String? _active;
+
   Future<void> _handleGoogle() async {
     final ctl = ref.read(authControllerProvider.notifier);
+    setState(() => _active = 'google');
     final user = await ctl.signInWithGoogle();
+    if (mounted) setState(() => _active = null);
     if (user != null) await _signedIn();
   }
 
   Future<void> _handleApple() async {
     final ctl = ref.read(authControllerProvider.notifier);
+    setState(() => _active = 'apple');
     final user = await ctl.signInWithApple();
+    if (mounted) setState(() => _active = null);
     if (user != null) await _signedIn();
   }
 
@@ -86,25 +94,33 @@ class _AccountStepViewState extends ConsumerState<AccountStepView> {
       }
     });
 
-    final methods = <({Widget icon, String label, VoidCallback onTap})>[
-      if (appleSignInAvailable)
-        (
-          icon: Icon(Icons.apple_rounded, color: c.textPrimary, size: 22),
-          label: 'Continue with Apple',
-          onTap: _handleApple,
-        ),
-      (
-        // Google's own mark, as its branding rules ask.
-        icon: const GoogleLogo(size: 22),
-        label: 'Continue with Google',
-        onTap: _handleGoogle,
-      ),
-      (
-        icon: Icon(Icons.mail_outline_rounded, color: c.textPrimary, size: 22),
-        label: 'Continue with email',
-        onTap: _handleEmail,
-      ),
-    ];
+    final methods =
+        <({String id, Widget icon, String label, VoidCallback onTap})>[
+          if (appleSignInAvailable)
+            (
+              id: 'apple',
+              icon: Icon(Icons.apple_rounded, color: c.textPrimary, size: 22),
+              label: 'Continue with Apple',
+              onTap: _handleApple,
+            ),
+          (
+            id: 'google',
+            // Google's own mark, as its branding rules ask.
+            icon: const GoogleLogo(size: 22),
+            label: 'Continue with Google',
+            onTap: _handleGoogle,
+          ),
+          (
+            id: 'email',
+            icon: Icon(
+              Icons.mail_outline_rounded,
+              color: c.textPrimary,
+              size: 22,
+            ),
+            label: 'Continue with email',
+            onTap: _handleEmail,
+          ),
+        ];
 
     return Column(
       children: [
@@ -177,14 +193,8 @@ class _AccountStepViewState extends ConsumerState<AccountStepView> {
                                 ),
                               ),
                             ),
-                            if (isBusy)
-                              const SizedBox(
-                                width: 18,
-                                height: 18,
-                                child: CircularProgressIndicator(
-                                  strokeWidth: 2,
-                                ),
-                              )
+                            if (isBusy && _active == item.id)
+                              DotsLoader(color: c.accentText, dot: 6)
                             else
                               Icon(
                                 Icons.chevron_right_rounded,

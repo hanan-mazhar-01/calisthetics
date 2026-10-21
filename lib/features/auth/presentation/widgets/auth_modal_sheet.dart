@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../core/theme/app_colors_extension.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/theme/app_typography.dart';
+import '../../../../shared/widgets/dots_loader.dart';
 import '../../../../shared/widgets/glass/glass_button.dart';
 import '../../../../shared/widgets/google_logo.dart';
 import '../../../../shared/widgets/primary_button.dart';
@@ -44,7 +45,12 @@ class AuthModalSheet extends ConsumerStatefulWidget {
   ConsumerState<AuthModalSheet> createState() => _AuthModalSheetState();
 }
 
+enum _Method { apple, google, email }
+
 class _AuthModalSheetState extends ConsumerState<AuthModalSheet> {
+  /// The button that was tapped: only it shows the loader.
+  _Method? _active;
+
   late bool _isSignUp = widget.initialIsSignUp;
   bool _showEmailForm = false;
   bool _obscurePassword = true;
@@ -81,19 +87,24 @@ class _AuthModalSheetState extends ConsumerState<AuthModalSheet> {
 
   Future<void> _handleGoogle() async {
     final ctl = ref.read(authControllerProvider.notifier);
+    setState(() => _active = _Method.google);
     final user = await ctl.signInWithGoogle();
+    if (mounted) setState(() => _active = null);
     if (user != null) _onSuccess();
   }
 
   Future<void> _handleApple() async {
     final ctl = ref.read(authControllerProvider.notifier);
+    setState(() => _active = _Method.apple);
     final user = await ctl.signInWithApple();
+    if (mounted) setState(() => _active = null);
     if (user != null) _onSuccess();
   }
 
   Future<void> _handleEmailSubmit() async {
     if (!_formKey.currentState!.validate()) return;
     final ctl = ref.read(authControllerProvider.notifier);
+    setState(() => _active = _Method.email);
     final email = _emailController.text.trim();
     final password = _passwordController.text;
 
@@ -104,6 +115,7 @@ class _AuthModalSheetState extends ConsumerState<AuthModalSheet> {
         password: password,
         displayName: name.isEmpty ? null : name,
       );
+      if (mounted) setState(() => _active = null);
       if (user != null) {
         // The name chosen at sign-up is the one the profile shows.
         if (name.isNotEmpty) {
@@ -113,6 +125,7 @@ class _AuthModalSheetState extends ConsumerState<AuthModalSheet> {
       }
     } else {
       final user = await ctl.signInWithEmail(email: email, password: password);
+      if (mounted) setState(() => _active = null);
       if (user != null) _onSuccess();
     }
   }
@@ -281,6 +294,7 @@ class _AuthModalSheetState extends ConsumerState<AuthModalSheet> {
                     color: Colors.black,
                     textColor: Colors.white,
                     isLoading: isBusy,
+                    loading: isBusy && _active == _Method.apple,
                     onPressed: isBusy ? null : _handleApple,
                   ),
                   const SizedBox(height: AppSpacing.md),
@@ -296,6 +310,7 @@ class _AuthModalSheetState extends ConsumerState<AuthModalSheet> {
                   textColor: c.textPrimary,
                   borderColor: c.divider,
                   isLoading: isBusy,
+                  loading: isBusy && _active == _Method.google,
                   onPressed: isBusy ? null : _handleGoogle,
                 ),
                 const SizedBox(height: AppSpacing.md),
@@ -458,6 +473,7 @@ class _AuthModalSheetState extends ConsumerState<AuthModalSheet> {
                       PrimaryButton(
                         label: _isSignUp ? 'Create Account' : 'Sign In',
                         enabled: !isBusy,
+                        loading: isBusy && _active == _Method.email,
                         onPressed: isBusy ? null : _handleEmailSubmit,
                       ),
                       const SizedBox(height: AppSpacing.md),
@@ -514,6 +530,7 @@ class _SocialButton extends StatelessWidget {
     required this.textColor,
     this.borderColor,
     required this.isLoading,
+    this.loading = false,
     required this.onPressed,
   });
 
@@ -525,7 +542,12 @@ class _SocialButton extends StatelessWidget {
   final Color color;
   final Color textColor;
   final Color? borderColor;
+
+  /// Some sign-in is under way: this button ignores taps (but keeps its look).
   final bool isLoading;
+
+  /// This is the button that was tapped: it shows the loader.
+  final bool loading;
   final VoidCallback? onPressed;
 
   @override
@@ -536,6 +558,8 @@ class _SocialButton extends StatelessWidget {
         style: ElevatedButton.styleFrom(
           backgroundColor: color,
           foregroundColor: textColor,
+          disabledBackgroundColor: color,
+          disabledForegroundColor: textColor,
           elevation: 0,
           side: borderColor != null ? BorderSide(color: borderColor!) : null,
           shape: RoundedRectangleBorder(
@@ -547,7 +571,12 @@ class _SocialButton extends StatelessWidget {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            logo ?? Icon(icon, size: 22, color: textColor),
+            loading
+                ? SizedBox(
+                    width: 22,
+                    child: Center(child: DotsLoader(color: textColor, dot: 5)),
+                  )
+                : (logo ?? Icon(icon, size: 22, color: textColor)),
             const SizedBox(width: 12),
             Text(
               label,

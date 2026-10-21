@@ -4,6 +4,7 @@ import '../../core/theme/app_colors_extension.dart';
 import '../../core/theme/app_motion.dart';
 import '../../core/theme/app_spacing.dart' show AppRadius;
 import '../../core/theme/app_typography.dart';
+import 'dots_loader.dart';
 
 /// The design's recurring full-width CTA: a dark-rose stadium pill, 58px
 /// tall, with a tactile press-scale (mirrors the source's
@@ -15,12 +16,17 @@ class PrimaryButton extends StatefulWidget {
     required this.onPressed,
     this.trailingIcon,
     this.enabled = true,
+    this.loading = false,
   });
 
   final String label;
   final VoidCallback? onPressed;
   final IconData? trailingIcon;
   final bool enabled;
+
+  /// Its action is under way: full colour, dots instead of the label, and
+  /// taps do nothing (the caller passes a null [onPressed]).
+  final bool loading;
 
   @override
   State<PrimaryButton> createState() => _PrimaryButtonState();
@@ -36,7 +42,8 @@ class _PrimaryButtonState extends State<PrimaryButton> {
 
   @override
   Widget build(BuildContext context) {
-    final disabled = !widget.enabled || widget.onPressed == null;
+    final disabled =
+        !widget.loading && (!widget.enabled || widget.onPressed == null);
     final c = context.appColors;
     return GestureDetector(
       onTapDown: (_) => _setPressed(true),
@@ -55,28 +62,30 @@ class _PrimaryButtonState extends State<PrimaryButton> {
             color: disabled ? c.accent.withValues(alpha: 0.4) : c.accent,
             borderRadius: BorderRadius.circular(AppRadius.pill),
           ),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Flexible(
-                child: FittedBox(
-                  fit: BoxFit.scaleDown,
-                  alignment: Alignment.centerLeft,
-                  child: Text(
-                    widget.label,
-                    style: AppTypography.title(
-                      17,
-                      c.onAccent,
-                      weight: FontWeight.w700,
+          child: widget.loading
+              ? Center(child: DotsLoader(color: c.onAccent))
+              : Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Flexible(
+                      child: FittedBox(
+                        fit: BoxFit.scaleDown,
+                        alignment: Alignment.centerLeft,
+                        child: Text(
+                          widget.label,
+                          style: AppTypography.title(
+                            17,
+                            c.onAccent,
+                            weight: FontWeight.w700,
+                          ),
+                        ),
+                      ),
                     ),
-                  ),
+                    if (widget.trailingIcon != null) const SizedBox(width: 12),
+                    if (widget.trailingIcon != null)
+                      Icon(widget.trailingIcon, color: c.onAccent, size: 22),
+                  ],
                 ),
-              ),
-              if (widget.trailingIcon != null) const SizedBox(width: 12),
-              if (widget.trailingIcon != null)
-                Icon(widget.trailingIcon, color: c.onAccent, size: 22),
-            ],
-          ),
         ),
       ),
     );
