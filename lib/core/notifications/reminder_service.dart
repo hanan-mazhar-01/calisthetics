@@ -61,7 +61,7 @@ class LocalReminderService implements ReminderService {
       tz.setLocalLocation(tz.getLocation(zone.identifier));
       await _plugin.initialize(
         settings: const InitializationSettings(
-          android: AndroidInitializationSettings('@mipmap/ic_launcher'),
+          android: AndroidInitializationSettings('@drawable/ic_stat_notification'),
           // iPhone: nothing is asked at start-up. The permission prompt
           // appears when the user switches reminders on (requestPermission).
           iOS: DarwinInitializationSettings(
