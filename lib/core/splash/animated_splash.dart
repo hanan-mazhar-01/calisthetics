@@ -32,10 +32,10 @@ class _SplashHostState extends State<SplashHost> {
   }
 }
 
-/// Launch animation: the rose colour opens in a circle from the middle of the
-/// launch screen, the icon gets a shine, the name pops in letter by letter
-/// and the tagline fades up. It starts exactly like the native launch screen
-/// (same background, same rounded icon) so there is no jump.
+/// Launch animation: the rose launch screen gains a soft glow, the icon gets
+/// a shine, the name pops in letter by letter and the tagline fades up. It
+/// starts exactly like the native launch screen (same rose background, same
+/// rounded icon) so there is no jump and no white flash.
 class AnimatedSplash extends StatefulWidget {
   const AnimatedSplash({super.key, required this.onDone});
   final VoidCallback onDone;
@@ -70,23 +70,18 @@ class _AnimatedSplashState extends State<AnimatedSplash>
 
   @override
   Widget build(BuildContext context) {
-    final dark = Theme.of(context).brightness == Brightness.dark;
-    final cover = dark ? const Color(0xFF171516) : const Color(0xFFF7F7F7);
     return AnimatedBuilder(
       animation: _c,
       builder: (context, _) {
-        final size = MediaQuery.sizeOf(context);
-        final reach = Offset(size.width / 2, size.height / 2).distance;
-        final open = _p(0.1, 1.2, Curves.easeInOutCubic);
+        final glow = _p(0.1, 1.2, Curves.easeInOutCubic);
         final fadeOut = 1 - _p(3.1, 3.6, Curves.easeIn);
-        final center = Offset(size.width / 2, size.height * 0.46);
         return Opacity(
           opacity: fadeOut,
           child: Stack(
             fit: StackFit.expand,
             children: [
-              ColoredBox(color: cover),
-              CustomPaint(painter: _RosePainter(center, reach * 1.2 * open)),
+              const ColoredBox(color: Color(0xFFD85F70)),
+              CustomPaint(painter: _GlowPainter(glow)),
               Align(
                 alignment: const Alignment(0, -0.08),
                 child: Column(
@@ -197,28 +192,29 @@ class _AnimatedSplashState extends State<AnimatedSplash>
   }
 }
 
-class _RosePainter extends CustomPainter {
-  _RosePainter(this.center, this.radius);
-  final Offset center;
-  final double radius;
+/// The launch screen is flat rose; the lighter middle and darker edge fade in.
+class _GlowPainter extends CustomPainter {
+  _GlowPainter(this.t);
+  final double t;
 
   @override
   void paint(Canvas canvas, Size size) {
-    if (radius <= 0) return;
+    if (t <= 0) return;
     final rect = Offset.zero & size;
     final paint = Paint()
-      ..shader = const RadialGradient(
-        center: Alignment(0, -0.2),
+      ..shader = RadialGradient(
+        center: const Alignment(0, -0.2),
         radius: 1.1,
-        colors: [Color(0xFFEE8A9B), Color(0xFFD85F70), Color(0xFFB94A5B)],
-        stops: [0, 0.55, 1],
+        colors: [
+          const Color(0xFFEE8A9B).withValues(alpha: t),
+          const Color(0xFFD85F70).withValues(alpha: 0),
+          const Color(0xFFB94A5B).withValues(alpha: t),
+        ],
+        stops: const [0, 0.55, 1],
       ).createShader(rect);
-    canvas.save();
-    canvas.clipPath(Path()..addOval(Rect.fromCircle(center: center, radius: radius)));
     canvas.drawRect(rect, paint);
-    canvas.restore();
   }
 
   @override
-  bool shouldRepaint(_RosePainter o) => o.radius != radius || o.center != center;
+  bool shouldRepaint(_GlowPainter o) => o.t != t;
 }
