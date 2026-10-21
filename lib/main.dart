@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'core/routing/app_router.dart';
+import 'core/splash/animated_splash.dart';
 import 'core/storage/shared_preferences_provider.dart';
 import 'core/theme/app_theme.dart';
 import 'core/theme/theme_reveal.dart';
@@ -69,7 +70,8 @@ class CalestheticsApp extends ConsumerWidget {
 
   Widget _app(WidgetRef ref) {
     return MaterialApp.router(
-      builder: (context, child) => ThemeRevealHost(child: child!),
+      builder: (context, child) =>
+          SplashHost(child: ThemeRevealHost(child: child!)),
       title: 'Calesthetics',
       debugShowCheckedModeBanner: false,
       theme: AppTheme.light,
