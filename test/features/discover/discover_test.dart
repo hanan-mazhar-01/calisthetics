@@ -139,18 +139,11 @@ void main() {
       expect(p.canViewPage(rung), isTrue);
     });
 
-    test('free: only the own plan plays; premium plays everything', () {
+    test('free: nothing in Discover plays; premium plays everything', () {
       const free = ExerciseAccessPolicy(isPremium: false);
       expect(free.canPlayVideo(rung), isFalse);
       expect(free.canPlayVideo(foundation), isFalse);
       expect(free.canStartPlan, isFalse);
-      expect(
-        ExerciseAccessPolicy(
-          isPremium: false,
-          planExerciseNumbers: {rung.number},
-        ).canPlayVideo(rung),
-        isTrue,
-      );
       const premium = ExerciseAccessPolicy(isPremium: true);
       expect(premium.canPlayVideo(rung), isTrue);
       expect(premium.canPlayVideo(foundation), isTrue);

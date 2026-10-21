@@ -14,13 +14,15 @@ void main() {
     },
   );
 
-  test('a plan using the foundation twin unlocks the ladder rung', () {
-    // Push-up plan uses #1 (wall push-up); the ladder rung is #39.
-    const policy = ExerciseAccessPolicy(
-      isPremium: false,
-      planExerciseNumbers: {1, 2, 3, 4},
+  test('free: no Discover video plays, even one the own plan uses', () {
+    const free = ExerciseAccessPolicy(isPremium: false);
+    // #39 (a ladder rung) shares its video with #1 (wall push-up).
+    expect(free.canPlayVideo(exerciseByNumber(39)), isFalse);
+    expect(free.canPlayVideo(exerciseByNumber(1)), isFalse);
+    expect(
+      const ExerciseAccessPolicy(isPremium: true)
+          .canPlayVideo(exerciseByNumber(39)),
+      isTrue,
     );
-    expect(policy.canPlayVideo(exerciseByNumber(39)), isTrue);
-    expect(policy.canPlayVideo(exerciseByNumber(46)), isFalse);
   });
 }

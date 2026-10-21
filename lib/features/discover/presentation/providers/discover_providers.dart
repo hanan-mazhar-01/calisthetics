@@ -12,17 +12,8 @@ final premiumAccessProvider = Provider<bool>(
   (ref) => ref.watch(isPremiumProvider),
 );
 
-/// Catalog numbers used by the active plan (all stages).
-final planExerciseNumbersProvider = Provider<Set<int>>((ref) {
-  final template = ref.watch(activeTemplateProvider);
-  return template == null ? const {} : template.exerciseNumbers.toSet();
-});
-
 final exerciseAccessPolicyProvider = Provider<ExerciseAccessPolicy>(
-  (ref) => ExerciseAccessPolicy(
-    isPremium: ref.watch(premiumAccessProvider),
-    planExerciseNumbers: ref.watch(planExerciseNumbersProvider),
-  ),
+  (ref) => ExerciseAccessPolicy(isPremium: ref.watch(premiumAccessProvider)),
 );
 
 class SearchQueryNotifier extends Notifier<String> {

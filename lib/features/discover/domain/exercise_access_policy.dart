@@ -1,33 +1,20 @@
 import '../../exercises/domain/exercise.dart';
-import '../../exercises/domain/exercise_lookup.dart';
 
-/// THE one place that decides what a free user can open.
+/// THE one place that decides what a free user can open in Discover.
 ///
-///  * Free: one plan, and the exercises in that plan play;
-///  * every other Discover exercise video needs Premium;
+///  * Every Discover exercise video needs Premium, whether or not the
+///    exercise is in the user's own plan (the plan's workouts play in the
+///    workout player as usual, and are not part of Discover);
 ///  * exercise pages stay visible to everyone (with a lock on the video);
 ///  * starting plans beyond the free one needs Premium.
 class ExerciseAccessPolicy {
-  const ExerciseAccessPolicy({
-    required this.isPremium,
-    this.planExerciseNumbers = const {},
-  });
+  const ExerciseAccessPolicy({required this.isPremium});
 
   final bool isPremium;
 
-  /// Catalog numbers used by the user's active plan.
-  final Set<int> planExerciseNumbers;
-
   bool canViewPage(Exercise e) => true;
 
-  bool canPlayVideo(Exercise e) {
-    if (isPremium) return true;
-    if (planExerciseNumbers.contains(e.number)) return true;
-    // A plan may use the foundation twin of a ladder rung (same video).
-    return planExerciseNumbers.any(
-      (n) => exerciseByNumber(n).videoNumber == e.videoNumber,
-    );
-  }
+  bool canPlayVideo(Exercise e) => isPremium;
 
   bool get canStartPlan => isPremium;
 }
