@@ -6,6 +6,7 @@ import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/theme/app_typography.dart';
 import '../../../../shared/widgets/glass/glass_button.dart';
 import '../../../../shared/widgets/glass/glass_card.dart';
+import '../../../../shared/widgets/google_logo.dart';
 import '../../../../shared/widgets/primary_button.dart';
 import '../../../auth/domain/apple_sign_in.dart';
 import '../../../auth/presentation/providers/auth_providers.dart';
@@ -85,20 +86,21 @@ class _AccountStepViewState extends ConsumerState<AccountStepView> {
       }
     });
 
-    final methods = [
+    final methods = <({Widget icon, String label, VoidCallback onTap})>[
       if (appleSignInAvailable)
         (
-          icon: Icons.apple_rounded,
+          icon: Icon(Icons.apple_rounded, color: c.textPrimary, size: 22),
           label: 'Continue with Apple',
           onTap: _handleApple,
         ),
       (
-        icon: Icons.g_mobiledata_rounded,
+        // Google's own mark, as its branding rules ask.
+        icon: const GoogleLogo(size: 22),
         label: 'Continue with Google',
         onTap: _handleGoogle,
       ),
       (
-        icon: Icons.mail_outline_rounded,
+        icon: Icon(Icons.mail_outline_rounded, color: c.textPrimary, size: 22),
         label: 'Continue with email',
         onTap: _handleEmail,
       ),
@@ -163,13 +165,7 @@ class _AccountStepViewState extends ConsumerState<AccountStepView> {
                       child: GlassCard(
                         child: Row(
                           children: [
-                            Icon(
-                              item.icon,
-                              color: c.textPrimary,
-                              size: item.icon == Icons.g_mobiledata_rounded
-                                  ? 28
-                                  : 22,
-                            ),
+                            item.icon,
                             const SizedBox(width: AppSpacing.lg),
                             Expanded(
                               child: Text(

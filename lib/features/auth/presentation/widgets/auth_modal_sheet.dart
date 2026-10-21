@@ -5,6 +5,7 @@ import '../../../../core/theme/app_colors_extension.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/theme/app_typography.dart';
 import '../../../../shared/widgets/glass/glass_button.dart';
+import '../../../../shared/widgets/google_logo.dart';
 import '../../../../shared/widgets/primary_button.dart';
 import '../../../onboarding/presentation/providers/onboarding_controller.dart';
 import '../../domain/apple_sign_in.dart';
@@ -287,14 +288,13 @@ class _AuthModalSheetState extends ConsumerState<AuthModalSheet> {
 
                 // Google Button
                 _SocialButton(
-                  icon: Icons.g_mobiledata_rounded,
+                  logo: const GoogleLogo(size: 22),
                   label: _isSignUp
                       ? 'Sign up with Google'
                       : 'Continue with Google',
                   color: c.surface,
                   textColor: c.textPrimary,
                   borderColor: c.divider,
-                  iconSize: 28,
                   isLoading: isBusy,
                   onPressed: isBusy ? null : _handleGoogle,
                 ),
@@ -507,22 +507,24 @@ class _AuthModalSheetState extends ConsumerState<AuthModalSheet> {
 
 class _SocialButton extends StatelessWidget {
   const _SocialButton({
-    required this.icon,
+    this.icon,
+    this.logo,
     required this.label,
     required this.color,
     required this.textColor,
     this.borderColor,
-    this.iconSize = 22,
     required this.isLoading,
     required this.onPressed,
   });
 
-  final IconData icon;
+  final IconData? icon;
+
+  /// A brand mark that replaces [icon] (Google's own "G").
+  final Widget? logo;
   final String label;
   final Color color;
   final Color textColor;
   final Color? borderColor;
-  final double iconSize;
   final bool isLoading;
   final VoidCallback? onPressed;
 
@@ -545,7 +547,7 @@ class _SocialButton extends StatelessWidget {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(icon, size: iconSize, color: textColor),
+            logo ?? Icon(icon, size: 22, color: textColor),
             const SizedBox(width: 12),
             Text(
               label,
