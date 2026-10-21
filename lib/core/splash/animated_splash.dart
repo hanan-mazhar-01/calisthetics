@@ -74,6 +74,9 @@ class _AnimatedSplashState extends State<AnimatedSplash>
       animation: _c,
       builder: (context, _) {
         final glow = _p(0.1, 1.2, Curves.easeInOutCubic);
+        final size = MediaQuery.sizeOf(context);
+        final wipe = _p(0.1, 1.3, Curves.easeInOutCubic);
+        final wipeFade = 1 - _p(0.8, 1.3, Curves.easeIn);
         final fadeOut = 1 - _p(3.1, 3.6, Curves.easeIn);
         return Opacity(
           opacity: fadeOut,
@@ -82,6 +85,14 @@ class _AnimatedSplashState extends State<AnimatedSplash>
             children: [
               const ColoredBox(color: Color(0xFFD85F70)),
               CustomPaint(painter: _GlowPainter(glow)),
+              // A blush circle opens from the icon and melts into the rose.
+              CustomPaint(
+                painter: _WipePainter(
+                  Offset(size.width / 2, size.height * 0.46),
+                  size.height * 0.75 * wipe,
+                  wipeFade,
+                ),
+              ),
               Align(
                 alignment: const Alignment(0, -0.08),
                 child: Column(
@@ -217,4 +228,25 @@ class _GlowPainter extends CustomPainter {
 
   @override
   bool shouldRepaint(_GlowPainter o) => o.t != t;
+}
+
+class _WipePainter extends CustomPainter {
+  _WipePainter(this.center, this.radius, this.opacity);
+  final Offset center;
+  final double radius;
+  final double opacity;
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    if (radius <= 0 || opacity <= 0) return;
+    canvas.drawCircle(
+      center,
+      radius,
+      Paint()..color = const Color(0xFFFBE9EC).withValues(alpha: opacity),
+    );
+  }
+
+  @override
+  bool shouldRepaint(_WipePainter o) =>
+      o.radius != radius || o.opacity != opacity || o.center != center;
 }
