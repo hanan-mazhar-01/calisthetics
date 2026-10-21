@@ -147,6 +147,26 @@ class _WelcomeStepViewState extends ConsumerState<WelcomeStepView>
             ),
           ),
         ),
+        // The name line sits at the very top, over the photo, on a soft pill
+        // so it reads on any picture.
+        Positioned(
+          top: MediaQuery.paddingOf(context).top + 14,
+          left: 0,
+          right: 0,
+          child: Center(
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 7),
+              decoration: BoxDecoration(
+                color: p.bg.withValues(alpha: 0.78),
+                borderRadius: BorderRadius.circular(999),
+              ),
+              child: Text(
+                'CALESTHETICS FOR WOMEN',
+                style: AppTypography.kicker(p.accent, letterSpacingEm: 0.14),
+              ),
+            ),
+          ),
+        ),
         Positioned(
           left: AppSpacing.xxxl,
           right: AppSpacing.xxxl,
@@ -155,20 +175,6 @@ class _WelcomeStepViewState extends ConsumerState<WelcomeStepView>
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisSize: MainAxisSize.min,
             children: [
-              Row(
-                children: [
-                  Container(width: 22, height: 2, color: p.accent),
-                  const SizedBox(width: AppSpacing.sm),
-                  Text(
-                    "CALESTHETICS FOR WOMEN",
-                    style: AppTypography.kicker(
-                      p.accent,
-                      letterSpacingEm: 0.14,
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: AppSpacing.xxl),
               TypewriterText(
                 onDone: _typed,
                 style: AppTypography.display(
