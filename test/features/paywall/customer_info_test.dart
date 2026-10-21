@@ -64,9 +64,7 @@ void main() {
   test('the premium entitlement: monthly in its free trial', () {
     final s = statusFromCustomerInfo(
       _info(
-        entitlements: {
-          'premium': _entitlement('premium', _monthly, period: 'TRIAL'),
-        },
+        entitlements: {'pro': _entitlement('pro', _monthly, period: 'TRIAL')},
         active: [_monthly],
       ),
     );
@@ -78,7 +76,7 @@ void main() {
   test('the premium entitlement: yearly', () {
     final s = statusFromCustomerInfo(
       _info(
-        entitlements: {'premium': _entitlement('premium', _yearly)},
+        entitlements: {'pro': _entitlement('pro', _yearly)},
         active: [_yearly],
       ),
     );

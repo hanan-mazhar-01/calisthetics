@@ -42,7 +42,7 @@ Architecture: UI → Riverpod providers → services (auth, sync, subscription, 
 | B1 | **The iOS app icon is the default Flutter "F".** (CONFIRMED) | 2.1 App Completeness / 2.3 (placeholder assets). Placeholder icons are a routine rejection. | `ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-1024x1024@1x.png` is the blue Flutter logo on white. | Make the real icon (1024×1024, no transparency, no rounded corners), regenerate the whole set. Needs your brand decision. |
 | B2 | **Privacy Policy URL and Support URL are not live.** (CONFIRMED) | 5.1.1(i) privacy policy link in App Store Connect; 1.5 support URL. Both are mandatory fields. | The three pages exist in `legal_pages/` but are not published; `legal_links.dart` has empty addresses, so the app shows its in-app copy. | Publish `privacy-policy.html`, `terms-of-service.html`, `help-support.html` on Blogger; put the Privacy URL and Support URL in App Store Connect; give the three addresses to the app (`legal_links.dart` or `--dart-define`). |
 | B3 | **No iOS build has ever been compiled or run.** (CONFIRMED: there is no `Podfile`, no `Pods`, no Mac here.) | 2.1 App Completeness (crashes), and everything iPhone-only is untested. | Sign in with Apple, StoreKit purchases, notifications, Google sign-in on iOS, HLS video were only ever reasoned about. | On a Mac: `flutter build ios`, run on a real iPhone, upload to TestFlight, work through the test plan below. |
-| B4 | **In-App Purchase set-up cannot be seen from here.** (UNVERIFIED, but a miss means the reviewer cannot buy) | 2.1 / 3.1.1 / 3.1.2 | RevenueCat side checked live: `default` offering is current; `$rc_monthly` → `calisthenics_subscription_monthly`, `$rc_annual` → `calisthenics_subscription_yearly`. Nothing about App Store Connect, the `premium` entitlement attachment, or the RevenueCat App Store key can be read. | Do the App Store Connect and RevenueCat checklist in section "Human checks". |
+| B4 | **In-App Purchase set-up cannot be seen from here.** (UNVERIFIED, but a miss means the reviewer cannot buy) | 2.1 / 3.1.1 / 3.1.2 | RevenueCat side checked live: `default` offering is current; `$rc_monthly` → `calisthenics_subscription_monthly`, `$rc_annual` → `calisthenics_subscription_yearly`. Nothing about App Store Connect, the `pro` entitlement attachment, or the RevenueCat App Store key can be read. | Do the App Store Connect and RevenueCat checklist in section "Human checks". |
 
 ## 🟠 HIGH RISKS
 
@@ -113,7 +113,7 @@ Architecture: UI → Riverpod providers → services (auth, sync, subscription, 
 | Build runs on a real iPhone; archive validates (no privacy-manifest warnings from pods) | Xcode / TestFlight | B3 |
 | Subscription group with both products; IDs exactly `calisthenics_subscription_monthly` and `calisthenics_subscription_yearly`; monthly has a 7-day free introductory offer; prices $9.99 / $49.99; availability; localisation; review screenshot; status "Ready to Submit" and attached to the version | App Store Connect | B4, 3.1.2 |
 | Both products in the **same** subscription group (so Monthly ↔ Yearly is an upgrade/downgrade, not two subscriptions) | App Store Connect | 3.1.2 |
-| Both products attached to the `premium` entitlement; App Store Connect in-app-purchase key added to RevenueCat; restore behaviour set | RevenueCat dashboard | B4 |
+| Both products attached to the `pro` entitlement; App Store Connect in-app-purchase key added to RevenueCat; restore behaviour set | RevenueCat dashboard | B4 |
 | Firebase: Apple provider enabled; iOS API key restricted to the bundle id | Firebase / Google Cloud | sign-in works, M7 |
 | Privacy nutrition label filled from the table below; "Data Used to Track You" = none | App Store Connect | H3 |
 | Age rating questionnaire | App Store Connect | H4 |
@@ -128,7 +128,7 @@ Architecture: UI → Riverpod providers → services (auth, sync, subscription, 
 
 **Products** (CONFIRMED live): `calisthenics_subscription_monthly`, `calisthenics_subscription_yearly`.
 **Offerings**: `default` (current), packages `$rc_monthly` and `$rc_annual`. The app reads `offering.monthly` / `.annual`, so these package identifiers must stay as they are.
-**Entitlement**: code checks `premium` (`RevenueCatSubscriptionService.entitlementId`). UNVERIFIED that both products are attached to it.
+**Entitlement**: code checks `pro` (`RevenueCatSubscriptionService.entitlementId`). UNVERIFIED that both products are attached to it.
 
 | Item | Result |
 |---|---|
@@ -140,7 +140,7 @@ Architecture: UI → Riverpod providers → services (auth, sync, subscription, 
 | Manage | Profile > Manage: Switch plan, Restore, **Manage in the App Store** (new). |
 | Upgrade/downgrade | Switching opens the paywall; the store performs the change if both products share a group. UNVERIFIED. |
 | Account identity | `Purchases.logIn(uid)` after sign-in, `logOut()` after sign-out/deletion; saved status is wiped on sign-out. A→B switch cannot leak Premium (status is wiped; RevenueCat re-reads). Deletion keeps the RevenueCat record (M8). |
-| Source of truth | RevenueCat customer info (`premium`). A saved copy gives instant UI and offline use (M1). It no longer travels through Firestore (F7). |
+| Source of truth | RevenueCat customer info (`pro`). A saved copy gives instant UI and offline use (M1). It no longer travels through Firestore (F7). |
 | Subscription state | See table below. |
 | App restart | Saved status shows instantly, then refreshes. |
 | Reinstall | Restore / sign-in re-reads from RevenueCat. UNVERIFIED on device. |

@@ -10,6 +10,6 @@ void main() {
   });
 
   test('the entitlement is the one set up in RevenueCat', () {
-    expect(RevenueCatSubscriptionService.entitlementId, 'premium');
+    expect(RevenueCatSubscriptionService.entitlementId, 'pro');
   });
 }

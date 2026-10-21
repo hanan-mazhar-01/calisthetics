@@ -202,7 +202,7 @@ class RevenueCatSubscriptionService implements SubscriptionService {
   final SharedPreferences prefs;
   final String apiKey;
 
-  static const entitlementId = 'premium';
+  static const entitlementId = 'pro';
 
   /// RevenueCat's SDK keys are public keys made to ship inside the app (the
   /// secret `sk_` key must never be). `--dart-define` overrides the iOS one.
@@ -397,7 +397,7 @@ PremiumPlan _planOf(String productId) {
 
 /// What the customer has, from RevenueCat's customer info.
 ///
-/// The `premium` entitlement decides. If it is not there (the products were
+/// The `pro` entitlement decides. If it is not there (the products were
 /// not attached to it in the RevenueCat dashboard, or it is named otherwise)
 /// any other active entitlement counts, and failing that an active
 /// subscription to one of this app's own products does: a paid purchase must
