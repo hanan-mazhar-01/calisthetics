@@ -1,6 +1,6 @@
 import 'package:calisthenics/core/theme/app_theme.dart';
 import 'package:calisthenics/features/legal/presentation/screens/legal_screen.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {

@@ -9,7 +9,7 @@ import 'package:calisthenics/features/plans/domain/plan_template.dart';
 import 'package:calisthenics/features/plans/domain/user_profile.dart';
 import 'package:calisthenics/features/user/domain/active_plan.dart';
 import 'package:calisthenics/features/user/presentation/providers/user_providers.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -59,7 +59,7 @@ void main() {
       'Duration',
       'Avoid Areas',
       'UPDATE MY CURRENT PLAN',
-      'Restart From Day1',
+      'Restart From Day 1',
       'Sounds',
       'Music',
     ]) {

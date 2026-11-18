@@ -1,6 +1,6 @@
 import 'dart:ui';
 
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../core/theme/app_colors_extension.dart';
@@ -101,80 +101,91 @@ class NameStepContentState extends ConsumerState<NameStepContent>
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          SizedBox(
-            height: _folderHeight + _topHeadroom,
-            width: _folderWidth + _gap + _docWidth,
-            child: AnimatedBuilder(
-              animation: Listenable.merge([_controller, _textController]),
-              builder: (context, _) {
-                final isClosing = _controller.status == AnimationStatus.reverse;
-                // `p` always reads as "how open" (0 closed -> 1 open). `tau`
-                // is elapsed progress of *this* direction's play-through
-                // (0 -> 1 either way), so the curve below actually shapes
-                // time-as-experienced rather than fighting the controller's
-                // own direction: decelerating into place on the way out,
-                // accelerating — getting pulled in faster right at the end —
-                // on the way in. Two distinct motions, not a mirrored one.
-                final tau = isClosing
-                    ? (1 - _controller.value)
-                    : _controller.value;
-                final p = isClosing
-                    ? (1 - Curves.easeInCubic.transform(tau))
-                    : Curves.easeOutCubic.transform(tau);
+          // Drawn at its designed size, scaled down on phones narrower than
+          // that (320 pt) instead of overflowing.
+          FittedBox(
+            fit: BoxFit.scaleDown,
+            alignment: Alignment.centerLeft,
+            child: SizedBox(
+              height: _folderHeight + _topHeadroom,
+              width: _folderWidth + _gap + _docWidth,
+              child: AnimatedBuilder(
+                animation: Listenable.merge([_controller, _textController]),
+                builder: (context, _) {
+                  final isClosing =
+                      _controller.status == AnimationStatus.reverse;
+                  // `p` always reads as "how open" (0 closed -> 1 open). `tau`
+                  // is elapsed progress of *this* direction's play-through
+                  // (0 -> 1 either way), so the curve below actually shapes
+                  // time-as-experienced rather than fighting the controller's
+                  // own direction: decelerating into place on the way out,
+                  // accelerating — getting pulled in faster right at the end —
+                  // on the way in. Two distinct motions, not a mirrored one.
+                  final tau = isClosing
+                      ? (1 - _controller.value)
+                      : _controller.value;
+                  final p = isClosing
+                      ? (1 - Curves.easeInCubic.transform(tau))
+                      : Curves.easeOutCubic.transform(tau);
 
-                final riseP = (p / 0.55).clamp(0.0, 1.0);
-                final travelP = ((p - 0.25) / 0.75).clamp(0.0, 1.0);
+                  final riseP = (p / 0.55).clamp(0.0, 1.0);
+                  final travelP = ((p - 0.25) / 0.75).clamp(0.0, 1.0);
 
-                const mouthX = _folderWidth * 0.14;
-                const mouthY = _topHeadroom + _folderHeight * 0.06;
-                const peakY = 4.0;
-                const restY = _topHeadroom + (_folderHeight - _docHeight) / 2;
-                const restX = _folderWidth + _gap;
+                  const mouthX = _folderWidth * 0.14;
+                  const mouthY = _topHeadroom + _folderHeight * 0.06;
+                  const peakY = 4.0;
+                  const restY = _topHeadroom + (_folderHeight - _docHeight) / 2;
+                  const restX = _folderWidth + _gap;
 
-                final x = lerpDouble(mouthX, restX, travelP)!;
-                final yRise = lerpDouble(mouthY, peakY, riseP)!;
-                final y = lerpDouble(yRise, restY, travelP)!;
-                final scale = lerpDouble(0.22, 1.0, p);
-                final opacity = riseP;
-                final tilt = lerpDouble(isClosing ? 0.14 : -0.18, 0.0, riseP)!;
+                  final x = lerpDouble(mouthX, restX, travelP)!;
+                  final yRise = lerpDouble(mouthY, peakY, riseP)!;
+                  final y = lerpDouble(yRise, restY, travelP)!;
+                  final scale = lerpDouble(0.22, 1.0, p);
+                  final opacity = riseP;
+                  final tilt = lerpDouble(
+                    isClosing ? 0.14 : -0.18,
+                    0.0,
+                    riseP,
+                  )!;
 
-                return Stack(
-                  clipBehavior: Clip.none,
-                  children: [
-                    if (opacity > 0.01)
-                      Positioned(
-                        left: x,
-                        top: y,
-                        child: Opacity(
-                          opacity: opacity,
-                          child: Transform.rotate(
-                            angle: tilt,
-                            alignment: Alignment.bottomLeft,
-                            child: Transform.scale(
-                              scale: scale,
+                  return Stack(
+                    clipBehavior: Clip.none,
+                    children: [
+                      if (opacity > 0.01)
+                        Positioned(
+                          left: x,
+                          top: y,
+                          child: Opacity(
+                            opacity: opacity,
+                            child: Transform.rotate(
+                              angle: tilt,
                               alignment: Alignment.bottomLeft,
-                              child: PinkNameDocument(
-                                width: _docWidth,
-                                height: _docHeight,
-                                name: _textController.text,
+                              child: Transform.scale(
+                                scale: scale,
+                                alignment: Alignment.bottomLeft,
+                                child: PinkNameDocument(
+                                  width: _docWidth,
+                                  height: _docHeight,
+                                  name: _textController.text,
+                                ),
                               ),
                             ),
                           ),
                         ),
+                      Positioned(
+                        left: 0,
+                        top: _topHeadroom,
+                        child: GlassFolder(
+                          width: _folderWidth,
+                          height: _folderHeight,
+                          reactT: riseP,
+                          openT: p,
+                        ),
                       ),
-                    Positioned(
-                      left: 0,
-                      top: _topHeadroom,
-                      child: GlassFolder(
-                        width: _folderWidth,
-                        height: _folderHeight,
-                        reactT: riseP,
-                        openT: p,
-                      ),
-                    ),
-                  ],
-                );
-              },
+                    ],
+                  );
+                },
+              ),
             ),
           ),
           const SizedBox(height: AppSpacing.xl),

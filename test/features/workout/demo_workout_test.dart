@@ -6,7 +6,7 @@ import 'package:calisthenics/features/workout/domain/workout_request.dart';
 import 'package:calisthenics/features/workout/domain/workout_state.dart';
 import 'package:calisthenics/features/workout/domain/workout_steps.dart';
 import 'package:calisthenics/features/workout/presentation/screens/workout_screen.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';

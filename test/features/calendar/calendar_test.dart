@@ -6,7 +6,7 @@ import 'package:calisthenics/features/calendar/presentation/widgets/add_activity
 import 'package:calisthenics/features/calendar/presentation/widgets/calendar_section.dart';
 import 'package:calisthenics/features/user/domain/completed_session.dart';
 import 'package:calisthenics/features/user/presentation/providers/user_providers.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';

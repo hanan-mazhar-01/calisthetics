@@ -3,7 +3,7 @@ import 'package:calisthenics/core/theme/app_theme.dart';
 import 'package:calisthenics/shared/widgets/glass/glass_surface.dart';
 import 'package:calisthenics/shared/widgets/nav_icons.dart';
 import 'package:calisthenics/shared/widgets/premium_bottom_nav.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 Future<List<int>> _pumpBar(

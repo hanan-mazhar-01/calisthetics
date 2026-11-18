@@ -6,6 +6,7 @@ import '../../features/legal/presentation/screens/legal_screen.dart';
 import '../../features/onboarding/presentation/providers/onboarding_completed_provider.dart';
 import '../../features/onboarding/presentation/screens/onboarding_flow_screen.dart';
 import '../../features/paywall/presentation/screens/paywall_screen.dart';
+import '../../features/legal/presentation/screens/sources_screen.dart';
 import '../../features/plan/presentation/screens/all_plans_screen.dart';
 import '../../features/plan/presentation/screens/day_overview_screen.dart';
 import '../../features/plan/presentation/screens/plan_details_screen.dart';
@@ -21,7 +22,7 @@ const _onboardingPath = '/';
 const _homePath = '/home';
 
 /// Routes anyone may open, finished onboarding or not.
-const _publicPaths = {'/paywall', '/privacy', '/terms', '/support'};
+const _publicPaths = {'/paywall', '/privacy', '/terms', '/support', '/sources'};
 
 /// Centralized route table. Onboarding and the workout player manage their
 /// own internal step/phase state rather than pushing a route per step.
@@ -92,6 +93,10 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: '/support',
         builder: (context, state) => const LegalScreen(kind: LegalKind.support),
+      ),
+      GoRoute(
+        path: '/sources',
+        builder: (context, state) => const SourcesScreen(),
       ),
       GoRoute(
         path: '/settings',

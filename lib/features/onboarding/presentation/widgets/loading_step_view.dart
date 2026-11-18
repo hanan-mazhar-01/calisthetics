@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 import '../../../../core/theme/app_colors_extension.dart';
 import '../../../../core/theme/app_motion.dart';
@@ -131,7 +131,11 @@ class _LoadingStepViewState extends State<LoadingStepView>
                       if (!short) const SizedBox(height: AppSpacing.xl),
                       if (!short)
                         SizedBox(
-                          height: 120,
+                          // Picture + gap + one caption line, which grows
+                          // with the system text size.
+                          height:
+                              96 +
+                              MediaQuery.textScalerOf(context).scale(13 * 1.5),
                           child: ListView.separated(
                             scrollDirection: Axis.horizontal,
                             itemCount: widget.step.previewExercises.length,
@@ -157,6 +161,8 @@ class _LoadingStepViewState extends State<LoadingStepView>
                                   const SizedBox(height: 6),
                                   Text(
                                     widget.step.previewExercises[i],
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
                                     style: AppTypography.body(
                                       context.appColors.textPrimary,
                                       fontSize: 13,

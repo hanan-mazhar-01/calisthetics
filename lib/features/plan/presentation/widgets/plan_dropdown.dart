@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
@@ -103,7 +103,7 @@ class PlanDropdownPanel extends ConsumerWidget {
               ],
               Semantics(
                 button: true,
-                label: 'Add More Plan',
+                label: 'Add More Plans',
                 excludeSemantics: true,
                 child: GestureDetector(
                   onTap: addMore,
@@ -121,7 +121,7 @@ class PlanDropdownPanel extends ConsumerWidget {
                         Icon(Icons.add_rounded, color: c.accentText, size: 24),
                         const SizedBox(width: 8),
                         Text(
-                          'Add More Plan',
+                          'Add More Plans',
                           style: AppTypography.title(
                             18,
                             c.accentText,
@@ -199,7 +199,9 @@ class _PlanCard extends StatelessWidget {
         child: AnimatedContainer(
           duration: const Duration(milliseconds: 200),
           width: double.infinity,
-          height: data.isCurrent ? 176 : 156,
+          // A minimum, not a fixed height: a two-line name or larger system
+          // text makes the card grow instead of overflowing.
+          constraints: BoxConstraints(minHeight: data.isCurrent ? 176 : 156),
           clipBehavior: Clip.antiAlias,
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(26),
@@ -214,6 +216,8 @@ class _PlanCard extends StatelessWidget {
             ),
           ),
           child: Stack(
+            // Hands the card's minimum height down to the content below.
+            fit: StackFit.passthrough,
             children: [
               Positioned(
                 right: -14,
@@ -231,7 +235,12 @@ class _PlanCard extends StatelessWidget {
                   20,
                   18,
                 ),
+                // Gets the card's minimum height from the Stack: the name
+                // sits at the top, days + dots at the bottom; with a long
+                // name or large text the card simply grows.
                 child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     ConstrainedBox(
@@ -248,17 +257,25 @@ class _PlanCard extends StatelessWidget {
                         ),
                       ),
                     ),
-                    const Spacer(),
-                    Text(
-                      '${data.doneDays} / ${data.totalDays} Days',
-                      style: AppTypography.body(
-                        Colors.white,
-                        fontSize: 16,
-                        weight: FontWeight.w600,
+                    Padding(
+                      padding: const EdgeInsets.only(top: 12),
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            '${data.doneDays} / ${data.totalDays} Days',
+                            style: AppTypography.body(
+                              Colors.white,
+                              fontSize: 16,
+                              weight: FontWeight.w600,
+                            ),
+                          ),
+                          const SizedBox(height: 10),
+                          _PhaseDots(done: data.phaseDone),
+                        ],
                       ),
                     ),
-                    const SizedBox(height: 10),
-                    _PhaseDots(done: data.phaseDone),
                   ],
                 ),
               ),

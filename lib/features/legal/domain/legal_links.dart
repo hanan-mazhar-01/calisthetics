@@ -9,13 +9,19 @@
 /// which also works offline.
 const privacyPolicyUrl = String.fromEnvironment(
   'PRIVACY_POLICY_URL',
-  defaultValue: '',
+  defaultValue:
+      'https://www.thesidequestlabs.com/apps/calisthenics-for-women/privacy',
 );
 const termsOfServiceUrl = String.fromEnvironment(
   'TERMS_OF_SERVICE_URL',
-  defaultValue: '',
+  defaultValue:
+      'https://www.thesidequestlabs.com/apps/calisthenics-for-women/terms',
 );
-const supportUrl = String.fromEnvironment('SUPPORT_URL', defaultValue: '');
+const supportUrl = String.fromEnvironment(
+  'SUPPORT_URL',
+  defaultValue:
+      'https://www.thesidequestlabs.com/apps/calisthenics-for-women/support',
+);
 
 /// The page to open on the web, or null when no valid web address is set
 /// (then the in-app text is shown). Only https addresses are used.

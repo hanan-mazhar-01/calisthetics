@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 import '../../../../core/theme/app_colors_extension.dart';
 import '../../../../core/theme/app_typography.dart';
@@ -74,7 +74,9 @@ class AchievementsRow extends StatelessWidget {
           ),
         ),
         SizedBox(
-          height: 152,
+          // Medal + paddings + up to two title lines, which grow with the
+          // system text size.
+          height: 116 + MediaQuery.textScalerOf(context).scale(13 * 2.8),
           child: ListView.separated(
             scrollDirection: Axis.horizontal,
             clipBehavior: Clip.none,

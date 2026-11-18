@@ -9,7 +9,7 @@ import 'package:calisthenics/features/paywall/presentation/providers/subscriptio
 import 'package:calisthenics/features/paywall/presentation/screens/paywall_screen.dart';
 import 'package:calisthenics/features/plan/presentation/providers/plan_providers.dart';
 import 'package:calisthenics/features/profile/presentation/screens/profile_screen.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';

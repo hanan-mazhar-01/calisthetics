@@ -10,7 +10,7 @@ import 'package:calisthenics/features/plans/domain/user_profile.dart';
 import 'package:calisthenics/features/user/domain/active_plan.dart';
 import 'package:calisthenics/features/user/presentation/providers/user_providers.dart';
 import 'package:calisthenics/features/workout/domain/workout_request.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
@@ -131,6 +131,7 @@ void main() {
     );
     await tester.tap(find.byKey(const ValueKey('day-start')));
     await tester.pump(const Duration(milliseconds: 500));
+    await tester.pump(); // one more frame: a new route starts offstage
     final req = pushed as WorkoutRequest;
     expect(req.session.warmUp, later.warmUp);
     expect(
@@ -143,6 +144,7 @@ void main() {
     await pump(tester);
     await tester.tap(find.byKey(const ValueKey('day-start')));
     await tester.pump(const Duration(milliseconds: 500));
+    await tester.pump(); // one more frame: a new route starts offstage
     expect(find.text('workout-route'), findsOneWidget);
     expect(pushed, isA<WorkoutRequest>());
   });
@@ -162,10 +164,12 @@ void main() {
     await pump(tester);
     await tester.tap(find.byKey(const ValueKey('day-music')));
     await tester.pump(const Duration(milliseconds: 400));
+    await tester.pump(); // one more frame: a new route starts offstage
     expect(find.byKey(const ValueKey('music-switch')), findsOneWidget);
     expect(find.byKey(const ValueKey('music-volume')), findsOneWidget);
     await tester.tap(find.byKey(const ValueKey('music-switch')));
     await tester.pump(const Duration(milliseconds: 400));
+    await tester.pump(); // one more frame: a new route starts offstage
     // Off: the button shows the crossed-out note.
     expect(find.byIcon(Icons.music_off_rounded), findsWidgets);
   });
@@ -176,6 +180,7 @@ void main() {
     await pump(tester);
     await tester.tap(find.text(exerciseByNumber(session.warmUp.first).name));
     await tester.pump(const Duration(seconds: 1));
+    await tester.pump(); // one more frame: a new route starts offstage
     expect(find.textContaining('exercise-'), findsNothing);
     expect(pushed, isNull);
     expect(find.text('START'), findsOneWidget);
@@ -201,6 +206,7 @@ void main() {
     expect(find.text('RESUME'), findsOneWidget);
     await tester.tap(find.byKey(const ValueKey('day-start')));
     await tester.pump(const Duration(milliseconds: 500));
+    await tester.pump(); // one more frame: a new route starts offstage
     expect((pushed as WorkoutRequest).progressKey, key);
   });
 
@@ -217,6 +223,7 @@ void main() {
     expect(find.text('START'), findsOneWidget);
     await tester.tap(find.byKey(const ValueKey('day-start')));
     await tester.pump(const Duration(milliseconds: 500));
+    await tester.pump(); // one more frame: a new route starts offstage
     // Starts from the top and saves no half-way progress of its own.
     expect((pushed as WorkoutRequest).progressKey, isNull);
   });

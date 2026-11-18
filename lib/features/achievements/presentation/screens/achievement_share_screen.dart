@@ -1,6 +1,6 @@
 import 'dart:ui' as ui;
 
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter/rendering.dart';
 import 'package:share_plus/share_plus.dart';
 
@@ -196,49 +196,61 @@ class _ShareCard extends StatelessWidget {
           Column(
             children: [
               const SizedBox(height: 18),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Container(
-                    width: 22,
-                    height: 22,
-                    alignment: Alignment.center,
-                    decoration: BoxDecoration(
-                      color: c.accent,
-                      borderRadius: BorderRadius.circular(6),
-                    ),
-                    child: Text(
-                      'C',
-                      style: AppTypography.title(
-                        14,
-                        c.onAccent,
-                        weight: FontWeight.w800,
+              // The card can be narrow on small phones: the brand line
+              // shrinks to fit rather than overflowing.
+              FittedBox(
+                fit: BoxFit.scaleDown,
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Container(
+                      width: 22,
+                      height: 22,
+                      alignment: Alignment.center,
+                      decoration: BoxDecoration(
+                        color: c.accent,
+                        borderRadius: BorderRadius.circular(6),
+                      ),
+                      child: Text(
+                        'C',
+                        style: AppTypography.title(
+                          14,
+                          c.onAccent,
+                          weight: FontWeight.w800,
+                        ),
                       ),
                     ),
-                  ),
-                  const SizedBox(width: 8),
-                  Text(
-                    'CALESTHETICS',
-                    style: AppTypography.title(
-                      14,
-                      c.onCover,
-                      weight: FontWeight.w700,
-                    ).copyWith(letterSpacing: 0.8),
-                  ),
-                ],
+                    const SizedBox(width: 8),
+                    Text(
+                      'CALESTHETICS',
+                      style: AppTypography.title(
+                        14,
+                        c.onCover,
+                        weight: FontWeight.w700,
+                      ).copyWith(letterSpacing: 0.8),
+                    ),
+                  ],
+                ),
               ),
               Expanded(
                 child: Center(
-                  child: MedalBadge(
-                    number: a.number,
-                    unit: a.unit,
-                    earned: true,
-                    size: 210,
+                  child: FittedBox(
+                    fit: BoxFit.scaleDown,
+                    child: MedalBadge(
+                      number: a.number,
+                      unit: a.unit,
+                      earned: true,
+                      size: 210,
+                    ),
                   ),
                 ),
               ),
               Text(
                 a.title,
+                textAlign: TextAlign.center,
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
                 style: AppTypography.title(
                   28,
                   Colors.white,

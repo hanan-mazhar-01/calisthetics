@@ -1,4 +1,5 @@
-import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:material_ui/material_ui.dart';
 
 import '../../../../../core/theme/app_colors_extension.dart';
 import '../../../../../core/theme/app_typography.dart';
@@ -21,6 +22,9 @@ class NameInputField extends StatelessWidget {
       controller: controller,
       focusNode: focusNode,
       maxLines: 1,
+      // Long enough for real first names, short enough for every greeting.
+      inputFormatters: [LengthLimitingTextInputFormatter(30)],
+      textCapitalization: TextCapitalization.words,
       textInputAction: TextInputAction.done,
       cursorColor: context.appColors.accent,
       style: AppTypography.title(

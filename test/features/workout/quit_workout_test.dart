@@ -4,7 +4,7 @@ import 'package:calisthenics/features/plans/domain/plan_builder.dart';
 import 'package:calisthenics/features/user/presentation/providers/user_providers.dart';
 import 'package:calisthenics/features/workout/domain/workout_request.dart';
 import 'package:calisthenics/features/workout/presentation/screens/workout_screen.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
@@ -52,12 +52,15 @@ Future<ProviderContainer> _open(WidgetTester t) async {
     ),
   );
   router.push('/w', extra: _request);
+  await t.pump(); // a new route starts offstage; its slide-in begins next frame
   await t.pump(const Duration(milliseconds: 500));
   // First up -> warm-up drill running -> "next" finishes it: 1 of 2 steps done.
   await t.tap(find.text('Skip'));
   await t.pump(const Duration(milliseconds: 400));
+  await t.pump(); // one more frame: a new route starts offstage
   await t.tap(find.byTooltip('Next'));
   await t.pump(const Duration(milliseconds: 400));
+  await t.pump(); // one more frame: a new route starts offstage
   return container;
 }
 
@@ -65,6 +68,7 @@ Future<void> _openQuitDialog(WidgetTester t) async {
   await t.pump(const Duration(milliseconds: 600));
   await t.tap(find.byTooltip('Quit workout').first);
   await t.pump(const Duration(milliseconds: 400));
+  await t.pump(); // one more frame: a new route starts offstage
 }
 
 void main() {
@@ -79,12 +83,14 @@ void main() {
     expect(keep.dx, lessThan(quit.dx));
     await t.tap(find.text('Keep going'));
     await t.pump(const Duration(milliseconds: 400));
+    await t.pump(); // one more frame: a new route starts offstage
     expect(find.text('Quit workout?'), findsNothing);
     expect(find.text('home'), findsNothing); // still in the player
     // Leave so no timer is left running.
     await _openQuitDialog(t);
     await t.tap(find.text('Quit'));
     await t.pump(const Duration(milliseconds: 600));
+    await t.pump(); // one more frame: a new route starts offstage
   });
 
   testWidgets('quit without the tick saves progress, not a finished day', (
@@ -95,6 +101,7 @@ void main() {
     expect(find.textContaining('50% through'), findsOneWidget);
     await t.tap(find.text('Quit'));
     await t.pump(const Duration(milliseconds: 600));
+    await t.pump(); // one more frame: a new route starts offstage
     expect(c.read(historyProvider), isEmpty);
     expect(c.read(partialProgressProvider)[_key], 50);
     expect(find.text('home'), findsOneWidget);
@@ -105,8 +112,10 @@ void main() {
     await _openQuitDialog(t);
     await t.tap(find.text('Mark this day as complete'));
     await t.pump(const Duration(milliseconds: 300));
+    await t.pump(); // one more frame: a new route starts offstage
     await t.tap(find.text('Quit'));
     await t.pump(const Duration(milliseconds: 600));
+    await t.pump(); // one more frame: a new route starts offstage
     expect(c.read(historyProvider), hasLength(1));
     expect(c.read(historyProvider).single.templateId, 'foundation-full-body');
     expect(c.read(partialProgressProvider), isEmpty);

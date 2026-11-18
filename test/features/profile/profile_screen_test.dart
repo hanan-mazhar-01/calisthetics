@@ -9,7 +9,7 @@ import 'package:calisthenics/features/onboarding/presentation/providers/onboardi
 import 'package:calisthenics/features/profile/presentation/screens/profile_screen.dart';
 import 'package:calisthenics/features/user/presentation/providers/user_providers.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
@@ -145,9 +145,11 @@ void main() {
     final container = await _pump(tester);
     await tester.tap(find.byTooltip('Edit name'));
     await tester.pump(const Duration(milliseconds: 400));
+    await tester.pump(); // one more frame: a new route starts offstage
     await tester.enterText(find.byType(TextField), 'Sara');
     await tester.tap(find.text('Save'));
     await tester.pump(const Duration(milliseconds: 400));
+    await tester.pump(); // one more frame: a new route starts offstage
     expect(container.read(onboardingControllerProvider).name, 'Sara');
     expect(find.text('Sara'), findsOneWidget);
   });
@@ -166,9 +168,11 @@ void main() {
 
     await tester.tap(find.byTooltip('Edit name'));
     await tester.pump(const Duration(milliseconds: 400));
+    await tester.pump(); // one more frame: a new route starts offstage
     await tester.enterText(find.byType(TextField), 'Sara');
     await tester.tap(find.text('Save'));
     await tester.pump(const Duration(milliseconds: 400));
+    await tester.pump(); // one more frame: a new route starts offstage
     expect(container.read(onboardingControllerProvider).name, 'Sara');
     expect(find.text('Sara'), findsOneWidget);
     expect(find.text('Google Name'), findsNothing);
@@ -188,11 +192,13 @@ void main() {
       expect(find.text('Delete Account'), findsNothing);
       await tester.tap(find.text('Erase data on this phone'));
       await tester.pump(const Duration(milliseconds: 400));
+      await tester.pump(); // one more frame: a new route starts offstage
       expect(find.text('Erase data on this phone?'), findsOneWidget);
       expect(find.textContaining('Restore purchases'), findsOneWidget);
       expect(find.text('Erase'), findsOneWidget);
       await tester.tap(find.text('Cancel'));
       await tester.pump(const Duration(milliseconds: 400));
+      await tester.pump(); // one more frame: a new route starts offstage
       expect(find.text('Erase data on this phone?'), findsNothing);
     },
   );
@@ -204,10 +210,12 @@ void main() {
     expect(find.text('Erase data on this phone'), findsNothing);
     await tester.tap(find.text('Delete Account'));
     await tester.pump(const Duration(milliseconds: 400));
+    await tester.pump(); // one more frame: a new route starts offstage
     expect(find.text('Delete account?'), findsOneWidget);
     expect(find.textContaining('deleted from our servers'), findsOneWidget);
     await tester.tap(find.text('Cancel'));
     await tester.pump(const Duration(milliseconds: 400));
+    await tester.pump(); // one more frame: a new route starts offstage
     expect(find.text('Delete account?'), findsNothing);
   });
 
@@ -218,11 +226,13 @@ void main() {
     await _pump(tester, store: store);
     await tester.tap(find.text('Manage'));
     await tester.pump(const Duration(milliseconds: 600));
+    await tester.pump(); // one more frame: a new route starts offstage
     await tester.pump(const Duration(seconds: 1));
     expect(find.text('Manage in Google Play'), findsOneWidget);
     expect(find.text('Switch to Monthly'), findsOneWidget);
     await tester.tap(find.text('Restore purchases'));
     await tester.pump(const Duration(milliseconds: 600));
+    await tester.pump(); // one more frame: a new route starts offstage
     await tester.pump(const Duration(milliseconds: 600));
     expect(store.restores, 1);
     // No crash, and the user is told.
@@ -236,7 +246,13 @@ void main() {
   testWidgets('Help & Support opens the support page', (tester) async {
     await _pump(tester);
     await tester.tap(find.text('Help & Support'));
+    // The web page cannot open in a test (no browser), so the in-app copy
+    // shows instead, after the failed launch attempt.
+    await tester.runAsync(
+      () => Future<void>.delayed(const Duration(milliseconds: 50)),
+    );
     await tester.pump(const Duration(milliseconds: 600));
+    await tester.pump(); // one more frame: a new route starts offstage
     expect(find.text('SUPPORT PAGE'), findsOneWidget);
   });
 
@@ -244,9 +260,11 @@ void main() {
     final container = await _pump(tester);
     await tester.tap(find.text('Dark'));
     await tester.pump(const Duration(milliseconds: 300));
+    await tester.pump(); // one more frame: a new route starts offstage
     expect(container.read(settingsProvider)['themeMode'], 'dark');
     await tester.tap(find.text('Auto'));
     await tester.pump(const Duration(milliseconds: 300));
+    await tester.pump(); // one more frame: a new route starts offstage
     expect(container.read(settingsProvider)['themeMode'], 'system');
   });
 }

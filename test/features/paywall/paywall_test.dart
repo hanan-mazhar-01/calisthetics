@@ -6,7 +6,7 @@ import 'package:calisthenics/features/paywall/presentation/providers/subscriptio
 import 'package:calisthenics/features/paywall/presentation/screens/paywall_screen.dart';
 import 'package:calisthenics/features/paywall/presentation/widgets/subscription_pill.dart';
 import 'package:calisthenics/features/plan/presentation/providers/plan_providers.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -113,7 +113,7 @@ void main() {
     expect(find.text('Start my free trial'), findsOneWidget);
     expect(find.text(r'7 days free, then $9.99/month'), findsOneWidget);
     expect(find.text('Not now'), findsOneWidget);
-    expect(find.text('Restore'), findsOneWidget);
+    expect(find.text('Restore Purchases'), findsOneWidget);
     await tester.tap(find.text('Yearly'));
     await tester.pump(const Duration(milliseconds: 600));
     expect(find.textContaining(r'$49.99'), findsWidgets);

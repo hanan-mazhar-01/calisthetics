@@ -3,7 +3,7 @@ import 'dart:math' as math;
 
 import 'package:flutter/foundation.dart'
     show TargetPlatform, defaultTargetPlatform, kIsWeb, kReleaseMode;
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -271,13 +271,13 @@ class _PaywallContentState extends ConsumerState<PaywallContent> {
                         alignment: WrapAlignment.center,
                         children: [
                           _LinkButton(label: 'Not now', onTap: widget.onClose),
-                          _LinkButton(label: 'Restore', onTap: _restore),
+                          _LinkButton(label: 'Restore Purchases', onTap: _restore),
                           _LinkButton(
-                            label: 'Terms',
+                            label: 'Terms of Use',
                             onTap: () => openLegal(context, LegalKind.terms),
                           ),
                           _LinkButton(
-                            label: 'Privacy',
+                            label: 'Privacy Policy',
                             onTap: () => openLegal(context, LegalKind.privacy),
                           ),
                         ],

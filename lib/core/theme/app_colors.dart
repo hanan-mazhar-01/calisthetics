@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 /// Raw brand color constants for the Calesthetics brand design.
 /// Only `lib/core/theme/` may reference these. Widgets use `context.appColors`

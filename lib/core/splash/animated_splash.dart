@@ -1,6 +1,6 @@
 import 'dart:io' show Platform;
 
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 /// Whether the launch animation plays. Widget tests turn it off by themselves.
 final bool _inTest = Platform.environment.containsKey('FLUTTER_TEST');
@@ -136,7 +136,8 @@ class _AnimatedSplashState extends State<AnimatedSplash>
         borderRadius: BorderRadius.circular(s * 0.2237),
         boxShadow: [
           BoxShadow(
-            color: const Color(0xFF5A1428).withValues(alpha: 0.45 * _p(0.3, 1.2)),
+            color: const Color(0xFF5A1428)
+                .withValues(alpha: 0.45 * _p(0.3, 1.2)),
             blurRadius: 44,
             offset: const Offset(0, 20),
           ),

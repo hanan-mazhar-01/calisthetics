@@ -1,6 +1,6 @@
 import 'dart:math' as math;
 
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 /// Three dots that rise and fall one after another: the wait indicator for a
 /// button whose action is under way. Stands still when animations are off.

@@ -7,12 +7,12 @@ class LegalSection {
   final String body;
 }
 
-const legalUpdated = "October 19, 2026";
+const legalUpdated = "November 18, 2026";
 
 const privacySections = <LegalSection>[
   LegalSection(
     "1. Information We Collect and Purpose of Collection",
-    "Calesthetics collects only the information needed to build your training plan, track your progress, and run your subscription. If you use the app as a guest, none of it leaves your phone.\n\n## A. Training Profile & Preferences\n\n• What We Collect: Your answers while setting up your plan: goal, age range, where you train, equipment, experience, days per week, session length, preferred time of day, focus areas, your plank test result, and the first name you type in. You may also choose \"areas to protect\" (for example knees or wrists); this is optional.\n• Why We Collect It: To choose and build your plan and to avoid exercises that load an area you asked us to protect. The plan is built by fixed rules from your answers; there is no profiling and no automated decision with legal effect.\n• Health-related answers: Areas to protect are your own preference. They are not a medical record, and we do not diagnose or assess anything.\n\n## B. Workouts & Progress\n\n• What We Collect: Workouts you finish or add by hand (name, date, length, exercises), how far you got in a workout you left early, how a set felt (Easy / Just right / Hard), favorites, personal records, plank results, and app settings such as your reminder time, theme and music choice.\n• Why We Collect It: To show your streak, achievements, calendar and history, to let you resume a workout, and to set your reminders.\n\n## C. Account & Authentication (Optional)\n\n• What We Collect: If you create an account: your email address, the display name you give, and how you sign in (email and password, Google, or Apple). With Apple you may hide your email; we then receive Apple's private relay address. Your password is handled by Firebase Authentication; we never see it.\n• Why We Collect It: To secure your account and to save your plan and progress so they come back when you sign in on another phone.\n\n## D. Subscriptions, In-App Purchases & Billing\n\n• Apple App Store & Google Play Billing: When you buy Premium, the payment is processed by Apple or Google. Calesthetics does not collect, store, or have access to your card number, bank details, or billing address.\n• Subscription Infrastructure (RevenueCat): We use RevenueCat to check and manage subscriptions. It receives purchase receipts, purchase and renewal dates, your subscription status, and an app user ID (your account ID, or an anonymous one for a guest), only to confirm what you have bought and unlock Premium on your devices.\n\n## E. Technical Data\n\n• Like any app that uses the internet, the services below see your IP address and basic device and request information when the app talks to them: Google (Firebase) when you sign in or sync, and our media provider Bunny.net when exercise videos and pictures load.\n• We do not use advertising IDs, analytics or crash-reporting tools, and we do not track you across other apps or websites.",
+    "Calisthenics for Women collects only the information needed to build your training plan, track your progress, and run your subscription. If you use the app as a guest, none of it leaves your phone.\n\n## A. Training Profile & Preferences\n\n• What We Collect: Your answers while setting up your plan: goal, age range, where you train, equipment, experience, days per week, session length, preferred time of day, focus areas, your plank test result, and the first name you type in. You may also choose \"areas to protect\" (for example knees or wrists); this is optional.\n• Why We Collect It: To choose and build your plan and to avoid exercises that load an area you asked us to protect. The plan is built by fixed rules from your answers; there is no profiling and no automated decision with legal effect.\n• Health-related answers: Areas to protect are your own preference. They are not a medical record, and we do not diagnose or assess anything.\n\n## B. Workouts & Progress\n\n• What We Collect: Workouts you finish or add by hand (name, date, length, exercises), how far you got in a workout you left early, how a set felt (Easy / Just right / Hard), favorites, personal records, plank results, and app settings such as your reminder time, theme and music choice.\n• Why We Collect It: To show your streak, achievements, calendar and history, to let you resume a workout, and to set your reminders.\n\n## C. Account & Authentication (Optional)\n\n• What We Collect: If you create an account: your email address, the display name you give, and how you sign in (email and password, Google, or Apple). With Apple you may hide your email; we then receive Apple's private relay address. Your password is handled by Firebase Authentication; we never see it.\n• Why We Collect It: To secure your account and to save your plan and progress so they come back when you sign in on another phone.\n\n## D. Subscriptions, In-App Purchases & Billing\n\n• Apple App Store & Google Play Billing: When you buy Premium, the payment is processed by Apple or Google. Calisthenics for Women does not collect, store, or have access to your card number, bank details, or billing address.\n• Subscription Infrastructure (RevenueCat): We use RevenueCat to check and manage subscriptions. It receives purchase receipts, purchase and renewal dates, your subscription status, and an app user ID (your account ID, or an anonymous one for a guest), only to confirm what you have bought and unlock Premium on your devices.\n\n## E. Technical Data\n\n• Like any app that uses the internet, the services below see your IP address and basic device and request information when the app talks to them: Google (Firebase) when you sign in or sync, and our media provider Bunny.net when exercise videos and pictures load.\n• We do not use advertising IDs, analytics or crash-reporting tools, and we do not track you across other apps or websites.",
   ),
   LegalSection(
     "2. Strict Zero Third-Party Sharing Policy",
@@ -24,7 +24,7 @@ const privacySections = <LegalSection>[
   ),
   LegalSection(
     "4. Device Permissions & Data Access",
-    "Calesthetics asks only for what its features need:\n\n• Notifications: Used only for the workout reminders you switch on. They are scheduled on your phone itself; there is no push-notification server, and you can turn them off anytime in the app or in system settings.\n• Vibration: Used for the light haptic feedback while you use the app. It needs no data.\n• Share sheet: When you tap Share on an achievement, the app hands a picture of that achievement card and one line of text to your phone's share sheet. Nothing is sent unless you choose where to share it.\n• Not requested: camera, photo library, microphone, location, contacts, or health data (such as Apple Health or Google Fit).",
+    "Calisthenics for Women asks only for what its features need:\n\n• Notifications: Used only for the workout reminders you switch on. They are scheduled on your phone itself; there is no push-notification server, and you can turn them off anytime in the app or in system settings.\n• Vibration: Used for the light haptic feedback while you use the app. It needs no data.\n• Share sheet: When you tap Share on an achievement, the app hands a picture of that achievement card and one line of text to your phone's share sheet. Nothing is sent unless you choose where to share it.\n• Not requested: camera, photo library, microphone, location, contacts, or health data (such as Apple Health or Google Fit).",
   ),
   LegalSection(
     "5. User Rights, Data Control & Account Deletion",
@@ -36,11 +36,11 @@ const privacySections = <LegalSection>[
   ),
   LegalSection(
     "7. Mandatory Non-Medical Disclaimer",
-    "Training Guidance — Not Medical Advice. Calesthetics is a fitness and training app. It is not a medical device and does not provide medical diagnoses, treatment or clinical advice. The \"areas to protect\" you choose only change which exercises are suggested; they are not a medical assessment. Talk to a doctor before you start if you have an injury, a health condition, or are pregnant, and stop right away if anything hurts.",
+    "Training Guidance — Not Medical Advice. Calisthenics for Women is a fitness and training app. It is not a medical device and does not provide medical diagnoses, treatment or clinical advice. The \"areas to protect\" you choose only change which exercises are suggested; they are not a medical assessment. Talk to a doctor before you start if you have an injury, a health condition, or are pregnant, and stop right away if anything hurts.",
   ),
   LegalSection(
     "8. Children's Privacy",
-    "Calesthetics is intended for adults aged 18 and over and is not directed at children. We do not knowingly collect personal data from anyone under 13 (or under 16 in the European Union). If you believe a child has given us information, contact us and we will delete it promptly.",
+    "Calisthenics for Women is intended for adults aged 18 and over and is not directed at children. We do not knowingly collect personal data from anyone under 13 (or under 16 in the European Union). If you believe a child has given us information, contact us and we will delete it promptly.",
   ),
   LegalSection(
     "9. International Data Transfers",
@@ -48,22 +48,22 @@ const privacySections = <LegalSection>[
   ),
   LegalSection(
     "10. Changes to This Privacy Policy",
-    "We may update this Privacy Policy when the app, its features or the law change. The new version is posted here with an updated \"Last Updated\" date, and the in-app copy is updated with it. Continuing to use Calesthetics after a change means you accept the updated policy. See also our Terms of Service.",
+    "We may update this Privacy Policy when the app, its features or the law change. The new version is posted here with an updated \"Last Updated\" date, and the in-app copy is updated with it. Continuing to use Calisthenics for Women after a change means you accept the updated policy. See also our Terms of Service.",
   ),
   LegalSection(
     "11. Contact Information",
-    "For privacy questions, data requests, or anything about how we handle your data, please contact us:\n\nApplication: Calesthetics\nPublisher: Verado Studio\nSupport Email: support@veradostudio.com",
+    "For privacy questions, data requests, or anything about how we handle your data, please contact us:\n\nApplication: Calisthenics for Women\nPublisher: Verado Studio\nSupport Email: support@veradostudio.com",
   ),
 ];
 
 const termsSections = <LegalSection>[
   LegalSection(
     "1. Agreement to These Terms",
-    "These Terms of Service (also called Terms of Use) are an agreement between you and Verado Studio (\"we\", \"us\") for the Calesthetics app. By installing or using the app you agree to them and to our Privacy Policy. If you do not agree, please do not use the app.\n\nThe app is for adults. You must be 18 or older, or the age of majority where you live.",
+    "These Terms of Service (also called Terms of Use) are an agreement between you and Verado Studio (\"we\", \"us\") for the Calisthenics for Women app. By installing or using the app you agree to them and to our Privacy Policy. If you do not agree, please do not use the app.\n\nThe app is for adults. You must be 18 or older, or the age of majority where you live.",
   ),
   LegalSection(
     "2. Health, Safety & Not Medical Advice",
-    "Train Within Your Own Limits. Calesthetics provides general training guidance. It is not medical advice and not a substitute for a doctor or qualified coach. Talk to a doctor before you start if you have an injury, a health condition, or are pregnant. Stop right away if you feel pain, dizziness or anything unusual. You use the app and do the exercises at your own risk. The \"areas to protect\" you choose only change which exercises are suggested; they are not a medical assessment, and no plan can promise a result.",
+    "Train Within Your Own Limits. Calisthenics for Women provides general training guidance. It is not medical advice and not a substitute for a doctor or qualified coach. Talk to a doctor before you start if you have an injury, a health condition, or are pregnant. Stop right away if you feel pain, dizziness or anything unusual. You use the app and do the exercises at your own risk. The \"areas to protect\" you choose only change which exercises are suggested; they are not a medical assessment, and no plan can promise a result.",
   ),
   LegalSection(
     "3. Your Account",
@@ -75,11 +75,11 @@ const termsSections = <LegalSection>[
   ),
   LegalSection(
     "5. Subscriptions, Free Trial & Billing",
-    "## A. Prices and Free Trial\n\n• Monthly: \$9.99 per month, with a 7-day free trial for eligible new subscribers. Yearly: \$49.99 per year (no trial).\n• Prices can differ by country and include taxes where required; the exact price is shown in the store before you confirm. The free trial is offered once per person. Any unused part of a free trial ends when you buy a subscription.\n\n## B. Billing and Renewal\n\n• Payment is charged to your Apple ID or Google Play account when you confirm the purchase (or when the free trial ends).\n• Subscriptions renew automatically for the same period unless you cancel at least 24 hours before the current period ends. Your account is charged for the renewal within 24 hours before it ends.\n\n## C. Cancelling, Refunds and Restoring\n\n• Manage or cancel in your Apple ID > Subscriptions or Google Play > Payments & subscriptions settings. Deleting the app or your Calesthetics account does not cancel a subscription.\n• Apple and Google handle payments and refunds, and their rules apply. We cannot refund purchases made through them.\n• On a new phone, use Restore on the Premium screen to bring your subscription back.",
+    "## A. Prices and Free Trial\n\n• Monthly: \$9.99 per month, with a 7-day free trial for eligible new subscribers. Yearly: \$49.99 per year (no trial).\n• Prices can differ by country and include taxes where required; the exact price is shown in the store before you confirm. The free trial is offered once per person. Any unused part of a free trial ends when you buy a subscription.\n\n## B. Billing and Renewal\n\n• Payment is charged to your Apple ID or Google Play account when you confirm the purchase (or when the free trial ends).\n• Subscriptions renew automatically for the same period unless you cancel at least 24 hours before the current period ends. Your account is charged for the renewal within 24 hours before it ends.\n\n## C. Cancelling, Refunds and Restoring\n\n• Manage or cancel in your Apple ID > Subscriptions or Google Play > Payments & subscriptions settings. Deleting the app or your Calisthenics for Women account does not cancel a subscription.\n• Apple and Google handle payments and refunds, and their rules apply. We cannot refund purchases made through them.\n• On a new phone, use Restore on the Premium screen to bring your subscription back.",
   ),
   LegalSection(
     "6. Using the App",
-    "You may use Calesthetics for your own personal, non-commercial training. You agree not to:\n\n• copy, record, download in bulk, resell or share the videos, pictures, plans or text outside the app (other than what the app's Share button offers);\n• reverse engineer, modify, or try to break or bypass the app, its sign-in, or its Premium protection;\n• overload or interfere with our services, or use the app in a way that breaks the law.",
+    "You may use Calisthenics for Women for your own personal, non-commercial training. You agree not to:\n\n• copy, record, download in bulk, resell or share the videos, pictures, plans or text outside the app (other than what the app's Share button offers);\n• reverse engineer, modify, or try to break or bypass the app, its sign-in, or its Premium protection;\n• overload or interfere with our services, or use the app in a way that breaks the law.",
   ),
   LegalSection(
     "7. Content and Ownership",
@@ -107,18 +107,18 @@ const termsSections = <LegalSection>[
   ),
   LegalSection(
     "13. Changes to These Terms",
-    "We may update these terms. The new version is posted here with an updated \"Last Updated\" date, and in the app. If you keep using Calesthetics after a change, you accept the new terms. If you do not agree, stop using the app and delete your account.",
+    "We may update these terms. The new version is posted here with an updated \"Last Updated\" date, and in the app. If you keep using Calisthenics for Women after a change, you accept the new terms. If you do not agree, stop using the app and delete your account.",
   ),
   LegalSection(
     "14. Contact Information",
-    "Questions about these terms? Contact us:\n\nApplication: Calesthetics\nPublisher: Verado Studio\nSupport Email: support@veradostudio.com",
+    "Questions about these terms? Contact us:\n\nApplication: Calisthenics for Women\nPublisher: Verado Studio\nSupport Email: support@veradostudio.com",
   ),
 ];
 
 const supportSections = <LegalSection>[
   LegalSection(
     "1. Getting Started",
-    "## How do the plans work?\n\nYour plan is split into phases of three training days. Each day lists a warm-up, the main exercises and a cool-down. Open a day and tap START.\n\n## Why is a day locked?\n\nDays open one after another: finish a day to unlock the next. It keeps your progression steady and safe.\n\n## I quit in the middle of a workout. Is it lost?\n\nNo. Quitting saves how far you got. Open that day again and tap Resume to carry on from where you stopped.\n\n## Can I change my plan?\n\nYes. On the Plan tab, tap Edit to adjust your training, or open the plan menu at the top to see all plans and switch. Switching asks you to confirm first. Free includes one plan; Premium lets you add more.",
+    "## How do the plans work?\n\nYour plan is split into phases of three training days. Each day lists a warm-up, the main exercises and a cool-down. Open a day and tap START.\n\n## Why is a day locked?\n\nDays open one after another: finish a day to unlock the next. It keeps your progression steady and safe.\n\n## I quit in the middle of a workout. Is it lost?\n\nNo. Quitting saves how far you got. Open that day again and tap Resume to carry on from where you stopped.\n\n## Can I change my plan?\n\nYes. On the Plan tab, tap Edit to adjust your training, or open the plan menu at the top to see all plans and switch. Your progress in each plan is kept when you switch. Free includes one plan; Premium lets you add more.",
   ),
   LegalSection(
     "2. Your Account and Signing In",
@@ -126,7 +126,7 @@ const supportSections = <LegalSection>[
   ),
   LegalSection(
     "3. Premium and Subscriptions",
-    "## What does Premium include?\n\nEvery plan, and every exercise and video in Discover. Monthly is \$9.99 per month with a 7-day free trial for eligible new subscribers; Yearly is \$49.99 per year. The free trial is offered once per person.\n\n## I paid, but Premium is not showing.\n\n• Open Profile, tap Manage on the Premium card, then Restore purchases. You can also tap Restore on the Premium screen.\n• Use the same Apple ID or Google account that bought it.\n• Still missing? Email us the order number from your Apple or Google receipt and we will help.\n\n## How do I cancel?\n\nCancel in the store, not in the app: Apple ID > Subscriptions on iPhone, or Google Play > Payments & subscriptions > Subscriptions on Android. Cancel at least 24 hours before it renews. Deleting the app or your Calesthetics account does not cancel it.\n\n## Can I get a refund?\n\nApple and Google take the payment, so they handle refunds. On iPhone, use reportaproblem.apple.com; on Android, use your order history in Google Play. We cannot refund purchases made through them.",
+    "## What does Premium include?\n\nEvery plan, and every exercise and video in Discover. Monthly is \$9.99 per month with a 7-day free trial for eligible new subscribers; Yearly is \$49.99 per year. The free trial is offered once per person.\n\n## I paid, but Premium is not showing.\n\n• Open Profile, tap Manage on the Premium card, then Restore purchases. You can also tap Restore on the Premium screen.\n• Use the same Apple ID or Google account that bought it.\n• Still missing? Email us the order number from your Apple or Google receipt and we will help.\n\n## How do I cancel?\n\nCancel in the store, not in the app: Apple ID > Subscriptions on iPhone, or Google Play > Payments & subscriptions > Subscriptions on Android. Cancel at least 24 hours before it renews. Deleting the app or your Calisthenics for Women account does not cancel it.\n\n## Can I get a refund?\n\nApple and Google take the payment, so they handle refunds. On iPhone, use reportaproblem.apple.com; on Android, use your order history in Google Play. We cannot refund purchases made through them.",
   ),
   LegalSection(
     "4. Workouts, Videos and Music",
@@ -134,7 +134,7 @@ const supportSections = <LegalSection>[
   ),
   LegalSection(
     "5. Reminders",
-    "## How do I turn on reminders?\n\nOpen Profile > Reminders, switch them on and pick a time. We remind you on the days your plan trains. Allow notifications when your phone asks.\n\n## My reminders do not arrive.\n\n• In your phone's settings, make sure notifications are allowed for Calesthetics.\n• On some Android phones, battery saver can delay or block reminders. Set Calesthetics to Unrestricted (or remove its battery limits).\n• Reminders are scheduled on your phone, so they work without internet.",
+    "## How do I turn on reminders?\n\nOpen Profile > Reminders, switch them on and pick a time. We remind you on the days your plan trains. Allow notifications when your phone asks.\n\n## My reminders do not arrive.\n\n• In your phone's settings, make sure notifications are allowed for the app.\n• On some Android phones, battery saver can delay or block reminders. Set the app to Unrestricted (or remove its battery limits).\n• Reminders are scheduled on your phone, so they work without internet.",
   ),
   LegalSection(
     "6. Your Data and Privacy",
@@ -142,6 +142,6 @@ const supportSections = <LegalSection>[
   ),
   LegalSection(
     "7. Still Need Help?",
-    "Email us and include, if you can: what happened and what you expected; your phone model and its system version; the app version (at the bottom of your Profile screen); and a screenshot. Please never send your password.\n\nApplication: Calesthetics\nPublisher: Verado Studio\nSupport Email: support@veradostudio.com",
+    "Email us and include, if you can: what happened and what you expected; your phone model and its system version; the app version (in your phone's Settings > Apps); and a screenshot. Please never send your password.\n\nApplication: Calisthenics for Women\nPublisher: Verado Studio\nSupport Email: support@veradostudio.com",
   ),
 ];

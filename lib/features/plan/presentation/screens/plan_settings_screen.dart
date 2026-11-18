@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
@@ -126,7 +126,7 @@ class PlanSettingsScreen extends ConsumerWidget {
                   ),
                   const SizedBox(height: AppSpacing.md),
                   _OutlineButton(
-                    label: 'Restart From Day1',
+                    label: 'Restart From Day 1',
                     onTap: () => _restart(context, ref),
                   ),
                 ],

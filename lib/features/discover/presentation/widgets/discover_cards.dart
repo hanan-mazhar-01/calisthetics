@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 import '../../../../core/theme/app_colors_extension.dart';
 import '../../../../core/theme/app_typography.dart';
@@ -378,16 +378,27 @@ class AreaBubble extends StatelessWidget {
                 Center(
                   child: Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 6),
-                    child: Text(
-                      label.toUpperCase(),
-                      textAlign: TextAlign.center,
-                      maxLines: 2,
-                      style: AppTypography.title(
-                        13,
-                        Colors.white,
-                        weight: FontWeight.w900,
-                        height: 1.1,
-                      ),
+                    child: LayoutBuilder(
+                      builder: (context, box) {
+                        final text = label.toUpperCase();
+                        final style = _fitLongestWord(
+                          context,
+                          text,
+                          AppTypography.title(
+                            13,
+                            Colors.white,
+                            weight: FontWeight.w900,
+                            height: 1.1,
+                          ),
+                          box.maxWidth,
+                        );
+                        return Text(
+                          text,
+                          textAlign: TextAlign.center,
+                          maxLines: 2,
+                          style: style,
+                        );
+                      },
                     ),
                   ),
                 ),
@@ -398,6 +409,31 @@ class AreaBubble extends StatelessWidget {
       ),
     );
   }
+}
+
+/// [style], with its font made just small enough that the longest word of
+/// [text] fits in [maxWidth] — words wrap between lines but never break
+/// mid-word ("CONDITIONI / NG").
+TextStyle _fitLongestWord(
+  BuildContext context,
+  String text,
+  TextStyle style,
+  double maxWidth,
+) {
+  final scaler = MediaQuery.textScalerOf(context);
+  var widest = 0.0;
+  for (final word in text.split(' ')) {
+    final painter = TextPainter(
+      text: TextSpan(text: word, style: style),
+      textDirection: TextDirection.ltr,
+      textScaler: scaler,
+      maxLines: 1,
+    )..layout();
+    if (painter.width > widest) widest = painter.width;
+    painter.dispose();
+  }
+  if (widest <= maxWidth || widest == 0) return style;
+  return style.copyWith(fontSize: style.fontSize! * maxWidth / widest * 0.98);
 }
 
 /// White rounded chip ("Time" / "Equipment" style).

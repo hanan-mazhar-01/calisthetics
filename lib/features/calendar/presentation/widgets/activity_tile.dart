@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 import '../../../../core/theme/app_colors_extension.dart';
 import '../../../../core/theme/app_typography.dart';
@@ -40,17 +40,23 @@ class ActivityTile extends StatelessWidget {
         onTap: onTap,
         onLongPress: onLongPress,
         child: Container(
-          height: 98,
+          constraints: const BoxConstraints(minHeight: 98),
           decoration: BoxDecoration(
             color: c.surface,
             borderRadius: BorderRadius.circular(14),
           ),
           clipBehavior: Clip.antiAlias,
-          child: Row(
+          // The text decides the height (at least 98, more with large
+          // system text); the picture fills that height on the left.
+          child: Stack(
+            fit: StackFit.passthrough,
+            alignment: AlignmentDirectional.centerStart,
             children: [
-              SizedBox(
+              Positioned(
+                left: 0,
+                top: 0,
+                bottom: 0,
                 width: 116,
-                height: 98,
                 child: n > 0 && !session.isManual
                     ? ExerciseThumb(
                         number: session.exerciseNumbers.first,
@@ -66,9 +72,10 @@ class ActivityTile extends StatelessWidget {
                         ),
                       ),
               ),
-              const SizedBox(width: 16),
-              Expanded(
+              Padding(
+                padding: const EdgeInsets.fromLTRB(116 + 16, 8, 12, 8),
                 child: Column(
+                  mainAxisSize: MainAxisSize.min,
                   mainAxisAlignment: MainAxisAlignment.center,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -98,7 +105,6 @@ class ActivityTile extends StatelessWidget {
                   ],
                 ),
               ),
-              const SizedBox(width: 12),
             ],
           ),
         ),

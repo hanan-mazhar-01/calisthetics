@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:video_player/video_player.dart';
 
@@ -49,6 +49,9 @@ class WorkoutVideo extends ConsumerStatefulWidget {
 class _WorkoutVideoState extends ConsumerState<WorkoutVideo> {
   VideoPlayerController? _controller;
   bool _ready = false;
+  /// The video could not be loaded (offline, or the CDN refused it): show
+  /// the thumbnail/name card instead of the loading backdrop for good.
+  bool _failed = false;
   int _generation = 0;
 
   /// The set's 30 s video, initialised (paused) while its rest clip plays,
@@ -100,6 +103,7 @@ class _WorkoutVideoState extends ConsumerState<WorkoutVideo> {
 
   Future<void> _load() async {
     final generation = ++_generation;
+    _failed = false;
     final exercise = exerciseByNumber(widget.exerciseNumber);
     final key = _key(widget.exerciseNumber, widget.clip);
     widget.onLoading?.call(ExerciseVideos.has(exercise));
@@ -148,7 +152,7 @@ class _WorkoutVideoState extends ConsumerState<WorkoutVideo> {
       await controller.dispose();
       if (generation == _generation) widget.onLoading?.call(false);
       if (mounted && generation == _generation && _controller == null) {
-        setState(() {});
+        setState(() => _failed = true);
       }
     }
   }
@@ -216,7 +220,7 @@ class _WorkoutVideoState extends ConsumerState<WorkoutVideo> {
     // The exercise has a video that is still loading: show the video's own
     // plain studio backdrop (not a different photo) with a thin loading bar,
     // so the video appears without a jump.
-    if (ExerciseVideos.has(exercise)) {
+    if (ExerciseVideos.has(exercise) && !_failed) {
       return const Stack(
         fit: StackFit.expand,
         children: [

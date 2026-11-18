@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
@@ -431,11 +431,17 @@ class _TryButton extends StatelessWidget {
               color: c.onAccent,
             ),
             const SizedBox(width: 8),
-            Text(
-              locked
-                  ? 'Unlock with Premium'
-                  : 'Try it · ${PlanBuilder.drillSeconds} s',
-              style: AppTypography.title(16, c.onAccent),
+            Flexible(
+              child: FittedBox(
+                fit: BoxFit.scaleDown,
+                child: Text(
+                  locked
+                      ? 'Unlock with Premium'
+                      : 'Try it · ${PlanBuilder.drillSeconds} s',
+                  maxLines: 1,
+                  style: AppTypography.title(16, c.onAccent),
+                ),
+              ),
             ),
           ],
         ),
@@ -490,7 +496,14 @@ class _Section extends StatelessWidget {
                 child: Icon(icon, size: 17, color: tint ?? c.accentText),
               ),
               const SizedBox(width: 10),
-              Text(title, style: AppTypography.title(16, c.textPrimary)),
+              // Wraps (e.g. "Make it easier or harder") instead of running
+              // past the card on narrow phones.
+              Expanded(
+                child: Text(
+                  title,
+                  style: AppTypography.title(16, c.textPrimary),
+                ),
+              ),
             ],
           ),
           const SizedBox(height: 10),

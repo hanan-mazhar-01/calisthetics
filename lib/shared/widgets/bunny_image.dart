@@ -1,5 +1,5 @@
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 import '../../features/media/data/bunny_images.dart';
 
@@ -38,7 +38,7 @@ class BunnyImage extends StatelessWidget {
       memCacheWidth: cacheWidth,
       fadeInDuration: const Duration(milliseconds: 180),
       fadeOutDuration: Duration.zero,
-      placeholder: (_, _) => const SizedBox.shrink(),
+      placeholder: (_, _) => empty,
       errorWidget: (_, _, _) => empty,
     );
   }

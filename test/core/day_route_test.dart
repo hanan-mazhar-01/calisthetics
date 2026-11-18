@@ -3,7 +3,7 @@ import 'package:calisthenics/core/storage/shared_preferences_provider.dart';
 import 'package:calisthenics/core/theme/app_theme.dart';
 import 'package:calisthenics/features/onboarding/presentation/providers/onboarding_completed_provider.dart';
 import 'package:calisthenics/features/plan/presentation/screens/day_overview_screen.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -32,6 +32,7 @@ void main() {
 
     router.go('/day/2?week=3');
     await tester.pump(const Duration(seconds: 1));
+    await tester.pump(); // one more frame: a new route starts offstage
     final screen = tester.widget<DayOverviewScreen>(
       find.byType(DayOverviewScreen),
     );
@@ -40,6 +41,7 @@ void main() {
 
     router.go('/day/2');
     await tester.pump(const Duration(seconds: 1));
+    await tester.pump(); // one more frame: a new route starts offstage
     expect(
       tester.widget<DayOverviewScreen>(find.byType(DayOverviewScreen)).week,
       isNull,

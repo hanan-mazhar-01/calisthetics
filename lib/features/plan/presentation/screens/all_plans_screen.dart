@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
@@ -45,7 +45,7 @@ class AllPlansScreen extends ConsumerWidget {
           ),
         ),
       if (others.isNotEmpty)
-        _Heading('Other Plan', top: ordered.isEmpty ? 4 : 14),
+        _Heading('Other Plans', top: ordered.isEmpty ? 4 : 14),
       for (final t in others)
         _Spaced(
           PlanShowcaseCard(
@@ -61,7 +61,7 @@ class AllPlansScreen extends ConsumerWidget {
         bottom: false,
         child: Column(
           children: [
-            const PlanTopBar(title: 'All Plan'),
+            const PlanTopBar(title: 'All Plans'),
             Expanded(
               child: ListView.builder(
                 padding: EdgeInsets.fromLTRB(

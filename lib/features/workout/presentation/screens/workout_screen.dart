@@ -1,4 +1,6 @@
-import 'package:flutter/material.dart';
+import 'dart:math' as math;
+
+import 'package:material_ui/material_ui.dart';
 
 import '../../../media/data/exercise_videos.dart';
 import '../../data/background_music.dart';
@@ -45,8 +47,29 @@ class _WorkoutScreenState extends ConsumerState<WorkoutScreen> {
   bool? _musicDucked;
   double? _musicLevel;
 
+  /// Leaving the app (home button, a call, the app switcher) pauses the
+  /// workout: the timer, video and music stop where they are, and the user
+  /// carries on with Play when they come back. Nothing runs in the
+  /// background and no progress is lost.
+  late final AppLifecycleListener _lifecycle = AppLifecycleListener(
+    onHide: () {
+      if (!mounted) return;
+      final s = ref.read(workoutControllerProvider(request));
+      if (!s.paused && !s.isDone) {
+        ref.read(workoutControllerProvider(request).notifier).setPaused(true);
+      }
+    },
+  );
+
+  @override
+  void initState() {
+    super.initState();
+    _lifecycle; // starts listening
+  }
+
   @override
   void dispose() {
+    _lifecycle.dispose();
     _music.dispose();
     super.dispose();
   }
@@ -172,76 +195,92 @@ class _WorkoutScreenState extends ConsumerState<WorkoutScreen> {
       },
       child: Scaffold(
         backgroundColor: c.background,
-        body: Column(
-          children: [
-            AnimatedSwitcher(
+        // Tall screens: the video fills whatever the top and bottom leave.
+        // Short ones (landscape, small phone with large text): the player
+        // scrolls, with the video at a fixed share of the height, rather
+        // than squeezing the controls off the screen.
+        body: LayoutBuilder(
+          builder: (context, box) {
+            final short = box.maxHeight < 600;
+            final video = AnimatedContainer(
               duration: switchDuration,
-              transitionBuilder: _transition,
-              child: KeyedSubtree(
-                key: key,
-                child: switch (phase) {
-                  WorkoutPhase.preview || WorkoutPhase.rest => _InterludeTop(
-                    state: state,
-                    countdown: ctl.countdown,
-                    onQuit: _quit,
-                    onExtend: ctl.extendRest,
-                    onSkip: ctl.skipRest,
-                  ),
-                  WorkoutPhase.work => _ActiveTop(
-                    state: state,
-                    countdown: ctl.countdown,
-                    detailsOpen: _detailsOpen,
-                    onQuit: _quit,
-                    onToggleDetails: () =>
-                        setState(() => _detailsOpen = !_detailsOpen),
-                    onMusic: showMusicPanel,
-                  ),
-                  _ => _RatingTop(state: state, onQuit: _quit),
-                },
-              ),
-            ),
-            Expanded(
-              child: AnimatedContainer(
-                duration: switchDuration,
-                clipBehavior: Clip.hardEdge,
-                decoration: BoxDecoration(
-                  color: c.surface,
-                  borderRadius: BorderRadius.vertical(
-                    top: Radius.circular(interlude ? 28 : 0),
-                  ),
-                ),
-                child: WorkoutVideo(
-                  exerciseNumber: state.displayExercise,
-                  paused: state.paused,
-                  // Rest and "up next" show the short silent clip; the set
-                  // plays the full video with its own coaching sound (the
-                  // music switch only affects the background track).
-                  clip: interlude,
-                  onLoading: ctl.setVideoLoading,
-                  sound: true,
+              clipBehavior: Clip.hardEdge,
+              decoration: BoxDecoration(
+                color: c.surface,
+                borderRadius: BorderRadius.vertical(
+                  top: Radius.circular(interlude ? 28 : 0),
                 ),
               ),
-            ),
-            AnimatedSwitcher(
-              duration: switchDuration,
-              transitionBuilder: _transition,
-              child: KeyedSubtree(
-                key: key,
-                child: switch (phase) {
-                  WorkoutPhase.work => _ActiveBottom(
-                    state: state,
-                    countdown: ctl.countdown,
-                    onTogglePause: () => ctl.setPaused(!state.paused),
-                    onDone: ctl.finishStep,
-                    onPrevious: ctl.previousStep,
-                    onAudio: _toggleMusic,
-                  ),
-                  WorkoutPhase.rating => _RatingBottom(onRate: ctl.rate),
-                  _ => const SizedBox.shrink(),
-                },
+              child: WorkoutVideo(
+                exerciseNumber: state.displayExercise,
+                paused: state.paused,
+                // Rest and "up next" show the short silent clip; the set
+                // plays the full video with its own coaching sound (the
+                // music switch only affects the background track).
+                clip: interlude,
+                onLoading: ctl.setVideoLoading,
+                sound: true,
               ),
-            ),
-          ],
+            );
+            final column = Column(
+              children: [
+                AnimatedSwitcher(
+                  duration: switchDuration,
+                  transitionBuilder: _transition,
+                  child: KeyedSubtree(
+                    key: key,
+                    child: switch (phase) {
+                      WorkoutPhase.preview ||
+                      WorkoutPhase.rest => _InterludeTop(
+                        state: state,
+                        countdown: ctl.countdown,
+                        onQuit: _quit,
+                        onExtend: ctl.extendRest,
+                        onSkip: ctl.skipRest,
+                      ),
+                      WorkoutPhase.work => _ActiveTop(
+                        state: state,
+                        countdown: ctl.countdown,
+                        detailsOpen: _detailsOpen,
+                        onQuit: _quit,
+                        onToggleDetails: () =>
+                            setState(() => _detailsOpen = !_detailsOpen),
+                        onMusic: showMusicPanel,
+                      ),
+                      _ => _RatingTop(state: state, onQuit: _quit),
+                    },
+                  ),
+                ),
+                if (short)
+                  SizedBox(
+                    height: math.max(180, box.maxHeight * 0.45),
+                    child: video,
+                  )
+                else
+                  Expanded(child: video),
+                AnimatedSwitcher(
+                  duration: switchDuration,
+                  transitionBuilder: _transition,
+                  child: KeyedSubtree(
+                    key: key,
+                    child: switch (phase) {
+                      WorkoutPhase.work => _ActiveBottom(
+                        state: state,
+                        countdown: ctl.countdown,
+                        onTogglePause: () => ctl.setPaused(!state.paused),
+                        onDone: ctl.finishStep,
+                        onPrevious: ctl.previousStep,
+                        onAudio: _toggleMusic,
+                      ),
+                      WorkoutPhase.rating => _RatingBottom(onRate: ctl.rate),
+                      _ => const SizedBox.shrink(),
+                    },
+                  ),
+                ),
+              ],
+            );
+            return short ? SingleChildScrollView(child: column) : column;
+          },
         ),
       ),
     );
@@ -269,7 +308,14 @@ class _InterludeTop extends StatelessWidget {
   Widget build(BuildContext context) {
     final c = context.appColors;
     final first = state.isIntro;
-    final h = (MediaQuery.sizeOf(context).height * 0.47).clamp(330.0, 460.0);
+    // The +10s pill's slot (mirrored on the left so the countdown stays
+    // centred) grows with the system text size, so "+10s" never wraps.
+    final pillSlot = MediaQuery.textScalerOf(context).scale(64);
+    final screenH = MediaQuery.sizeOf(context).height;
+    // Never more than 60% of a short (landscape) screen.
+    final h = (screenH * 0.47)
+        .clamp(math.min(330.0, screenH * 0.6), 460.0)
+        .toDouble();
     return Container(
       height: h,
       decoration: BoxDecoration(
@@ -296,32 +342,53 @@ class _InterludeTop extends StatelessWidget {
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      Text(
-                        first ? 'FIRST UP' : 'REST',
-                        style: AppTypography.title(20, c.textPrimary),
-                      ),
-                      const SizedBox(height: 6),
-                      // The +10s pill sits inside the row's bounds (a Stack child
-                      // outside its parent can't be tapped).
-                      FittedBox(
-                        fit: BoxFit.scaleDown,
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            const SizedBox(width: 64),
-                            CountdownText(listenable: countdown, size: 64),
-                            SizedBox(
-                              width: 64,
-                              child: Padding(
-                                padding: const EdgeInsets.only(left: 6, top: 4),
-                                child: Align(
-                                  alignment: Alignment.topLeft,
-                                  child: ExtendPill(onPressed: onExtend),
-                                ),
+                      // The label and countdown take the height left over
+                      // after Skip, shrinking on short screens or with
+                      // large text.
+                      Flexible(
+                        child: FittedBox(
+                          fit: BoxFit.scaleDown,
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Text(
+                                !first
+                                    ? 'REST'
+                                    : state.index == 0
+                                    ? 'FIRST UP'
+                                    : 'NEXT UP',
+                                style: AppTypography.title(20, c.textPrimary),
                               ),
-                            ),
-                          ],
+                              const SizedBox(height: 6),
+                              // The +10s pill sits inside the row's bounds (a
+                              // Stack child outside its parent can't be
+                              // tapped).
+                              Row(
+                                mainAxisSize: MainAxisSize.min,
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  SizedBox(width: pillSlot),
+                                  CountdownText(
+                                    listenable: countdown,
+                                    size: 64,
+                                  ),
+                                  SizedBox(
+                                    width: pillSlot,
+                                    child: Padding(
+                                      padding: const EdgeInsets.only(
+                                        left: 6,
+                                        top: 4,
+                                      ),
+                                      child: Align(
+                                        alignment: Alignment.topLeft,
+                                        child: ExtendPill(onPressed: onExtend),
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
                         ),
                       ),
                       const SizedBox(height: 20),
@@ -484,21 +551,32 @@ class _ActiveTop extends StatelessWidget {
                           color: c.softRose,
                           borderRadius: BorderRadius.circular(18),
                         ),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            _DetailLine('Target', step.targetLabel),
-                            if (ex.cues != null && ex.cues!.isNotEmpty)
-                              _DetailLine('Cues', ex.cues!),
-                            _DetailLine(
-                              'Next up',
-                              next == null
-                                  ? 'Last one'
-                                  : next.exerciseNumber == step.exerciseNumber
-                                  ? 'Set ${next.setNumber} of ${next.totalSets}'
-                                  : exerciseByNumber(next.exerciseNumber).name,
+                        // Long cues scroll inside the panel instead of
+                        // pushing the video and controls off a small screen.
+                        child: ConstrainedBox(
+                          constraints: BoxConstraints(
+                            maxHeight: MediaQuery.sizeOf(context).height * 0.28,
+                          ),
+                          child: SingleChildScrollView(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                _DetailLine('Target', step.targetLabel),
+                                if (ex.cues != null && ex.cues!.isNotEmpty)
+                                  _DetailLine('Cues', ex.cues!),
+                                _DetailLine(
+                                  'Next up',
+                                  next == null
+                                      ? 'Last one'
+                                      : next.exerciseNumber ==
+                                            step.exerciseNumber
+                                      ? 'Set ${next.setNumber} of ${next.totalSets}'
+                                      : exerciseByNumber(next.exerciseNumber)
+                                            .name,
+                                ),
+                              ],
                             ),
-                          ],
+                          ),
                         ),
                       )
                     : const SizedBox(width: double.infinity),

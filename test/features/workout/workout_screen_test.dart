@@ -6,7 +6,7 @@ import 'package:calisthenics/features/user/presentation/providers/user_providers
 import 'package:calisthenics/features/workout/domain/workout_request.dart';
 import 'package:calisthenics/features/workout/presentation/screens/workout_screen.dart';
 import 'package:calisthenics/features/exercises/domain/exercise_lookup.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -87,8 +87,8 @@ void main() {
     expect(find.byTooltip('Pause'), findsOneWidget);
     await t.tap(find.byTooltip('Next'));
     await tick();
-    // "First up" announces the main exercise before it starts.
-    expect(find.text('FIRST UP'), findsOneWidget);
+    // "Next up" announces the main exercise before it starts.
+    expect(find.text('NEXT UP'), findsOneWidget);
     expect(find.text(name(1)), findsWidgets);
     await t.tap(find.text('Skip'));
     await tick();
@@ -97,7 +97,7 @@ void main() {
     await tick();
     await t.tap(find.text('Hard'));
     await tick();
-    expect(find.text('FIRST UP'), findsOneWidget);
+    expect(find.text('NEXT UP'), findsOneWidget);
     expect(find.text(name(95)), findsWidgets);
     await t.tap(find.text('Skip'));
     await tick();

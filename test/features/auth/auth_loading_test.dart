@@ -7,7 +7,7 @@ import 'package:calisthenics/features/auth/presentation/widgets/auth_modal_sheet
 import 'package:calisthenics/shared/widgets/dots_loader.dart';
 import 'package:calisthenics/shared/widgets/primary_button.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';

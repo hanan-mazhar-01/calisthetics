@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 /// A physical-folder silhouette: a rounded body with a smaller rounded tab
 /// peeking above its top-left — used to clip [GlassFolder] into something

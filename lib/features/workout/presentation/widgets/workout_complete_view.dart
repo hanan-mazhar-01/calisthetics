@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../core/theme/app_colors_extension.dart';
@@ -49,103 +49,118 @@ class WorkoutCompleteView extends ConsumerWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
-                'WORKOUT COMPLETE',
-                style: AppTypography.kicker(c.accentText),
-              ),
-              const SizedBox(height: 8),
-              Text(
-                request.session.name,
-                style: AppTypography.title(30, c.textPrimary),
-              ),
-              const SizedBox(height: 20),
-              Row(
-                children: [
-                  _Stat(
-                    icon: Icons.schedule_rounded,
-                    label: 'Time',
-                    value: saved == null
-                        ? '-'
-                        : (minutes < 1
-                              ? formatClock(saved.durationSeconds)
-                              : '$minutes min'),
-                  ),
-                  const SizedBox(width: 10),
-                  _Stat(
-                    icon: Icons.fitness_center_rounded,
-                    label: 'Exercises',
-                    value: '${exercises.length}',
-                  ),
-                  const SizedBox(width: 10),
-                  _Stat(
-                    icon: Icons.local_fire_department_rounded,
-                    label: 'Day streak',
-                    value: '$streak',
-                  ),
-                ],
-              ),
-              if (next != null) ...[
-                const SizedBox(height: 14),
-                Container(
-                  padding: const EdgeInsets.all(16),
-                  decoration: BoxDecoration(
-                    color: c.surfaceSelected,
-                    borderRadius: BorderRadius.circular(20),
-                  ),
-                  child: Row(
-                    children: [
-                      Icon(Icons.trending_up, color: c.accentText),
-                      const SizedBox(width: 12),
-                      Expanded(
-                        child: Text(
-                          next,
-                          style: AppTypography.title(16, c.textPrimary),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-              const SizedBox(height: 20),
-              Text(
-                'How it felt',
-                style: AppTypography.title(17, c.textPrimary),
-              ),
-              const SizedBox(height: 8),
+              // Header, stats and ratings scroll together, so the summary
+              // never pushes the list (or Done) off a short screen.
               Expanded(
-                child: ListView.separated(
-                  padding: EdgeInsets.zero,
-                  itemCount: exercises.length,
-                  separatorBuilder: (_, _) => const SizedBox(height: 8),
-                  itemBuilder: (context, i) {
-                    final n = exercises[i];
-                    final effort = saved?.efforts[n];
-                    return Container(
-                      padding: const EdgeInsets.all(8),
-                      decoration: BoxDecoration(
-                        color: c.surface,
-                        borderRadius: BorderRadius.circular(18),
-                      ),
-                      child: Row(
+                child: CustomScrollView(
+                  slivers: [
+                    SliverToBoxAdapter(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          ExerciseThumb(
-                            number: n,
-                            size: 48,
-                            radiusFactor: 0.25,
+                          Text(
+                            'WORKOUT COMPLETE',
+                            style: AppTypography.kicker(c.accentText),
                           ),
-                          const SizedBox(width: 12),
-                          Expanded(
-                            child: Text(
-                              exerciseByNumber(n).name,
-                              style: AppTypography.title(15, c.textPrimary),
+                          const SizedBox(height: 8),
+                          Text(
+                            request.session.name,
+                            style: AppTypography.title(30, c.textPrimary),
+                          ),
+                          const SizedBox(height: 20),
+                          Row(
+                            children: [
+                              _Stat(
+                                icon: Icons.schedule_rounded,
+                                label: 'Time',
+                                value: saved == null
+                                    ? '-'
+                                    : (minutes < 1
+                                          ? formatClock(saved.durationSeconds)
+                                          : '$minutes min'),
+                              ),
+                              const SizedBox(width: 10),
+                              _Stat(
+                                icon: Icons.fitness_center_rounded,
+                                label: 'Exercises',
+                                value: '${exercises.length}',
+                              ),
+                              const SizedBox(width: 10),
+                              _Stat(
+                                icon: Icons.local_fire_department_rounded,
+                                label: 'Day streak',
+                                value: '$streak',
+                              ),
+                            ],
+                          ),
+                          if (next != null) ...[
+                            const SizedBox(height: 14),
+                            Container(
+                              padding: const EdgeInsets.all(16),
+                              decoration: BoxDecoration(
+                                color: c.surfaceSelected,
+                                borderRadius: BorderRadius.circular(20),
+                              ),
+                              child: Row(
+                                children: [
+                                  Icon(Icons.trending_up, color: c.accentText),
+                                  const SizedBox(width: 12),
+                                  Expanded(
+                                    child: Text(
+                                      next,
+                                      style: AppTypography.title(
+                                        16,
+                                        c.textPrimary,
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
                             ),
+                          ],
+                          const SizedBox(height: 20),
+                          Text(
+                            'How it felt',
+                            style: AppTypography.title(17, c.textPrimary),
                           ),
-                          if (effort != null) _EffortChip(effort: effort),
-                          const SizedBox(width: 4),
+                          const SizedBox(height: 8),
                         ],
                       ),
-                    );
-                  },
+                    ),
+                    SliverList.separated(
+                      itemCount: exercises.length,
+                      separatorBuilder: (_, _) => const SizedBox(height: 8),
+                      itemBuilder: (context, i) {
+                        final n = exercises[i];
+                        final effort = saved?.efforts[n];
+                        return Container(
+                          padding: const EdgeInsets.all(8),
+                          decoration: BoxDecoration(
+                            color: c.surface,
+                            borderRadius: BorderRadius.circular(18),
+                          ),
+                          child: Row(
+                            children: [
+                              ExerciseThumb(
+                                number: n,
+                                size: 48,
+                                radiusFactor: 0.25,
+                              ),
+                              const SizedBox(width: 12),
+                              Expanded(
+                                child: Text(
+                                  exerciseByNumber(n).name,
+                                  style: AppTypography.title(15, c.textPrimary),
+                                ),
+                              ),
+                              if (effort != null) _EffortChip(effort: effort),
+                              const SizedBox(width: 4),
+                            ],
+                          ),
+                        );
+                      },
+                    ),
+                  ],
                 ),
               ),
               const SizedBox(height: 12),

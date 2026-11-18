@@ -288,7 +288,10 @@ class RevenueCatSubscriptionService implements SubscriptionService {
   @override
   Future<List<PaywallOffer>> offers() async {
     try {
-      final o = await _offering();
+      // A store that never answers must not leave the paywall loading
+      // forever (App Review 2.1(b) "loading loop"): after the timeout the
+      // paywall shows its "Try again" state.
+      final o = await _offering().timeout(const Duration(seconds: 15));
       if (o == null) return const [];
       final monthly = o.monthly?.storeProduct;
       final annual = o.annual?.storeProduct;

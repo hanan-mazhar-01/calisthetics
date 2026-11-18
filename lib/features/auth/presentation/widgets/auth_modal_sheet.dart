@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../core/theme/app_colors_extension.dart';
@@ -21,6 +21,9 @@ Future<bool?> showAuthModalSheet(
   return showModalBottomSheet<bool>(
     context: context,
     isScrollControlled: true,
+    // With the keyboard up the form grows to full height: keep its top
+    // below the status bar.
+    useSafeArea: true,
     backgroundColor: Colors.transparent,
     barrierColor: Colors.black.withValues(alpha: 0.6),
     builder: (ctx) => AuthModalSheet(
@@ -578,12 +581,19 @@ class _SocialButton extends StatelessWidget {
                   )
                 : (logo ?? Icon(icon, size: 22, color: textColor)),
             const SizedBox(width: 12),
-            Text(
-              label,
-              style: AppTypography.title(
-                15,
-                textColor,
-                weight: FontWeight.w600,
+            // Shrinks rather than overflowing on narrow phones / large text.
+            Flexible(
+              child: FittedBox(
+                fit: BoxFit.scaleDown,
+                child: Text(
+                  label,
+                  maxLines: 1,
+                  style: AppTypography.title(
+                    15,
+                    textColor,
+                    weight: FontWeight.w600,
+                  ),
+                ),
               ),
             ),
           ],

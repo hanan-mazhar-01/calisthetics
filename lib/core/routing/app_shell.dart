@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 import '../../features/discover/presentation/screens/discover_screen.dart';
 import '../../features/plan/presentation/screens/plan_screen.dart';

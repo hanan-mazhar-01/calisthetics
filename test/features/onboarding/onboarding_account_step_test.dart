@@ -5,7 +5,7 @@ import 'package:calisthenics/features/onboarding/data/onboarding_flow.dart';
 import 'package:calisthenics/features/onboarding/presentation/screens/onboarding_flow_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
@@ -62,6 +62,7 @@ void main() {
     await _atPaywall(tester, signedIn: false);
     await tester.tap(find.text('Not now'));
     await tester.pump(const Duration(seconds: 2));
+    await tester.pump(); // one more frame: a new route starts offstage
     expect(find.text('Continue with Google'), findsOneWidget);
     expect(find.text('HOME'), findsNothing);
   });
@@ -72,6 +73,7 @@ void main() {
     final prefs = await _atPaywall(tester, signedIn: true);
     await tester.tap(find.text('Not now'));
     await tester.pump(const Duration(seconds: 2));
+    await tester.pump(); // one more frame: a new route starts offstage
     expect(find.text('Continue with Google'), findsNothing);
     expect(find.text('HOME'), findsOneWidget);
     expect(prefs.getBool('onboarding_completed'), isTrue);
@@ -84,6 +86,7 @@ void main() {
     await _atPaywall(tester, signedIn: false);
     await tester.tap(find.text('Not now'));
     await tester.pump(const Duration(seconds: 2));
+    await tester.pump(); // one more frame: a new route starts offstage
     expect(find.text('Continue with Apple'), findsNothing);
     expect(find.text('Continue with Google'), findsOneWidget);
     expect(find.text('Continue with email'), findsOneWidget);
@@ -95,6 +98,7 @@ void main() {
       await _atPaywall(tester, signedIn: false);
       await tester.tap(find.text('Not now'));
       await tester.pump(const Duration(seconds: 2));
+      await tester.pump(); // one more frame: a new route starts offstage
       expect(find.text('Continue with Apple'), findsOneWidget);
       expect(find.text('Continue with Google'), findsOneWidget);
     } finally {

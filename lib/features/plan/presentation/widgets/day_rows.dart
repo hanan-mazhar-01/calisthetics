@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../core/motion/calesthetics_motion.dart';
@@ -191,6 +191,9 @@ Future<void> showDayRestSheet(BuildContext context) {
     context: context,
     backgroundColor: c.surface,
     showDragHandle: true,
+    // As tall as its content (the default 9/16 cap is too short on small
+    // phones); it scrolls if even the full screen isn't enough.
+    isScrollControlled: true,
     builder: (_) => const _RestSheet(),
   );
 }
@@ -203,7 +206,7 @@ class _RestSheet extends ConsumerWidget {
     final c = context.appColors;
     final selected = ref.watch(restSecondsProvider);
     return SafeArea(
-      child: Padding(
+      child: SingleChildScrollView(
         padding: const EdgeInsets.fromLTRB(
           AppSpacing.xxl,
           0,

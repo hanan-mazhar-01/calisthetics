@@ -1,6 +1,6 @@
 import 'dart:math' as math;
 
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
@@ -459,59 +459,63 @@ class _PlanSelector extends StatelessWidget {
       child: GestureDetector(
         onTap: onTap,
         child: Container(
-          height: 76,
+          // At least 76, taller when large system text needs it.
+          constraints: const BoxConstraints(minHeight: 76),
           clipBehavior: Clip.antiAlias,
           decoration: BoxDecoration(
             color: c.surface,
             borderRadius: BorderRadius.circular(18),
             border: Border.all(color: c.accent, width: 1.6),
           ),
-          child: Row(
-            children: [
-              Expanded(
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 20),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        'Current Plan',
-                        style: AppTypography.title(
-                          20,
-                          c.textPrimary,
-                          weight: FontWeight.w800,
+          child: IntrinsicHeight(
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Expanded(
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 20),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Current Plan',
+                          style: AppTypography.title(
+                            20,
+                            c.textPrimary,
+                            weight: FontWeight.w800,
+                          ),
                         ),
-                      ),
-                      const SizedBox(height: 2),
-                      Text(
-                        overview.template.name,
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        style: AppTypography.body(
-                          c.textSecondary,
-                          fontSize: 15,
+                        const SizedBox(height: 2),
+                        Text(
+                          overview.template.name,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: AppTypography.body(
+                            c.textSecondary,
+                            fontSize: 15,
+                          ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
                 ),
-              ),
-              Container(
-                width: 76,
-                color: c.accent,
-                alignment: Alignment.center,
-                child: AnimatedRotation(
-                  turns: open ? 0.5 : 0,
-                  duration: const Duration(milliseconds: 220),
-                  child: Icon(
-                    Icons.keyboard_arrow_down_rounded,
-                    color: c.onAccent,
-                    size: 32,
+                Container(
+                  width: 76,
+                  color: c.accent,
+                  alignment: Alignment.center,
+                  child: AnimatedRotation(
+                    turns: open ? 0.5 : 0,
+                    duration: const Duration(milliseconds: 220),
+                    child: Icon(
+                      Icons.keyboard_arrow_down_rounded,
+                      color: c.onAccent,
+                      size: 32,
+                    ),
                   ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),

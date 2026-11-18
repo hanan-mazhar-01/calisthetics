@@ -10,7 +10,7 @@ import 'package:calisthenics/features/plans/domain/plan_template.dart';
 import 'package:calisthenics/features/plans/domain/user_profile.dart';
 import 'package:calisthenics/features/user/domain/active_plan.dart';
 import 'package:calisthenics/features/user/presentation/providers/user_providers.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
@@ -118,9 +118,9 @@ void main() {
 
     testWidgets('lists My Plan first, then the other plans', (tester) async {
       await pump(tester);
-      expect(find.text('All Plan'), findsOneWidget);
+      expect(find.text('All Plans'), findsOneWidget);
       expect(find.text('My Plan'), findsOneWidget);
-      expect(find.text('Other Plan'), findsOneWidget);
+      expect(find.text('Other Plans'), findsOneWidget);
       expect(find.text('Current plan'), findsOneWidget);
       expect(find.text('Full-Body Foundation'), findsOneWidget);
       expect(find.text('Core Control'), findsOneWidget);
@@ -130,6 +130,7 @@ void main() {
       await pump(tester);
       await tester.tap(find.text('Core Control'));
       await tester.pump(const Duration(seconds: 1));
+      await tester.pump(); // one more frame: a new route starts offstage
       expect(find.text('Plan Details'), findsOneWidget);
       expect(find.text('Focus'), findsOneWidget);
       expect(find.text('Brief'), findsOneWidget);
@@ -143,6 +144,7 @@ void main() {
       final (c, went) = await pump(tester, start: '/plans/core-control');
       await tester.tap(find.text('Join'));
       await tester.pump(const Duration(seconds: 1));
+      await tester.pump(); // one more frame: a new route starts offstage
       expect(went, ['/paywall']);
       expect(c.read(ownedPlansProvider), hasLength(1));
     });
@@ -157,6 +159,7 @@ void main() {
       );
       await tester.tap(find.text('Join'));
       await tester.pump(const Duration(milliseconds: 600));
+      await tester.pump(); // one more frame: a new route starts offstage
       expect(find.text('Switch the plan now?'), findsOneWidget);
       expect(
         find.textContaining("You've joined 'Core Control'"),
@@ -164,6 +167,7 @@ void main() {
       );
       await tester.tap(find.text('NOT NOW'));
       await tester.pump(const Duration(seconds: 1));
+      await tester.pump(); // one more frame: a new route starts offstage
       expect(c.read(ownedPlansProvider), hasLength(2));
       expect(c.read(activePlanProvider)!.templateId, 'foundation-full-body');
       expect(went, ['/home']);
@@ -179,8 +183,10 @@ void main() {
       );
       await tester.tap(find.text('Join'));
       await tester.pump(const Duration(milliseconds: 600));
+      await tester.pump(); // one more frame: a new route starts offstage
       await tester.tap(find.text('SWITCH NOW'));
       await tester.pump(const Duration(seconds: 1));
+      await tester.pump(); // one more frame: a new route starts offstage
       expect(c.read(activePlanProvider)!.templateId, 'core-control');
       expect(went, ['/home']);
     });
@@ -195,6 +201,7 @@ void main() {
       );
       await tester.tap(find.text('Join'));
       await tester.pump(const Duration(seconds: 1));
+      await tester.pump(); // one more frame: a new route starts offstage
       expect(find.text('Switch the plan now?'), findsNothing);
       expect(c.read(activePlanProvider)!.templateId, 'core-control');
       expect(went, ['/home']);

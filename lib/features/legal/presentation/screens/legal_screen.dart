@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -68,7 +68,7 @@ class LegalScreen extends StatelessWidget {
                 ),
                 children: [
                   Text(
-                    'Calesthetics by Verado Studio · Updated $legalUpdated',
+                    'Calisthenics for Women by Verado Studio · Updated $legalUpdated',
                     style: AppTypography.body(c.textMuted, fontSize: 12.5),
                   ),
                   if (kind == LegalKind.support) ...[
@@ -129,7 +129,7 @@ class _EmailButton extends StatelessWidget {
 
   Future<void> _write(BuildContext context) async {
     final uri = Uri.parse(
-      'mailto:$_supportEmail?subject=${Uri.encodeComponent('Calesthetics support')}',
+      'mailto:$_supportEmail?subject=${Uri.encodeComponent('Calisthenics for Women support')}',
     );
     var opened = false;
     try {

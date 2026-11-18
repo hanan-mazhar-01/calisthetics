@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 /// Progress (0 to 1) of the slice [from]-[to] of a parent clock value [t].
 double slice(

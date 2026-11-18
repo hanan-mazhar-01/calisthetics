@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_timezone/flutter_timezone.dart';
 import 'package:timezone/data/latest.dart' as tzdata;
@@ -61,7 +61,9 @@ class LocalReminderService implements ReminderService {
       tz.setLocalLocation(tz.getLocation(zone.identifier));
       await _plugin.initialize(
         settings: const InitializationSettings(
-          android: AndroidInitializationSettings('@drawable/ic_stat_notification'),
+          android: AndroidInitializationSettings(
+            '@drawable/ic_stat_notification',
+          ),
           // iPhone: nothing is asked at start-up. The permission prompt
           // appears when the user switches reminders on (requestPermission).
           iOS: DarwinInitializationSettings(

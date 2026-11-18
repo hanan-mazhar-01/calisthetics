@@ -73,6 +73,6 @@ void main() {
     // Guests have no account to delete: both texts name the button they see.
     expect(privacy, contains('Profile > Erase data on this phone'));
     expect(terms, contains('Profile > Erase data on this phone'));
-    expect(legalUpdated, 'October 19, 2026');
+    expect(legalUpdated, 'November 18, 2026');
   });
 }

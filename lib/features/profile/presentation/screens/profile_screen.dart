@@ -1,7 +1,9 @@
+import 'dart:math' as math;
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart'
     show TargetPlatform, defaultTargetPlatform, kIsWeb;
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -99,6 +101,14 @@ class ProfileScreen extends ConsumerWidget {
               delay: d(2),
               child: _PlanCard(
                 status: subscription,
+                // The store's own price, in the user's currency.
+                price: ref
+                    .watch(paywallOffersProvider)
+                    .asData
+                    ?.value
+                    .where((o) => o.plan == subscription.plan)
+                    .map((o) => '${o.price}/${o.period}')
+                    .firstOrNull,
                 planCount: planCount,
                 onUpgrade: () => context.push('/paywall'),
                 onManage: () => _manageSubscription(context, ref),
@@ -127,6 +137,11 @@ class ProfileScreen extends ConsumerWidget {
                 title: 'Help & Support',
                 value: _supportEmail,
                 onTap: () => openLegal(context, LegalKind.support),
+              ),
+              _RowData(
+                icon: Icons.menu_book_outlined,
+                title: 'Sources & methodology',
+                onTap: () => context.push('/sources'),
               ),
               _RowData(
                 icon: Icons.shield_outlined,
@@ -315,7 +330,11 @@ class ProfileScreen extends ConsumerWidget {
                   Padding(
                     padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
                     child: Text(
-                      'To cancel, open your App Store or Google Play subscriptions.',
+                      // iPhone users never see another store's name
+                      // (App Store Review Guideline 2.3.10).
+                      _isApple
+                          ? 'To cancel, open your App Store subscriptions.'
+                          : 'To cancel, open your Google Play subscriptions.',
                       textAlign: TextAlign.center,
                       style: AppTypography.body(c.textSecondary, fontSize: 13),
                     ),
@@ -629,12 +648,16 @@ class _AppearanceTabs extends StatelessWidget {
 class _PlanCard extends StatelessWidget {
   const _PlanCard({
     required this.status,
+    required this.price,
     required this.planCount,
     required this.onUpgrade,
     required this.onManage,
   });
 
   final SubscriptionStatus status;
+
+  /// e.g. "€10.99/month"; null until the store has answered.
+  final String? price;
   final int planCount;
   final VoidCallback onUpgrade;
   final VoidCallback onManage;
@@ -649,9 +672,6 @@ class _PlanCard extends StatelessWidget {
         ? Colors.white.withValues(alpha: 0.88)
         : c.textSecondary;
     final plan = status.plan == PremiumPlan.yearly ? 'Yearly' : 'Monthly';
-    final price = status.plan == PremiumPlan.yearly
-        ? r'$49.99/year'
-        : r'$9.99/month';
     final days = status.trialDaysLeft(now);
     final kicker = !premium
         ? 'YOUR PLAN'
@@ -670,12 +690,12 @@ class _PlanCard extends StatelessWidget {
         ? '1 plan included${planCount > 0 ? ' ($planCount in use)' : ''}. '
               'Upgrade to unlock every plan and all exercises.'
         : status.inTrial
-        ? 'Then $price. Cancel any time before it ends.'
+        ? '${price == null ? '' : 'Then $price. '}Cancel any time before it ends.'
         : !status.willRenew && renew != null
         ? 'Ends on $renew.'
         : renew != null
-        ? '$price. Renews on $renew.'
-        : price;
+        ? '${price == null ? '' : '$price. '}Renews on $renew.'
+        : price ?? '$plan plan';
 
     return Semantics(
       button: true,
@@ -843,56 +863,73 @@ class _RowState extends State<_Row> {
             borderRadius: BorderRadius.circular(18),
           ),
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-          child: Row(
-            children: [
-              SizedBox(
-                width: 30,
-                child: Icon(
-                  data.icon,
-                  size: 24,
-                  color: data.destructive ? c.warning : c.accentText,
-                ),
-              ),
-              const SizedBox(width: 16),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      data.title,
-                      style: AppTypography.title(
-                        16,
-                        titleColor,
-                        weight: FontWeight.w600,
+          child: LayoutBuilder(
+            builder: (context, box) {
+              final rowWidth = box.maxWidth;
+              return Row(
+                children: [
+                  SizedBox(
+                    width: 30,
+                    child: Icon(
+                      data.icon,
+                      size: 24,
+                      color: data.destructive ? c.warning : c.accentText,
+                    ),
+                  ),
+                  const SizedBox(width: 16),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          data.title,
+                          style: AppTypography.title(
+                            16,
+                            titleColor,
+                            weight: FontWeight.w600,
+                          ),
+                        ),
+                        if (data.subtitle != null)
+                          Text(
+                            data.subtitle!,
+                            style: AppTypography.body(
+                              c.textMuted,
+                              fontSize: 12.5,
+                            ),
+                          ),
+                      ],
+                    ),
+                  ),
+                  // The value sits right against the chevron, like in every row.
+                  if (data.value != null) ...[
+                    const SizedBox(width: 8),
+                    // Never more than ~38% of the row (and 150): a long value
+                    // (the support e-mail) can't squeeze the title, while a
+                    // short one ("Clear") leaves the title the rest.
+                    ConstrainedBox(
+                      constraints: BoxConstraints(
+                        maxWidth: math.min(150, rowWidth * 0.38),
+                      ),
+                      child: Text(
+                        data.value!,
+                        textAlign: TextAlign.end,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: AppTypography.body(c.textMuted, fontSize: 14),
                       ),
                     ),
-                    if (data.subtitle != null)
-                      Text(
-                        data.subtitle!,
-                        style: AppTypography.body(c.textMuted, fontSize: 12.5),
-                      ),
                   ],
-                ),
-              ),
-              // The value sits right against the chevron, like in every row.
-              if (data.value != null) ...[
-                const SizedBox(width: 8),
-                ConstrainedBox(
-                  constraints: const BoxConstraints(maxWidth: 150),
-                  child: Text(
-                    data.value!,
-                    textAlign: TextAlign.end,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: AppTypography.body(c.textMuted, fontSize: 14),
-                  ),
-                ),
-              ],
-              if (enabled) ...[
-                const SizedBox(width: 4),
-                Icon(Icons.chevron_right_rounded, color: c.textMuted, size: 22),
-              ],
-            ],
+                  if (enabled) ...[
+                    const SizedBox(width: 4),
+                    Icon(
+                      Icons.chevron_right_rounded,
+                      color: c.textMuted,
+                      size: 22,
+                    ),
+                  ],
+                ],
+              );
+            },
           ),
         ),
       ),

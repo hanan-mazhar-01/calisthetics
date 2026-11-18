@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 /// Google's own four-colour "G" mark, drawn as vector paths (Google's
 /// branding rules ask for this mark, unaltered, on "Sign in with Google").

@@ -1,6 +1,6 @@
 import 'dart:ui';
 
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 import '../../../../../core/theme/app_colors_extension.dart';
 import '../../../../../core/theme/app_typography.dart';
@@ -67,18 +67,22 @@ class PinkNameDocument extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 6),
-              Text(
-                hasName ? name : 'Your name',
-                maxLines: 1,
-                overflow: TextOverflow.fade,
-                softWrap: false,
-                style: AppTypography.display(
-                  fontSize: 24,
-                  color: hasName
-                      ? context.appColors.textPrimary
-                      : context.appColors.textMuted,
-                  stretchPercent: 85,
-                  height: 1.05,
+              // A long name shrinks to fit the card rather than being cut.
+              FittedBox(
+                fit: BoxFit.scaleDown,
+                alignment: Alignment.centerLeft,
+                child: Text(
+                  hasName ? name : 'Your name',
+                  maxLines: 1,
+                  softWrap: false,
+                  style: AppTypography.display(
+                    fontSize: 24,
+                    color: hasName
+                        ? context.appColors.textPrimary
+                        : context.appColors.textMuted,
+                    stretchPercent: 85,
+                    height: 1.05,
+                  ),
                 ),
               ),
             ],

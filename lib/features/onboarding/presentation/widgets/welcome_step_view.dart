@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
@@ -6,7 +6,6 @@ import '../../../../core/theme/app_colors_extension.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/theme/app_typography.dart';
 import '../../../../shared/widgets/bunny_image.dart';
-import '../../../../shared/widgets/media_placeholder.dart';
 import '../../../../shared/widgets/primary_button.dart';
 
 import 'package:firebase_auth/firebase_auth.dart';
@@ -123,12 +122,10 @@ class _WelcomeStepViewState extends ConsumerState<WelcomeStepView>
               'onboarding/welcome-hero',
               fit: BoxFit.cover,
               alignment: Alignment.topCenter,
-              fallback: const Opacity(
-                opacity: 0.3,
-                child: MediaPlaceholder(
-                  brief: 'Four women in colourful workout outfits, arms raised, stretching',
-                ),
-              ),
+              // Full-bleed backdrop: until the photo is there, the cover's
+              // own gradient shows (a captioned placeholder here would draw
+              // its text across the headline).
+              fallback: const SizedBox.shrink(),
             ),
           ),
         ),
@@ -211,14 +208,20 @@ class _WelcomeStepViewState extends ConsumerState<WelcomeStepView>
                       bottom: BorderSide(color: p.fg.withValues(alpha: 0.18)),
                     ),
                   ),
-                  child: Row(
-                    children: const [
-                      _Stat(value: '8', caption: 'Skills'),
-                      SizedBox(width: AppSpacing.xxxl),
-                      _Stat(value: '115', caption: 'Exercises'),
-                      SizedBox(width: AppSpacing.xxxl),
-                      _Stat(value: '98', caption: 'Coached videos'),
-                    ],
+                  // Scales down on narrow phones instead of overflowing.
+                  child: FittedBox(
+                    fit: BoxFit.scaleDown,
+                    alignment: Alignment.centerLeft,
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: const [
+                        _Stat(value: '8', caption: 'Skills'),
+                        SizedBox(width: AppSpacing.xxxl),
+                        _Stat(value: '115', caption: 'Exercises'),
+                        SizedBox(width: AppSpacing.xxxl),
+                        _Stat(value: '98', caption: 'Coached videos'),
+                      ],
+                    ),
                   ),
                 ),
               ),

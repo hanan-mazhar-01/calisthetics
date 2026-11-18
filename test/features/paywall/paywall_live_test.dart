@@ -6,7 +6,7 @@ import 'package:calisthenics/features/paywall/domain/subscription.dart';
 import 'package:calisthenics/features/paywall/presentation/providers/subscription_providers.dart';
 import 'package:calisthenics/features/paywall/presentation/screens/paywall_screen.dart';
 import 'package:flutter/foundation.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';

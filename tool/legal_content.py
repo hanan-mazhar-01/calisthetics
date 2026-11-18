@@ -1,5 +1,5 @@
 """The text of the Privacy Policy, the Terms of Service and the Help & Support
-page of Calesthetics.
+page of Calisthenics for Women.
 
 The ONE place to edit the wording. `python3 tool/build_legal_pages.py` turns it
 into the three web pages (legal_pages/) and the in-app copy
@@ -17,11 +17,11 @@ Inline:  **bold**, [[privacy]] / [[terms]] / [[support]] (link to the other
          page), [[email]] becomes a mail link.
 """
 
-APP = "Calesthetics"
+APP = "Calisthenics for Women"
 PUBLISHER = "Verado Studio"
 EMAIL = "support@veradostudio.com"
 EFFECTIVE = "October 19, 2026"
-UPDATED = "October 19, 2026"
+UPDATED = "November 18, 2026"
 
 # Credit for the workout background music (assets/audio/gym_background_music.mp3),
 # shown in the Terms ("Credits") and Help & Support once it is filled in:
@@ -54,7 +54,7 @@ PRIVACY = {
         {
             "title": "Information We Collect and Purpose of Collection",
             "blocks": [
-                ("p", "Calesthetics collects only the information needed to build "
+                ("p", "Calisthenics for Women collects only the information needed to build "
                       "your training plan, track your progress, and run your "
                       "subscription. **If you use the app as a guest, none of it "
                       "leaves your phone.**"),
@@ -101,7 +101,7 @@ PRIVACY = {
                 ("ul", [
                     "**Apple App Store & Google Play Billing:** When you buy "
                     "Premium, the payment is processed by Apple or Google. "
-                    "Calesthetics does **not** collect, store, or have access to "
+                    "Calisthenics for Women does **not** collect, store, or have access to "
                     "your card number, bank details, or billing address.",
                     "**Subscription Infrastructure (RevenueCat):** We use "
                     "RevenueCat to check and manage subscriptions. It receives "
@@ -175,7 +175,7 @@ PRIVACY = {
         {
             "title": "Device Permissions & Data Access",
             "blocks": [
-                ("p", "Calesthetics asks only for what its features need:"),
+                ("p", "Calisthenics for Women asks only for what its features need:"),
                 ("ul", [
                     "**Notifications:** Used only for the workout reminders you "
                     "switch on. They are scheduled on your phone itself; there is "
@@ -261,7 +261,7 @@ PRIVACY = {
             "title": "Mandatory Non-Medical Disclaimer",
             "blocks": [
                 ("warn", "⚠️ Training Guidance — Not Medical Advice",
-                 "Calesthetics is a fitness and training app. It is **not** a "
+                 "Calisthenics for Women is a fitness and training app. It is **not** a "
                  "medical device and does **not** provide medical diagnoses, "
                  "treatment or clinical advice. The \"areas to protect\" you "
                  "choose only change which exercises are suggested; they are not "
@@ -273,7 +273,7 @@ PRIVACY = {
         {
             "title": "Children's Privacy",
             "blocks": [
-                ("p", "Calesthetics is intended for adults aged 18 and over and is "
+                ("p", "Calisthenics for Women is intended for adults aged 18 and over and is "
                       "not directed at children. We do not knowingly collect "
                       "personal data from anyone under 13 (or under 16 in the "
                       "European Union). If you believe a child has given us "
@@ -297,7 +297,7 @@ PRIVACY = {
                 ("p", "We may update this Privacy Policy when the app, its "
                       "features or the law change. The new version is posted here "
                       "with an updated \"Last Updated\" date, and the in-app copy "
-                      "is updated with it. Continuing to use Calesthetics after a "
+                      "is updated with it. Continuing to use Calisthenics for Women after a "
                       "change means you accept the updated policy. See also our "
                       "[[terms]]."),
             ],
@@ -324,7 +324,7 @@ TERMS = {
     "box": (
         "\U0001F4CB",
         "The Key Points",
-        "**Calesthetics is free with one training plan.** **Premium** unlocks "
+        "**Calisthenics for Women is free with one training plan.** **Premium** unlocks "
         "every plan and every exercise: **$9.99 per month** (with a **7-day "
         "free trial** for new subscribers) or **$49.99 per year**. Subscriptions "
         "renew automatically until you cancel in your Apple or Google "
@@ -337,7 +337,7 @@ TERMS = {
             "blocks": [
                 ("p", "These Terms of Service (also called Terms of Use) are an "
                       "agreement between you and **Verado Studio** (\"we\", \"us\") "
-                      "for the Calesthetics app. By installing or using the app "
+                      "for the Calisthenics for Women app. By installing or using the app "
                       "you agree to them and to our [[privacy]]. If you do not "
                       "agree, please do not use the app."),
                 ("p", "The app is for adults. You must be 18 or older, or the age "
@@ -348,7 +348,7 @@ TERMS = {
             "title": "Health, Safety & Not Medical Advice",
             "blocks": [
                 ("warn", "⚠️ Train Within Your Own Limits",
-                 "Calesthetics provides general training guidance. It is **not** "
+                 "Calisthenics for Women provides general training guidance. It is **not** "
                  "medical advice and not a substitute for a doctor or qualified "
                  "coach. Talk to a doctor before you start if you have an "
                  "injury, a health condition, or are pregnant. Stop right away "
@@ -420,7 +420,7 @@ TERMS = {
                 ("ul", [
                     "Manage or cancel in your **Apple ID > Subscriptions** or "
                     "**Google Play > Payments & subscriptions** settings. "
-                    "Deleting the app or your Calesthetics account does **not** "
+                    "Deleting the app or your Calisthenics for Women account does **not** "
                     "cancel a subscription.",
                     "Apple and Google handle payments and refunds, and their "
                     "rules apply. We cannot refund purchases made through them.",
@@ -432,7 +432,7 @@ TERMS = {
         {
             "title": "Using the App",
             "blocks": [
-                ("p", "You may use Calesthetics for your own personal, "
+                ("p", "You may use Calisthenics for Women for your own personal, "
                       "non-commercial training. You agree not to:"),
                 ("ul", [
                     "copy, record, download in bulk, resell or share the videos, "
@@ -536,7 +536,7 @@ TERMS = {
             "blocks": [
                 ("p", "We may update these terms. The new version is posted here "
                       "with an updated \"Last Updated\" date, and in the app. "
-                      "If you keep using Calesthetics after a change, you accept "
+                      "If you keep using Calisthenics for Women after a change, you accept "
                       "the new terms. If you do not agree, stop using the app "
                       "and delete your account."),
             ],
@@ -584,8 +584,9 @@ SUPPORT = {
                 ("h3", "Can I change my plan?"),
                 ("p", "Yes. On the Plan tab, tap **Edit** to adjust your "
                       "training, or open the plan menu at the top to see all "
-                      "plans and switch. Switching asks you to confirm first. "
-                      "Free includes one plan; Premium lets you add more."),
+                      "plans and switch. Your progress in each plan is kept when "
+                      "you switch. Free includes one plan; Premium lets you add "
+                      "more."),
             ],
         },
         {
@@ -637,7 +638,7 @@ SUPPORT = {
                       "Subscriptions** on iPhone, or **Google Play > Payments "
                       "& subscriptions > Subscriptions** on Android. Cancel at "
                       "least 24 hours before it renews. Deleting the app or "
-                      "your Calesthetics account does **not** cancel it."),
+                      "your Calisthenics for Women account does **not** cancel it."),
                 ("h3", "Can I get a refund?"),
                 ("p", "Apple and Google take the payment, so they handle "
                       "refunds. On iPhone, use reportaproblem.apple.com; on "
@@ -686,9 +687,9 @@ SUPPORT = {
                 ("h3", "My reminders do not arrive."),
                 ("ul", [
                     "In your phone's settings, make sure notifications are "
-                    "allowed for Calesthetics.",
+                    "allowed for the app.",
                     "On some Android phones, battery saver can delay or block "
-                    "reminders. Set Calesthetics to **Unrestricted** (or remove "
+                    "reminders. Set the app to **Unrestricted** (or remove "
                     "its battery limits).",
                     "Reminders are scheduled on your phone, so they work "
                     "without internet.",
@@ -713,7 +714,7 @@ SUPPORT = {
             "blocks": [
                 ("p", "Email us and include, if you can: what happened and what "
                       "you expected; your phone model and its system version; "
-                      "the app version (at the bottom of your Profile screen); "
+                      "the app version (in your phone's Settings > Apps); "
                       "and a screenshot. Please never send your password."),
                 ("contact", [
                     ("Application", APP),

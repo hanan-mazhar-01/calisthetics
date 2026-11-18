@@ -5,7 +5,7 @@ import 'package:calisthenics/core/storage/shared_preferences_provider.dart';
 import 'package:calisthenics/features/onboarding/data/onboarding_flow.dart';
 import 'package:calisthenics/features/workout/domain/workout_request.dart';
 import 'package:calisthenics/main.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';

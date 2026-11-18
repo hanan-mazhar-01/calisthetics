@@ -14,7 +14,7 @@ import 'package:calisthenics/shared/widgets/premium_bottom_nav.dart';
 
 import 'dart:convert';
 
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -229,7 +229,7 @@ void main() {
       expect(find.text('Start Training'), findsOneWidget);
       expect(find.textContaining('Phase 1'), findsOneWidget);
       expect(find.text('Day 2'), findsOneWidget);
-      expect(find.text('Add More Plan'), findsNothing);
+      expect(find.text('Add More Plans'), findsNothing);
       // No "not available yet" line at the end of the plan (scroll to it).
       await tester.drag(find.byType(ListView).first, const Offset(0, -5000));
       await tester.pump(const Duration(milliseconds: 500));

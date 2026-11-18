@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 import '../../domain/exercise_lookup.dart';
 import 'exercise_picture.dart';

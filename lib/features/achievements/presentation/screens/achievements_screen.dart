@@ -1,6 +1,6 @@
 import 'dart:math' as math;
 
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../core/theme/app_colors_extension.dart';
@@ -106,11 +106,14 @@ class _AchievementsScreenState extends ConsumerState<AchievementsScreen> {
           SliverPadding(
             padding: EdgeInsets.fromLTRB(16, 18, 16, pad.bottom + 40),
             sliver: SliverGrid.builder(
-              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                 crossAxisCount: 3,
                 mainAxisSpacing: 14,
                 crossAxisSpacing: 8,
-                mainAxisExtent: 188,
+                // Medal + paddings, plus the text lines under it, which grow
+                // with the system text size.
+                mainAxisExtent:
+                    140 + MediaQuery.textScalerOf(context).scale(48),
               ),
               itemCount: shown.length,
               itemBuilder: (context, i) {
@@ -233,15 +236,21 @@ class _TabsDelegate extends SliverPersistentHeaderDelegate {
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Text(
-                        t.label,
-                        style: AppTypography.body(
-                          t == selected ? c.textPrimary : c.textMuted,
-                          fontSize: 14,
-                          weight: t == selected
-                              ? FontWeight.w700
-                              : FontWeight.w500,
-                        ).copyWith(letterSpacing: 0.4),
+                      // One line always: shrinks on narrow phones instead of
+                      // wrapping out of the fixed-height tab bar.
+                      FittedBox(
+                        fit: BoxFit.scaleDown,
+                        child: Text(
+                          t.label,
+                          maxLines: 1,
+                          style: AppTypography.body(
+                            t == selected ? c.textPrimary : c.textMuted,
+                            fontSize: 14,
+                            weight: t == selected
+                                ? FontWeight.w700
+                                : FontWeight.w500,
+                          ).copyWith(letterSpacing: 0.4),
+                        ),
                       ),
                       const SizedBox(height: 6),
                       AnimatedContainer(
@@ -319,12 +328,17 @@ class _HeaderDelegate extends SliverPersistentHeaderDelegate {
             children: [
               Positioned(
                 left: 22,
+                // Stops short of the floating medals on the right, so a long
+                // name ends in "…" instead of running underneath them.
+                right: decor.isEmpty ? 134 : 172,
                 top: topInset + 78,
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
                       'Hi, $name',
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
                       style: AppTypography.title(
                         26,
                         c.textPrimary,

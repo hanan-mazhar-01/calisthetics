@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 /// Typography tokens. Poppins is the app's font for every piece of text;
 /// Lora (a soft serif) is used only for the highlighted pink word inside a

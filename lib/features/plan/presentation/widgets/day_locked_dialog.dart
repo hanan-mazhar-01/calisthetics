@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 import '../../../../core/haptics/haptics.dart';
 import '../../../../core/theme/app_colors_extension.dart';
@@ -22,7 +22,9 @@ Future<void> showDayLockedDialog(
         backgroundColor: c.surface,
         insetPadding: const EdgeInsets.symmetric(horizontal: 24),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(28)),
-        child: Padding(
+        // Scrolls if it is ever taller than the screen (small phone with
+        // large text).
+        child: SingleChildScrollView(
           padding: const EdgeInsets.fromLTRB(22, 28, 22, 20),
           child: Column(
             mainAxisSize: MainAxisSize.min,

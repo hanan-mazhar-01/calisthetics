@@ -1,5 +1,6 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../../../core/theme/app_colors_extension.dart';
 import '../../../../core/theme/app_spacing.dart';
@@ -104,6 +105,20 @@ class HealthNoteStepContent extends ConsumerWidget {
                   ),
                 ),
               ],
+            ),
+          ),
+          const SizedBox(height: AppSpacing.sm),
+          // App Store 1.4.1: the guidance cites its sources, one tap away.
+          TextButton.icon(
+            onPressed: () => context.push('/sources'),
+            icon: Icon(Icons.menu_book_outlined, size: 18, color: c.accentText),
+            label: Text(
+              'Sources & methodology',
+              style: AppTypography.body(
+                c.accentText,
+                fontSize: 14,
+                weight: FontWeight.w600,
+              ),
             ),
           ),
         ],
