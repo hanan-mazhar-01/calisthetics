@@ -28,7 +28,7 @@ import '../widgets/reminder_sheet.dart';
 import '../../../legal/presentation/open_legal.dart';
 import '../../../legal/presentation/screens/legal_screen.dart';
 
-const _supportEmail = 'support@veradostudio.com';
+const _supportEmail = 'ryan@thesidequestlabs.com';
 
 /// Profile tab: account, plan status and the app's settings, in the same
 /// flat white cards as the rest of the app.

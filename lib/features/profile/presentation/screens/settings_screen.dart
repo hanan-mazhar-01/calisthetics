@@ -16,7 +16,7 @@ import '../../../sync/presentation/providers/sync_providers.dart';
 import '../../../legal/presentation/open_legal.dart';
 import '../../../legal/presentation/screens/legal_screen.dart';
 
-const _supportEmail = 'support@veradostudio.com';
+const _supportEmail = 'ryan@thesidequestlabs.com';
 
 /// Settings. Account, subscription and sync are not connected yet, so those
 /// rows are honest "coming soon" states, never faked.

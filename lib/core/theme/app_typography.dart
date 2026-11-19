@@ -16,7 +16,6 @@ abstract final class AppTypography {
     required Color color,
     double? height,
     double letterSpacingEm = 0,
-    double? stretchPercent,
   }) {
     return TextStyle(
       fontFamily: 'Poppins',
@@ -48,7 +47,6 @@ abstract final class AppTypography {
       color: color,
       height: height,
       letterSpacingEm: letterSpacingEm,
-      stretchPercent: stretchPercent,
     );
   }
 

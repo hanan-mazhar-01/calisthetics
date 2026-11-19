@@ -19,7 +19,7 @@ Inline:  **bold**, [[privacy]] / [[terms]] / [[support]] (link to the other
 
 APP = "Calisthenics for Women"
 PUBLISHER = "Verado Studio"
-EMAIL = "support@veradostudio.com"
+EMAIL = "ryan@thesidequestlabs.com"
 EFFECTIVE = "October 19, 2026"
 UPDATED = "November 18, 2026"
 

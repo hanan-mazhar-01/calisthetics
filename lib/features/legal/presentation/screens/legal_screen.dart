@@ -9,7 +9,7 @@ import '../../domain/legal_text.dart';
 
 enum LegalKind { privacy, terms, support }
 
-const _supportEmail = 'support@veradostudio.com';
+const _supportEmail = 'ryan@thesidequestlabs.com';
 
 /// A paragraph that starts with this is a sub-heading (a question).
 const _subheading = '## ';

@@ -32,7 +32,7 @@ void main() {
         .map((s) => '${s.heading}\n${s.body}')
         .join();
     for (final needle in [
-      'support@veradostudio.com',
+      'ryan@thesidequestlabs.com',
       r'$9.99',
       r'$49.99',
       '7-day free trial',
@@ -59,7 +59,7 @@ void main() {
         .join();
     final terms = termsSections.map((s) => '${s.heading}\n${s.body}').join();
     for (final text in [privacy, terms]) {
-      expect(text, contains('support@veradostudio.com'));
+      expect(text, contains('ryan@thesidequestlabs.com'));
     }
     expect(terms, contains(r'$9.99'));
     expect(terms, contains(r'$49.99'));

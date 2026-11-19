@@ -213,8 +213,11 @@ class RevenueCatSubscriptionService implements SubscriptionService {
   static const entitlementId = 'pro';
 
   /// RevenueCat's SDK keys are public keys made to ship inside the app (the
-  /// secret `sk_` key must never be). `--dart-define` overrides the iOS one.
-  static const _androidKey = String.fromEnvironment('REVENUECAT_ANDROID_KEY');
+  /// secret `sk_` key must never be). `--dart-define` overrides either one.
+  static const _androidKey = String.fromEnvironment(
+    'REVENUECAT_ANDROID_KEY',
+    defaultValue: 'goog_ZrlBcPHnnyjtFdVUYLoGCLqSVCx',
+  );
   static const iosKey = String.fromEnvironment(
     'REVENUECAT_IOS_KEY',
     defaultValue: 'appl_fwvaYbmjxPvSssHbyVBLhApShNZ',
@@ -223,7 +226,11 @@ class RevenueCatSubscriptionService implements SubscriptionService {
   /// The RevenueCat key for this platform, or null when not set.
   static String? platformKey() {
     if (kIsWeb) return null;
-    final key = Platform.isIOS || Platform.isMacOS ? iosKey : _androidKey;
+    final key = Platform.isIOS || Platform.isMacOS
+        ? iosKey
+        : Platform.isAndroid
+        ? _androidKey
+        : '';
     return key.isEmpty ? null : key;
   }
 

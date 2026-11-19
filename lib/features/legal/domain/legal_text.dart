@@ -28,7 +28,7 @@ const privacySections = <LegalSection>[
   ),
   LegalSection(
     "5. User Rights, Data Control & Account Deletion",
-    "In line with Apple App Store Review Guideline 5.1.1, the Google Play User Data policy, and privacy laws such as the GDPR and the CCPA/CPRA, you stay in control:\n\n• In the app: You can change your name, switch reminders off, sign out, or delete your account yourself.\n• Complete Account Erasure: You can permanently erase your account and everything saved in it, directly in the app:\n\nProfile > Delete Account\n\nWhen you confirm, your account record is deleted from our servers, your sign-in account is deleted, and the data is cleared from your phone. If your last sign-in was a while ago, you may first be asked to confirm that it is you (with Google, Apple or your password). On iPhone, the app's Sign in with Apple access is also revoked.\n\nWithout an account (guest): nothing is stored on our servers, so there is no account to delete. To clear what is saved on your phone (plan, history, favorites and settings), use Profile > Erase data on this phone. If you bought Premium on that phone, use Restore purchases afterwards to get it back.\n\n• Subscription Cancellation Reminder: Deleting your account does not cancel an active Apple or Google subscription. Cancel it in your Apple ID or Google Play subscription settings.\n• Your rights: Depending on where you live (for example the EU, the UK, or California) you may ask us for access to your data, to correct it, to delete it, to receive a copy (portability), to restrict or object to its use, and to complain to your data-protection authority. We do not sell or share your data for advertising, and we do not treat you differently for using these rights.\n• How to ask: Email support@veradostudio.com. We reply to privacy requests within 30 days.\n• Legal bases (GDPR): We use your data to provide the app you asked for (contract), to keep it secure (legitimate interest), and, for optional things like reminders, with your consent, which you can withdraw anytime.",
+    "In line with Apple App Store Review Guideline 5.1.1, the Google Play User Data policy, and privacy laws such as the GDPR and the CCPA/CPRA, you stay in control:\n\n• In the app: You can change your name, switch reminders off, sign out, or delete your account yourself.\n• Complete Account Erasure: You can permanently erase your account and everything saved in it, directly in the app:\n\nProfile > Delete Account\n\nWhen you confirm, your account record is deleted from our servers, your sign-in account is deleted, and the data is cleared from your phone. If your last sign-in was a while ago, you may first be asked to confirm that it is you (with Google, Apple or your password). On iPhone, the app's Sign in with Apple access is also revoked.\n\nWithout an account (guest): nothing is stored on our servers, so there is no account to delete. To clear what is saved on your phone (plan, history, favorites and settings), use Profile > Erase data on this phone. If you bought Premium on that phone, use Restore purchases afterwards to get it back.\n\n• Subscription Cancellation Reminder: Deleting your account does not cancel an active Apple or Google subscription. Cancel it in your Apple ID or Google Play subscription settings.\n• Your rights: Depending on where you live (for example the EU, the UK, or California) you may ask us for access to your data, to correct it, to delete it, to receive a copy (portability), to restrict or object to its use, and to complain to your data-protection authority. We do not sell or share your data for advertising, and we do not treat you differently for using these rights.\n• How to ask: Email ryan@thesidequestlabs.com. We reply to privacy requests within 30 days.\n• Legal bases (GDPR): We use your data to provide the app you asked for (contract), to keep it secure (legitimate interest), and, for optional things like reminders, with your consent, which you can withdraw anytime.",
   ),
   LegalSection(
     "6. Security & Data Retention",
@@ -52,7 +52,7 @@ const privacySections = <LegalSection>[
   ),
   LegalSection(
     "11. Contact Information",
-    "For privacy questions, data requests, or anything about how we handle your data, please contact us:\n\nApplication: Calisthenics for Women\nPublisher: Verado Studio\nSupport Email: support@veradostudio.com",
+    "For privacy questions, data requests, or anything about how we handle your data, please contact us:\n\nApplication: Calisthenics for Women\nPublisher: Verado Studio\nSupport Email: ryan@thesidequestlabs.com",
   ),
 ];
 
@@ -103,7 +103,7 @@ const termsSections = <LegalSection>[
   ),
   LegalSection(
     "12. Governing Law",
-    "These terms are governed by the laws that apply where Verado Studio is established, without removing any mandatory consumer protection you have in your own country. If you have a concern, please write to us first at support@veradostudio.com; we will try to sort it out fairly and quickly.",
+    "These terms are governed by the laws that apply where Verado Studio is established, without removing any mandatory consumer protection you have in your own country. If you have a concern, please write to us first at ryan@thesidequestlabs.com; we will try to sort it out fairly and quickly.",
   ),
   LegalSection(
     "13. Changes to These Terms",
@@ -111,7 +111,7 @@ const termsSections = <LegalSection>[
   ),
   LegalSection(
     "14. Contact Information",
-    "Questions about these terms? Contact us:\n\nApplication: Calisthenics for Women\nPublisher: Verado Studio\nSupport Email: support@veradostudio.com",
+    "Questions about these terms? Contact us:\n\nApplication: Calisthenics for Women\nPublisher: Verado Studio\nSupport Email: ryan@thesidequestlabs.com",
   ),
 ];
 
@@ -142,6 +142,6 @@ const supportSections = <LegalSection>[
   ),
   LegalSection(
     "7. Still Need Help?",
-    "Email us and include, if you can: what happened and what you expected; your phone model and its system version; the app version (in your phone's Settings > Apps); and a screenshot. Please never send your password.\n\nApplication: Calisthenics for Women\nPublisher: Verado Studio\nSupport Email: support@veradostudio.com",
+    "Email us and include, if you can: what happened and what you expected; your phone model and its system version; the app version (in your phone's Settings > Apps); and a screenshot. Please never send your password.\n\nApplication: Calisthenics for Women\nPublisher: Verado Studio\nSupport Email: ryan@thesidequestlabs.com",
   ),
 ];

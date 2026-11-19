@@ -36,7 +36,7 @@ void main() {
         600,
         scrollable: find.byType(Scrollable).first,
       );
-      expect(find.textContaining('support@veradostudio.com'), findsWidgets);
+      expect(find.textContaining('ryan@thesidequestlabs.com'), findsWidgets);
     });
   }
 
@@ -52,7 +52,7 @@ void main() {
         home: const LegalScreen(kind: LegalKind.support),
       ),
     );
-    expect(find.bySemanticsLabel('Email support@veradostudio.com'), findsOne);
+    expect(find.bySemanticsLabel('Email ryan@thesidequestlabs.com'), findsOne);
     expect(find.text('1. Getting Started'), findsOneWidget);
     // A question is a bold sub-heading of its own, not part of the answer.
     final question = tester.widget<Text>(find.text('Why is a day locked?'));
@@ -66,7 +66,7 @@ void main() {
       ),
     );
     expect(
-      find.bySemanticsLabel('Email support@veradostudio.com'),
+      find.bySemanticsLabel('Email ryan@thesidequestlabs.com'),
       findsNothing,
     );
   });
